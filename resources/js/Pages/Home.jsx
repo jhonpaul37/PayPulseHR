@@ -1,3 +1,5 @@
+import Layout from "../layouts/layout";
+
 export default function Home() {
-    return <p className="bg-red-400">ni edit kuy ahahah</p>;
+    return <p className="">content</p>;
 }
