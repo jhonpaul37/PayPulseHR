@@ -1,11 +1,11 @@
-import { Link } from "@inertiajs/react";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+import { Link } from '@inertiajs/react';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function Layout({ children }) {
     return (
         <>
             {/* NavBar */}
-            <nav className="bg-main text-white flex justify-between items-center px-10 py-3">
+            <nav className="flex items-center justify-between bg-main px-10 py-3 text-white">
                 {/* Logo */}
 
                 <div>
@@ -37,7 +37,7 @@ export default function Layout({ children }) {
 
                 {/* navbar (right) */}
                 <div className="flex gap-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 ">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2">
                         {/* "hover:bg-gray-200" hover settings*/}
                         <Link href="">
                             <i className="fas fa-regular fa-bell"></i>
