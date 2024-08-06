@@ -8,7 +8,7 @@ export default function Voucher({ vouchers }) {
             <div className="px-20 pt-10">
                 <span>Recent</span>
                 {vouchers.data.map((vouchers) => (
-                    <div key={vouchers.id} className="border p-4">
+                    <div key={vouchers.id} className="border p-4 bg-white">
                         <div>
                             <span>
                                 {new Date(
