@@ -1,13 +1,9 @@
 import { Link } from "@inertiajs/react";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 export default function Layout({ children }) {
     return (
         <>
-            {/* icon links */}
-            <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-            />
-
             {/* NavBar */}
             <nav className="bg-main text-white flex justify-between items-center px-10 py-3">
                 {/* Logo */}
@@ -23,19 +19,19 @@ export default function Layout({ children }) {
                         <Link href="/">Home</Link>
                     </div>
                     <div>
-                        <Link href="">Dashboard</Link>
+                        <Link href="/dashboard">Dashboard</Link>
                     </div>
                     <div>
-                        <Link href="/disVoucher">Voucher</Link>
+                        <Link href="/voucher">Voucher</Link>
                     </div>
                     <div>
-                        <Link href="">Release</Link>
+                        <Link href="">Release/Approval</Link>
                     </div>
                     <div>
                         <Link href="">Reports</Link>
                     </div>
                     <div>
-                        <Link href="">Settings</Link>
+                        <Link href="">Transaction</Link>
                     </div>
                 </div>
 
@@ -49,13 +45,24 @@ export default function Layout({ children }) {
                     </div>
 
                     {/* user profile icon */}
-                    <div>
+                    {/* <div>
                         <div>
                             <button
                                 onclick="toggleDropdown('dropdown2')"
                                 className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 hover:shadow-md"
                             >
                                 <i className="fas fa-user"></i>
+                            </button>
+                        </div>
+                    </div> */}
+                    {/* settings */}
+                    <div>
+                        <div>
+                            <button
+                                onclick="toggleDropdown('dropdown2')"
+                                className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 hover:shadow-md"
+                            >
+                                <i className="fas fa-solid fa-gear"></i>
                             </button>
                         </div>
                     </div>

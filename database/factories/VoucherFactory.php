@@ -16,8 +16,15 @@ class VoucherFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            //
-        ];
+
+    return [
+        'jev_no' => fake()->text(),
+        'ors_burs_no' => fake()->numberBetween(1, 1000), // Assuming you want a random integer between 1 and 1000
+        'f_cluster' => fake()->word(),
+        'div_num' => fake()->randomNumber(),
+        'uacs_code' => fake()->numberBetween(1, 1000), // Assuming you want a random integer between 1 and 1000
+        'user_id' => fake()->randomNumber(),
+    ];
+
     }
 }

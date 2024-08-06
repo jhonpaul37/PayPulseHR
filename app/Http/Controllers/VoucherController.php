@@ -13,7 +13,8 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        //
+        $disVoucher = voucher::latest()->paginate(3);
+        return inertia('Voucher',['vouchers' => $disVoucher]);
     }
 
     /**
@@ -21,7 +22,7 @@ class VoucherController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('Voucher');
     }
 
     /**
