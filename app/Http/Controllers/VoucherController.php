@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\voucher;
-use App\Http\Requests\StorevoucherRequest;
-use App\Http\Requests\UpdatevoucherRequest;
+use Illuminate\Http\Request;
 
 class VoucherController extends Controller
 {
@@ -22,15 +21,27 @@ class VoucherController extends Controller
      */
     public function create()
     {
-        return inertia('Voucher');
+        return inertia('voucher/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorevoucherRequest $request)
+    public function store(Request $request)
     {
-        //
+        // sleep(1);
+
+        $fields = $request->validate([
+            'f_cluster' => ['required'],
+            'jev_no' => ['required']
+        ]);
+
+        Voucher::create($fields);
+
+        return redirect ('/voucher');
+
+        // tests output
+        // dd($request);
     }
 
     /**
@@ -52,7 +63,7 @@ class VoucherController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatevoucherRequest $request, voucher $voucher)
+    public function update(Request $request, voucher $voucher)
     {
         //
     }

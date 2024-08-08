@@ -43,27 +43,12 @@ export default function Layout({ children }) {
                             <i className="fas fa-regular fa-bell"></i>
                         </Link>
                     </div>
-
-                    {/* user profile icon */}
-                    {/* <div>
-                        <div>
-                            <button
-                                onclick="toggleDropdown('dropdown2')"
-                                className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 hover:shadow-md"
-                            >
-                                <i className="fas fa-user"></i>
-                            </button>
-                        </div>
-                    </div> */}
                     {/* settings */}
                     <div>
                         <div>
-                            <button
-                                onclick="toggleDropdown('dropdown2')"
-                                className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 hover:shadow-md"
-                            >
+                            <Link className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 hover:shadow-md">
                                 <i className="fas fa-solid fa-gear"></i>
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
