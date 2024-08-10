@@ -1,66 +1,65 @@
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import {
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    UploadOutlined,
+    UserOutlined,
+    VideoCameraOutlined,
+} from '@ant-design/icons';
+import { Button, Layout, Menu } from 'antd';
 
-export default function Layout({ children }) {
+const { Header, Sider, Content } = Layout;
+
+const App = ({ children }) => {
+    const [collapsed, setCollapsed] = useState(true);
+
     return (
-        <>
-            {/* NavBar */}
-            <nav className="flex items-center justify-between bg-main px-10 py-3 text-white">
-                {/* Logo */}
-
-                <div>
-                    <Link>PayPulseHR</Link>
+        <Layout className="h-screen">
+            <Sider
+                trigger={null}
+                collapsible
+                collapsed={collapsed}
+                style={{ backgroundColor: '#741D20' }}
+            >
+                <div className="bg-mainD flex h-16 items-center justify-center">
+                    <span className="text-xl text-white">Logo</span>{' '}
                 </div>
-
-                {/* navbar links (middle)*/}
-
-                <div className="flex gap-10">
-                    <div>
+                <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+                    <Menu.Item key="1" icon={<UserOutlined />}>
                         <Link href="/">Home</Link>
-                    </div>
-                    <div>
+                    </Menu.Item>
+                    <Menu.Item key="2" icon={<VideoCameraOutlined />}>
                         <Link href="/dashboard">Dashboard</Link>
-                    </div>
-                    <div>
+                    </Menu.Item>
+                    <Menu.Item key="3" icon={<UploadOutlined />}>
                         <Link href="/voucher">Voucher</Link>
-                    </div>
-                    <div>
-                        <Link href="">Release/Approval</Link>
-                    </div>
-                    <div>
-                        <Link href="">Reports</Link>
-                    </div>
-                    <div>
-                        <Link href="">Transaction</Link>
-                    </div>
-                </div>
-
-                {/* navbar (right) */}
-                <div className="flex gap-5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2">
-                        {/* "hover:bg-gray-200" hover settings*/}
-                        <Link href="">
-                            <i className="fas fa-regular fa-bell"></i>
-                        </Link>
-                    </div>
-                    {/* settings */}
-                    <div>
-                        <div>
-                            <Link className="flex h-10 w-10 items-center justify-center rounded-full border-2 px-2 py-2 hover:shadow-md">
-                                <i className="fas fa-solid fa-gear"></i>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {/* main content */}
-            <main>{children}</main>
-
-            {/* Footer  */}
-            <footer className="fixed bottom-0 w-full border-t border-gray-300 bg-gray-50 px-20 py-2 text-xs">
-                &copy; 2024 PaypulseHR Capstone project
-            </footer>
-        </>
+                    </Menu.Item>
+                </Menu>
+            </Sider>
+            <Layout>
+                <Header className="flex justify-between bg-white shadow-md">
+                    <Button
+                        type="text"
+                        icon={
+                            collapsed ? (
+                                <MenuUnfoldOutlined />
+                            ) : (
+                                <MenuFoldOutlined />
+                            )
+                        }
+                        onClick={() => setCollapsed(!collapsed)}
+                        className="h-16 w-16 text-lg"
+                    />
+                    <div>Search Bar</div>
+                    <div>user profile</div>
+                </Header>
+                <Content className="m-8 rounded-md bg-white p-10">
+                    {children}
+                </Content>
+            </Layout>
+        </Layout>
     );
-}
+};
+
+export default App;

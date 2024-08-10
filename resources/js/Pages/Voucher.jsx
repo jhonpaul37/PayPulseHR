@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react';
 
 export default function Voucher({ vouchers }) {
     return (
-        <div className="px-20 pt-10">
+        <div className="">
             {/* button to add */}
             <Link
                 href="../voucher/create"

@@ -1,9 +1,13 @@
-import Layout from "../layouts/layout";
+import Layout from '../layouts/layout';
 
 export default function Home() {
     return (
         <>
-            <button className="bg-high px-5 py-4 rounded-md ">Create</button>
+            <div className="">
+                <button className="rounded-md bg-high px-10 py-3 font-bold">
+                    Create
+                </button>
+            </div>
         </>
     );
 }
