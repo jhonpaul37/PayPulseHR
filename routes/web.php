@@ -9,3 +9,7 @@ Route::get('/', function () {
 });
 
 Route::resource('voucher',VoucherController::class);
+
+Route::get('/dashboard', function () {
+    return inertia('Dashboard');
+});
