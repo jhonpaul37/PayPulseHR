@@ -1,0 +1,15 @@
+
+DOMpurify
+terminal
+npm install dompurify
+
+Font Awesome
+terminal
+npm install @fortawesome/fontawesome-free
+import in file
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
+Ant Design
+terminal
+npm install @ant-design/icons
