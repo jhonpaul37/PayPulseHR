@@ -8,12 +8,18 @@ run this in terminal
 npm install @fortawesome/fontawesome-free
 npm install antd
 
+Align CSS in JSX
+run this in terminal
+npm install styled-components
+
+
 import in file
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
 Ant Design
 run this in terminal
+npm install @ant-design/icons --save
 npm install @ant-design/icons
 
 React Router
