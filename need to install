@@ -1,15 +1,17 @@
 
 DOMpurify
-terminal
+run this in terminal
 npm install dompurify
 
 Font Awesome
-terminal
+run this in terminal
 npm install @fortawesome/fontawesome-free
+npm install antd
+
 import in file
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
 Ant Design
-terminal
+run this in terminal
 npm install @ant-design/icons
