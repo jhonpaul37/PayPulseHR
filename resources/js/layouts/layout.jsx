@@ -12,15 +12,22 @@ import styled from 'styled-components';
 
 const { Header, Sider, Content } = Layout;
 
-// Styled components
+// // Styled components
 const StyledSider = styled(Sider)`
     background-color: #741d20 !important;
 `;
-
 const StyledMenu = styled(Menu)`
+    .ant-menu-item {
+        color: white !important; /* Set the default text color to white */
+    }
+
+    .ant-menu-item-icon {
+        color: white !important; /* Set the default icon color to white */
+    }
+
     .ant-menu-item-selected {
         background-color: #f0c519 !important;
-        color: #000 !important;
+        color: white !important; /* Set the selected text color to black */
     }
 `;
 
@@ -38,7 +45,7 @@ const App = ({ children }) => {
     return (
         <Layout className="h-screen">
             <StyledSider trigger={null} collapsible collapsed={collapsed}>
-                <div className="bg-mainD flex h-16 items-center justify-center">
+                <div className="flex h-16 items-center justify-center bg-mainD">
                     <span className="text-xl text-white">Logo</span>
                 </div>
                 <StyledMenu
