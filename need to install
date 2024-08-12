@@ -5,23 +5,23 @@ npm install dompurify
 
 Font Awesome
 run this in terminal
+npm i --save @fortawesome/fontawesome-svg-core
+npm i --save @fortawesome/free-solid-svg-icons
+npm i --save @fortawesome/free-regular-svg-icons
+npm i --save @fortawesome/free-brands-svg-icons
+npm i --save @fortawesome/react-fontawesome@latest
+
+
+npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 npm install @fortawesome/fontawesome-free
-npm install antd
+
 
 Align CSS in JSX
 run this in terminal
 npm install styled-components
 
-
-import in file
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
-
 Ant Design
 run this in terminal
 npm install @ant-design/icons --save
 npm install @ant-design/icons
-
-React Router
-run this in terminal
-npm install react-router-dom
+npm install antd
