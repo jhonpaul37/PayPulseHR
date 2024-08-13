@@ -29,11 +29,14 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-        // sleep(1);
 
         $fields = $request->validate([
+            'jev_no' => ['required'],
+            'ors_burs_no' => ['required'],
             'f_cluster' => ['required'],
-            'jev_no' => ['required']
+            'div_num' => ['required'],
+            'uacs_code' => ['required'],
+            'user_id' => ['required']
         ]);
 
         Voucher::create($fields);

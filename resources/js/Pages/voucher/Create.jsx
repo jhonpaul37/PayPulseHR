@@ -31,12 +31,12 @@ export default function Create() {
                         <input
                             value={data.f_cluster}
                             type="text"
-                            // same code with handleInputChange
+                            // drop down content from database
 
                             onChange={(e) =>
                                 setData('f_cluster', e.target.value)
                             }
-                            placeholder="Enter cluster"
+                            placeholder="fund cluster"
                             className={errors.f_cluster && '!ring-red-500'}
                         />
                         {errors.f_cluster && (
@@ -44,7 +44,21 @@ export default function Create() {
                                 {errors.f_cluster}
                             </div>
                         )}
-
+                        {/* ors_burs_no */}
+                        <input
+                            value={data.ors_burs_no}
+                            type="number"
+                            onChange={(e) =>
+                                setData('ors_burs_no', e.target.value)
+                            }
+                            placeholder="ors_burs_no"
+                            className={errors.ors_burs_no && '!ring-red-500'}
+                        />
+                        {errors.ors_burs_no && (
+                            <div className="text-red-600">
+                                {errors.ors_burs_no}
+                            </div>
+                        )}
                         {/* jev_num */}
                         <input
                             value={data.jev_no}
@@ -55,6 +69,43 @@ export default function Create() {
                         />
                         {errors.jev_no && (
                             <div className="text-red-600">{errors.jev_no}</div>
+                        )}
+                        {/* div_num */}
+                        <input
+                            value={data.div_num}
+                            type="text"
+                            onChange={(e) => setData('div_num', e.target.value)}
+                            placeholder="div_num"
+                            className={errors.div_num && '!ring-red-500'}
+                        />
+                        {errors.jev_no && (
+                            <div className="text-red-600">{errors.div_num}</div>
+                        )}
+                        {/* uacs_code */}
+                        <input
+                            value={data.uacs_code}
+                            type="number"
+                            onChange={(e) =>
+                                setData('uacs_code', e.target.value)
+                            }
+                            placeholder="uacs_code"
+                            className={errors.uacs_code && '!ring-red-500'}
+                        />
+                        {errors.uacs_code && (
+                            <div className="text-red-600">
+                                {errors.uacs_code}
+                            </div>
+                        )}
+                        {/* user_id */}
+                        <input
+                            value={data.user_id}
+                            type="number"
+                            onChange={(e) => setData('user_id', e.target.value)}
+                            placeholder="user_id"
+                            className={errors.user_id && '!ring-red-500'}
+                        />
+                        {errors.jev_no && (
+                            <div className="text-red-600">{errors.user_id}</div>
                         )}
                         {/* submit button */}
                         <button

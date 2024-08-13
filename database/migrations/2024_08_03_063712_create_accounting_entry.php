@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('accounting_entry', function (Blueprint $table) {
             $table->id();
-            $table->integer('uacs_code');
-            $table->string('account_title');
+            $table->string('UACS_code')->unique();
+            $table->string('Account_title');
             $table->timestamps();
         });
     }

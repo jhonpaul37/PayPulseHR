@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FundClusterController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +9,8 @@ Route::get('/', function () {
 });
 
 Route::resource('voucher',VoucherController::class);
+
+Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
 
 Route::get('/dashboard', function () {
     return inertia('Dashboard');

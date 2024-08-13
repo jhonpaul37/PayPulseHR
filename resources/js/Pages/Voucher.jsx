@@ -30,13 +30,13 @@ export default function Voucher({ vouchers }) {
             </div>
 
             {/* pagination recent*/}
-            <div className="pt-5">
+            <div className="fixed bg-white py-5">
                 {vouchers.links.map((link) =>
                     link.url ? (
                         <Link
                             key={link.label}
                             href={link.url}
-                            className={`${link.active ? 'font-bold text-high' : ''} m-1 p-1`}
+                            className={`${link.active ? 'bg-high font-bold' : ''} m-2 rounded-md border px-3 py-2`}
                         >
                             <span
                                 dangerouslySetInnerHTML={{ __html: link.label }}
