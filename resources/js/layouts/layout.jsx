@@ -7,7 +7,6 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     faHouse,
     faGear,
-    faPlus,
     faAddressBook,
     faFile,
 } from '@fortawesome/free-solid-svg-icons';
