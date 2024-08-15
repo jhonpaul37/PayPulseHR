@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Create() {
     const { data, setData, post, errors, processing } = useForm({
@@ -10,10 +11,30 @@ export default function Create() {
         user_id: '',
     });
 
+    const [entries, setEntries] = useState([
+        { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
+        { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
+    ]);
+
     function submit(e) {
         e.preventDefault();
-        post('/voucher');
+        post('/voucher', { ...data, entries });
     }
+
+    const handleInputChange = (index, event) => {
+        const { name, value } = event.target;
+        const newEntries = [...entries];
+        newEntries[index][name] = value;
+        setEntries(newEntries);
+    };
+
+    const addRow = (e) => {
+        e.preventDefault();
+        setEntries([
+            ...entries,
+            { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
+        ]);
+    };
 
     return (
         <>
@@ -202,61 +223,104 @@ export default function Create() {
                 </div>
 
                 {/* Certified Section */}
-                <div className="mb-4 border p-4">
-                    <div className="font-bold">
+                <div className="border-b border-black p-2">
+                    <div className="text-xs">
                         A. Certified: Expenses/Cash Advance necessary, lawful
                         and incurred under my direct supervision
                     </div>
-                    <div className="mt-2 font-semibold">
-                        {/* {namePositions[3]?.name_pos} */}
+                    <div className="flex flex-col items-center justify-center">
+                        <div className="mt-2 text-center font-bold">
+                            {/* {namePositions[3]?.name_pos} */} Mary Jane
+                            Alarcado
+                        </div>
+                        <div className="text-xs">
+                            {/* {namePositions[3]?.position} */}My BEBE Loves
+                        </div>
                     </div>
-                    <div>{/* {namePositions[3]?.position} */}</div>
                 </div>
 
                 {/* Accounting Entry */}
-                <div className="mb-4 border p-4">
-                    <div className="mb-2 font-bold">B. Accounting Entry</div>
-                    <div className="grid grid-cols-4 gap-2">
-                        <div>Account Title</div>
-                        <div>UACS Code</div>
-                        <div>Debit</div>
-                        <div>Credit</div>
+                <div>
+                    <div className="border-b border-black p-2 text-xs">
+                        B. Accounting Entry
                     </div>
-                    <div className="mt-2 grid grid-cols-4 gap-2">
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="text"
-                            name="uacsTitle"
-                            // value={formData.uacsTitle}
-                            // onChange={handleInputChange}
-                        />
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="text"
-                            name="uacsCode"
-                            // value={formData.uacsCode}
-                            // onChange={handleInputChange}
-                            readOnly
-                        />
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="number"
-                            name="debit"
-                            // value={formData.debit}
-                            // onChange={handleInputChange}
-                        />
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="number"
-                            name="credit"
-                            // value={formData.credit}
-                            // onChange={handleInputChange}
-                        />
+                    <div className="">
+                        <div className="grid grid-cols-4 border-b border-black text-xs">
+                            <div className="flex items-center justify-center">
+                                Account Title
+                            </div>
+                            <div className="flex items-center justify-center border-l border-black">
+                                UACS Code
+                            </div>
+                            <div className="flex items-center justify-center border-l border-black">
+                                Debit
+                            </div>
+                            <div className="flex items-center justify-center border-l border-black">
+                                Credit
+                            </div>
+                        </div>
+                        <div className="flex flex-col justify-center border-b border-black">
+                            {entries.map((entry, index) => (
+                                <div key={index} className="grid grid-cols-4">
+                                    <div className="p-2">
+                                        <input
+                                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                            type="text"
+                                            name="uacsTitle"
+                                            // value={entry.uacsTitle}
+                                            // onChange={(e) =>
+                                            //     handleInputChange(index, e)
+                                            // }
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black p-2">
+                                        <input
+                                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                            type="text"
+                                            name="uacsCode"
+                                            // value={entry.uacsCode}
+                                            // onChange={(e) =>
+                                            //     handleInputChange(index, e)
+                                            // }
+                                            // readOnly
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black p-2">
+                                        <input
+                                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                            type="number"
+                                            name="debit"
+                                            // value={entry.debit}
+                                            // onChange={(e) =>
+                                            //     handleInputChange(index, e)
+                                            // }
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black p-2">
+                                        <input
+                                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                            type="number"
+                                            name="credit"
+                                            // value={entry.credit}
+                                            // onChange={(e) =>
+                                            //     handleInputChange(index, e)
+                                            // }
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* <button
+                            onClick={addRow}
+                            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+                        >
+                            Add Entry
+                        </button> */}
                     </div>
                 </div>
 
                 {/* Certified and Approved Section */}
-                <div className="mb-4 grid grid-cols-2 gap-4 border p-4">
+                <div className="mb-4 grid grid-cols-2 border-b border-black">
                     <div>
                         <div className="font-bold">C. Certified</div>
                         <div className="mt-2">
@@ -273,13 +337,15 @@ export default function Create() {
                                 <span className="ml-2">Signature:</span>
                             </label>
                         </div>
+
                         <div className="mt-2">
                             <div className="font-semibold">name</div>
                             <div>position</div>
                         </div>
                     </div>
-                    <div>
-                        <div className="font-bold">D. Approved for Payment</div>
+
+                    <div className="border-l border-black">
+                        <div className="">D. Approved for Payment</div>
                         <div className="mt-2">
                             <input
                                 className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"

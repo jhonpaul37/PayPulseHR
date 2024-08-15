@@ -66,6 +66,12 @@ const App = ({ children }) => {
                         <Link href="/">Dashboard</Link>
                     </Menu.Item>
                     <Menu.Item
+                        key="2"
+                        icon={<FontAwesomeIcon icon={faHouse} />}
+                    >
+                        <Link href="/dashboard">Dashboard</Link>
+                    </Menu.Item>
+                    <Menu.Item
                         key="3"
                         icon={<FontAwesomeIcon icon={faFolder} />}
                     >
