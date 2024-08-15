@@ -1,29 +1,18 @@
 import React, { useState } from 'react';
-
-// intertia
 import { Link, usePage } from '@inertiajs/react';
-
-// Font Awesome icon
-import {
-    faHouse,
-    faGear,
-    faAddressBook,
-    faFolder,
-} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-// Ant design icon
+import { faHouse, faGear, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
+import styled from 'styled-components';
 
-const { Header, Sider, Content } = Layout;
+const { Header, Sider } = Layout;
 
 // Styled components
-import styled from 'styled-components';
-// this is the style
 const StyledSider = styled(Sider)`
     background-color: #741d20 !important;
 `;
+
 const StyledMenu = styled(Menu)`
     .ant-menu-item {
         color: white !important;
@@ -39,11 +28,19 @@ const StyledMenu = styled(Menu)`
     }
 `;
 
+const ScrollableContent = styled(Layout.Content)`
+    margin: 2rem; /* Equivalent to m-8 in Tailwind */
+    padding: 2.5rem; /* Equivalent to p-10 in Tailwind */
+    background-color: white;
+    border-radius: 0.5rem; /* Equivalent to rounded-md in Tailwind */
+    overflow-y: auto;
+    flex-grow: 1;
+`;
+
 const App = ({ children }) => {
     const [collapsed, setCollapsed] = useState(true);
     const { url } = usePage();
 
-    // Determine the active menu item based on the current URL
     const selectedKey = () => {
         if (url.startsWith('/dashboard')) return '2';
         if (url.startsWith('/voucher')) return '3';
@@ -68,14 +65,6 @@ const App = ({ children }) => {
                     >
                         <Link href="/">Dashboard</Link>
                     </Menu.Item>
-
-                    {/* <Menu.Item
-                        key="2"
-                        icon={<FontAwesomeIcon icon={faAddressBook} />}
-                    >
-                        <Link href="/dashboard">Dashboard</Link>
-                    </Menu.Item> */}
-
                     <Menu.Item
                         key="3"
                         icon={<FontAwesomeIcon icon={faFolder} />}
@@ -88,8 +77,8 @@ const App = ({ children }) => {
                 </StyledMenu>
             </StyledSider>
 
-            {/* navbar */}
-            <Layout>
+            {/* Navbar */}
+            <Layout className="flex h-screen flex-col">
                 <Header className="flex justify-between bg-white shadow-md">
                     <Button
                         type="text"
@@ -103,16 +92,13 @@ const App = ({ children }) => {
                         onClick={() => setCollapsed(!collapsed)}
                         className="h-16 w-16 text-lg"
                     />
-                    {/* search */}
+                    {/* Search */}
                     <div>search</div>
-
                     <div>User Profile</div>
                 </Header>
 
-                {/* content below */}
-                <Content className="m-8 rounded-md bg-white p-10">
-                    {children}
-                </Content>
+                {/* Scrollable content below with the same design */}
+                <ScrollableContent>{children}</ScrollableContent>
             </Layout>
         </Layout>
     );
