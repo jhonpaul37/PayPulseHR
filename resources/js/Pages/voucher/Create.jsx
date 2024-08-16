@@ -320,10 +320,14 @@ export default function Create() {
                 </div>
 
                 {/* Certified and Approved Section */}
-                <div className="mb-4 grid grid-cols-2 border-b border-black">
-                    <div>
-                        <div className="font-bold">C. Certified</div>
-                        <div className="mt-2">
+                <div className="grid grid-cols-2 border-b border-black">
+                    {/* C Section */}
+                    <div className="">
+                        <div className="border-b border-black p-2">
+                            C. Certified
+                        </div>
+                        <div className="flex h-28 flex-col justify-center p-2">
+                            {' '}
                             <label className="inline-flex items-center">
                                 <input
                                     type="checkbox"
@@ -331,54 +335,160 @@ export default function Create() {
                                 />
                                 <span className="ml-2">Cash available</span>
                             </label>
-                        </div>
-                        <div className="mt-2">
                             <label className="inline-flex items-center">
-                                <span className="ml-2">Signature:</span>
+                                <input
+                                    type="checkbox"
+                                    className="form-checkbox"
+                                />
+                                <span className="ml-2">
+                                    Subject to Authority to Debt Account (when
+                                    applicable)
+                                </span>
+                            </label>
+                            <label className="inline-flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="form-checkbox"
+                                />
+                                <span className="ml-2">
+                                    Supporting document complete and amount
+                                    claim proper
+                                </span>
                             </label>
                         </div>
 
-                        <div className="mt-2">
-                            <div className="font-semibold">name</div>
-                            <div>position</div>
+                        <div className="grid grid-cols-4 border-t border-black">
+                            <div className="flex flex-col justify-between">
+                                <div className="border-b border-black p-2">
+                                    Signature
+                                </div>
+                                <div className="border-b border-black p-2">
+                                    Printed Name
+                                </div>
+                                <div className="flex flex-grow items-center border-black p-2">
+                                    Position
+                                </div>
+                            </div>
+
+                            <div className="col-span-3 border-l border-black text-center">
+                                <div className="border-b border-black p-2">
+                                    Empty space
+                                </div>
+                                <div className="border-b border-black p-2 font-bold">
+                                    RHEA ANGELLICA D. ADDATU, CPA
+                                </div>
+                                <div className="grid grid-rows-2">
+                                    <div className="border-b border-black p-2">
+                                        College Accountant
+                                    </div>
+                                    <div className="p-2">
+                                        Head, Accounting Unit/Authorized
+                                        Representative
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    {/* D Section */}
                     <div className="border-l border-black">
-                        <div className="">D. Approved for Payment</div>
-                        <div className="mt-2">
+                        <div className="border-b border-black p-2">
+                            D. Approved for Payment
+                        </div>
+                        <div className="flex h-28 items-center justify-center p-2">
+                            {' '}
                             <input
                                 className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                 type="text"
                                 placeholder="Amount"
                             />
                         </div>
-                        <div className="mt-2">
-                            <label className="inline-flex items-center">
-                                <span className="ml-2">Signature:</span>
-                            </label>
-                        </div>
-                        <div className="mt-2">
-                            <div className="font-semibold">name</div>
-                            <div>position</div>
+                        <div className="grid grid-cols-4 border-t border-black">
+                            <div className="flex flex-col justify-between">
+                                <div className="border-b border-black p-2">
+                                    Signature
+                                </div>
+                                <div className="border-b border-black p-2">
+                                    Printed Name
+                                </div>
+                                <div className="flex flex-grow items-center border-black p-2">
+                                    Position
+                                </div>
+                            </div>
+
+                            <div className="col-span-3 border-l border-black text-center">
+                                <div className="border-b border-black p-2">
+                                    Empty space
+                                </div>
+                                <div className="border-b border-black p-2 font-bold">
+                                    RHEA ANGELLICA D. ADDATU, CPA
+                                </div>
+                                <div className="grid grid-rows-2">
+                                    <div className="border-b border-black p-2">
+                                        College Accountant
+                                    </div>
+                                    <div className="p-2">
+                                        Head, Accounting Unit/Authorized
+                                        Representative
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Receipt of Payment */}
-                <div className="mb-4 border p-4">
-                    <div className="font-bold">E. Receipt of Payment</div>
-                    <div className="mt-2 grid grid-cols-2 gap-4">
-                        <div>
-                            <div>Check/ADA No.:</div>
-                            <div>Date:</div>
-                            <div>Bank Name & Account Number:</div>
+                <div className="border-b border-black">
+                    <div className="border-b border-black p-2">
+                        E. Receipt of Payment
+                    </div>
+                    <div className="grid grid-cols-5">
+                        <div className="col-span-1">
+                            <div className="border-b border-black p-2">
+                                Check/ADA No.
+                            </div>
+                            <div className="p-2">Signatures</div>
                         </div>
-                        <div>
-                            <div>JEV No. </div>
-                            <div>Signature:</div>
-                            <div>Date:</div>
+                        <div className="border-l border-black">
+                            <div className="border-b border-black p-2">
+                                //for signature
+                            </div>
+                            <div className="p-2">//for signature</div>
                         </div>
+                        <div className="border-l border-black">
+                            <div className="border-b border-black p-2">
+                                Date:
+                            </div>
+                            <div className="p-2">Date:</div>
+                        </div>
+                        <div className="border-l border-black">
+                            <div className="border-b border-black p-2">
+                                Bank Name & Account Number:
+                            </div>
+                            <div className="p-2">Printed Name:</div>
+                        </div>
+                        <div className="border-l border-black">
+                            <div className="border-b border-black p-2">
+                                JEV No.
+                            </div>
+                            <div className="p-2">Date:</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-b border-black">
+                    Official Receipt No. & Date/Other Documents
+                </div>
+                <div className="flex justify-end border-b border-black">
+                    Annex-3
+                </div>
+                <div className="grid grid-cols-3">
+                    <div className="col-span-1 flex items-center justify-center bg-main p-2">
+                        Journal Entry Voucher
+                    </div>
+                    <div className="flex flex-col p-2">
+                        <span>No.</span>
+                        <span>Date</span>
                     </div>
                 </div>
 
