@@ -1,5 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 export default function Create() {
     const { data, setData, post, errors, processing } = useForm({
@@ -34,6 +36,12 @@ export default function Create() {
             ...entries,
             { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
         ]);
+    };
+    const removeRow = () => {
+        if (entries.length > 2) {
+            const updatedEntries = entries.slice(0, -1);
+            setEntries(updatedEntries);
+        }
     };
 
     return (
@@ -238,7 +246,7 @@ export default function Create() {
                     <div className="border-b border-black p-2 text-xs">
                         B. Accounting Entry
                     </div>
-                    <div className="">
+                    <div>
                         <div className="grid grid-cols-4 border-b border-black text-xs">
                             <div className="flex items-center justify-center">
                                 Account Title
@@ -261,10 +269,6 @@ export default function Create() {
                                             className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                             type="text"
                                             name="uacsTitle"
-                                            // value={entry.uacsTitle}
-                                            // onChange={(e) =>
-                                            //     handleInputChange(index, e)
-                                            // }
                                         />
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
@@ -272,11 +276,6 @@ export default function Create() {
                                             className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                             type="text"
                                             name="uacsCode"
-                                            // value={entry.uacsCode}
-                                            // onChange={(e) =>
-                                            //     handleInputChange(index, e)
-                                            // }
-                                            // readOnly
                                         />
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
@@ -284,10 +283,6 @@ export default function Create() {
                                             className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                             type="number"
                                             name="debit"
-                                            // value={entry.debit}
-                                            // onChange={(e) =>
-                                            //     handleInputChange(index, e)
-                                            // }
                                         />
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
@@ -295,23 +290,39 @@ export default function Create() {
                                             className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                             type="number"
                                             name="credit"
-                                            // value={entry.credit}
-                                            // onChange={(e) =>
-                                            //     handleInputChange(index, e)
-                                            // }
                                         />
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            removeRow(entries.length - 1)
+                                        }
+                                        className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
+                                            entries.length <= 2
+                                                ? 'cursor-not-allowed opacity-50'
+                                                : ''
+                                        }`}
+                                        disabled={entries.length <= 2}
+                                    >
+                                        <FontAwesomeIcon icon={faMinus} />
+                                    </button>
                                 </div>
                             ))}
                         </div>
-                        {/* <button
-                            onClick={addRow}
-                            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
-                        >
-                            Add Entry
-                        </button> */}
+
+                        {/* Control Buttons outside the form */}
+                        <div className="mt-4 flex justify-between">
+                            <button
+                                type="button"
+                                onClick={addRow}
+                                className="rounded bg-high px-4 py-2 font-bold"
+                            >
+                                <FontAwesomeIcon icon={faPlus} />
+                            </button>
+                        </div>
                     </div>
                 </div>
+
                 {/* Certified and Approved Section */}
                 <div className="grid grid-cols-2 border-b border-black">
                     {/* C Section */}
