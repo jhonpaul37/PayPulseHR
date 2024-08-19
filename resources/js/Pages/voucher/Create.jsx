@@ -80,7 +80,6 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
-
                 {/* Mode of Payment */}
                 <div className="grid grid-cols-8 border-b-2 border-black">
                     <div className="col-span-2 p-2 font-bold">
@@ -114,7 +113,6 @@ export default function Create() {
                         </label>
                     </div>
                 </div>
-
                 {/* Payee and Address */}
                 <div>
                     <div className="grid grid-cols-8 border-b border-black">
@@ -173,7 +171,6 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
-
                 {/* Particulars Section */}
                 <div className="grid grid-cols-10 border-b border-black">
                     <label className="col-span-4 flex items-center justify-center p-2 text-center">
@@ -189,7 +186,6 @@ export default function Create() {
                         Amount
                     </label>
                 </div>
-
                 {/* Input Section */}
                 <div className="grid grid-cols-10 border-b border-black">
                     <div className="col-span-4 flex items-center p-2">
@@ -221,7 +217,6 @@ export default function Create() {
                         />
                     </div>
                 </div>
-
                 {/* Certified Section */}
                 <div className="border-b border-black p-2">
                     <div className="text-xs">
@@ -238,7 +233,6 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
-
                 {/* Accounting Entry */}
                 <div>
                     <div className="border-b border-black p-2 text-xs">
@@ -318,7 +312,6 @@ export default function Create() {
                         </button> */}
                     </div>
                 </div>
-
                 {/* Certified and Approved Section */}
                 <div className="grid grid-cols-2 border-b border-black">
                     {/* C Section */}
@@ -436,7 +429,6 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
-
                 {/* Receipt of Payment */}
                 <div className="border-b border-black">
                     <div className="border-b border-black p-2">
@@ -475,23 +467,118 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
-
+                {/* Receipt and annex-3 */}
                 <div className="border-b border-black">
                     Official Receipt No. & Date/Other Documents
                 </div>
                 <div className="flex justify-end border-b border-black">
                     Annex-3
                 </div>
-                <div className="grid grid-cols-3">
-                    <div className="col-span-1 flex items-center justify-center bg-main p-2">
-                        Journal Entry Voucher
+
+                {/* Journal Entry Voucher */}
+                <div className="grid grid-cols-3 border-b border-black">
+                    <div className="col-span-2 flex flex-col items-center justify-center p-2">
+                        <label className="font-bold">
+                            Journal Entry Voucher
+                        </label>
+                        <label className="font-bold">
+                            BATANES STATE COLLEGE
+                        </label>
+                        <label>Agency Name</label>
                     </div>
-                    <div className="flex flex-col p-2">
+                    <div className="flex flex-col justify-center border-l border-black p-2">
                         <span>No.</span>
                         <span>Date</span>
                     </div>
                 </div>
 
+                {/* accouting entries */}
+                <div>
+                    <div className="grid grid-cols-5 text-center">
+                        <div className="col-span-1 flex items-center justify-center border-b border-black p-2">
+                            Resposibility Center
+                        </div>
+                        <div className="col-span-4 border-l border-black">
+                            <div className="border-b border-black p-2">
+                                ACCOUNTING ENTRIES
+                            </div>
+                            <div className="grid grid-cols-5 border-b border-black">
+                                <div className="col-span-2 flex items-center justify-center">
+                                    Accounts
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    Amount Code
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    Ref
+                                </div>
+                                <div className="flex flex-col border-l border-black">
+                                    <div className="border-b border-black">
+                                        Amount
+                                    </div>
+                                    <div className="grid grid-cols-2">
+                                        <div>Debit</div>
+                                        <div className="border-l border-black">
+                                            Credit
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* details */}
+                    <div className="grid grid-cols-5 text-center">
+                        <div className="border-b border-black">space</div>
+                        <div className="col-span-4 border-l border-black">
+                            <div className="grid grid-cols-5 border-b border-black">
+                                <div className="col-span-2 flex items-center justify-center">
+                                    NOTE: account title ref
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    NOTE: UACS code ref
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    emtpy
+                                </div>
+                                <div className="flex flex-col border-l border-black">
+                                    <div className="grid grid-cols-2">
+                                        <div>NOTE: debit ref</div>
+                                        <div className="border-l border-black">
+                                            NOTE: credit ref
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* duplicate */}
+                    <div className="grid grid-cols-5 text-center">
+                        <div className="border-b border-black">space</div>
+                        <div className="col-span-4 border-l border-black">
+                            <div className="grid grid-cols-5 border-b border-black">
+                                <div className="col-span-2 flex items-center justify-center">
+                                    NOTE: account title ref
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    NOTE: UACS code ref
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    emtpy
+                                </div>
+                                <div className="flex flex-col border-l border-black">
+                                    <div className="grid grid-cols-2">
+                                        <div>NOTE: debit ref</div>
+                                        <div className="border-l border-black">
+                                            NOTE: credit ref
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div></div>
                 {/* Submit and Print Buttons */}
                 <div className="flex items-center justify-between">
                     <button
