@@ -529,22 +529,24 @@ export default function Create() {
 
                     {/* details */}
                     <div className="grid grid-cols-5 text-center">
-                        <div className="border-b border-black">space</div>
+                        <div className="border-b border-black"></div>
                         <div className="col-span-4 border-l border-black">
                             <div className="grid grid-cols-5 border-b border-black">
-                                <div className="col-span-2 flex items-center justify-center">
+                                <div className="col-span-2 flex items-center justify-center p-2">
                                     NOTE: account title ref
                                 </div>
-                                <div className="flex items-center justify-center border-l border-black">
+                                <div className="flex items-center justify-center border-l border-black p-2">
                                     NOTE: UACS code ref
                                 </div>
-                                <div className="flex items-center justify-center border-l border-black">
+                                <div className="flex items-center justify-center border-l border-black p-2">
                                     emtpy
                                 </div>
                                 <div className="flex flex-col border-l border-black">
                                     <div className="grid grid-cols-2">
-                                        <div>NOTE: debit ref</div>
-                                        <div className="border-l border-black">
+                                        <div className="p-2">
+                                            NOTE: debit ref
+                                        </div>
+                                        <div className="border-l border-black p-2">
                                             NOTE: credit ref
                                         </div>
                                     </div>
@@ -554,22 +556,45 @@ export default function Create() {
                     </div>
                     {/* duplicate */}
                     <div className="grid grid-cols-5 text-center">
-                        <div className="border-b border-black">space</div>
+                        <div className="border-b border-black"></div>
                         <div className="col-span-4 border-l border-black">
                             <div className="grid grid-cols-5 border-b border-black">
-                                <div className="col-span-2 flex items-center justify-center">
+                                <div className="col-span-2 flex items-center justify-center p-2">
                                     NOTE: account title ref
                                 </div>
-                                <div className="flex items-center justify-center border-l border-black">
+                                <div className="flex items-center justify-center border-l border-black p-2">
                                     NOTE: UACS code ref
                                 </div>
-                                <div className="flex items-center justify-center border-l border-black">
+                                <div className="flex items-center justify-center border-l border-black p-2">
                                     emtpy
                                 </div>
                                 <div className="flex flex-col border-l border-black">
                                     <div className="grid grid-cols-2">
-                                        <div>NOTE: debit ref</div>
-                                        <div className="border-l border-black">
+                                        <div className="p-2">
+                                            NOTE: debit ref
+                                        </div>
+                                        <div className="border-l border-black p-2">
+                                            NOTE: credit ref
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* total */}
+                    <div className="grid grid-cols-5 text-center">
+                        <div className="col-span-1 border-b border-black p-2"></div>
+                        <div className="col-span-4">
+                            <div className="grid grid-cols-5 border-b border-black">
+                                <div className="col-span-4 flex items-center justify-end p-2 font-bold">
+                                    TOTAL
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    <div className="grid w-full grid-cols-2">
+                                        <div className="p-2 text-center">
+                                            NOTE: debit ref
+                                        </div>
+                                        <div className="border-l border-black p-2 text-center">
                                             NOTE: credit ref
                                         </div>
                                     </div>
@@ -578,23 +603,44 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
-                <div></div>
-                {/* Submit and Print Buttons */}
-                <div className="flex items-center justify-between">
-                    <button
-                        className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                        type="submit"
-                    >
-                        Add
-                    </button>
-                    <button
-                        className="focus:shadow-outline rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700 focus:outline-none"
-                        type="button"
-                    >
-                        Print
-                    </button>
+
+                <div className="grid grid-cols-2">
+                    <div className="p-2">
+                        <div className="">
+                            {/* sino naka sign auto here the complete name */}
+                            Prepared by:
+                        </div>
+                        <div className="flex flex-col items-center justify-center">
+                            <span className="font-bold">JACITA P. MORA</span>
+                            <span>Adimistrative Aide VI</span>
+                        </div>
+                    </div>
+                    <div className="border-l border-black p-2">
+                        <div> Approved by:</div>
+                        <div className="flex flex-col items-center justify-center">
+                            <span className="font-bold">
+                                RHEA ANGELLICA D. ADDATU, CPA
+                            </span>
+                            <span>Accountant I</span>
+                        </div>
+                    </div>
                 </div>
             </form>
+            {/* Submit and Print Buttons */}
+            <div className="flex items-center justify-between py-10">
+                <button
+                    className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                    type="submit"
+                >
+                    Add
+                </button>
+                <button
+                    className="focus:shadow-outline rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700 focus:outline-none"
+                    type="button"
+                >
+                    Print
+                </button>
+            </div>
         </>
     );
 }
