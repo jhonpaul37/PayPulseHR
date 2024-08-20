@@ -1,90 +1,122 @@
-import React, { useState } from 'react';
+import { useForm } from '@inertiajs/react';
+import DOMPurify from 'dompurify';
 
-const AccountingEntry = () => {
-    // Initial state with two empty rows
-    const [entries, setEntries] = useState([
-        { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
-        { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
-    ]);
+export default function Create() {
+    const { data, setData, post, errors, processing } = useForm({
+        jev_no: '',
+        f_cluster: '',
+        ors_vurs_no: '',
+        div_num: '',
+        uacs_code: '',
+        user_id: '',
+    });
 
-    // Function to handle input changes
-    const handleInputChange = (index, event) => {
-        const { name, value } = event.target;
-        const newEntries = [...entries];
-        newEntries[index][name] = value;
-        setEntries(newEntries);
-    };
-
-    // Function to add a new row
-    const addRow = () => {
-        setEntries([
-            ...entries,
-            { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
-        ]);
-    };
+    function submit(e) {
+        e.preventDefault();
+        post('/voucher');
+    }
 
     return (
-        <div>
-            <div className="border-b border-black p-2 text-xs">
-                B. Accounting Entry
-            </div>
-            <div className="">
-                <div className="grid grid-cols-4 border-b border-black text-xs">
-                    <div className="flex items-center justify-center">
-                        Account Title
-                    </div>
-                    <div className="flex items-center justify-center border-l border-black">
-                        UACS Code
-                    </div>
-                    <div className="flex items-center justify-center border-l border-black">
-                        Debit
-                    </div>
-                    <div className="flex items-center justify-center border-l border-black">
-                        Credit
-                    </div>
-                </div>
-                {entries.map((entry, index) => (
-                    <div key={index} className="mt-2 grid grid-cols-4 gap-2">
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="text"
-                            name="uacsTitle"
-                            value={entry.uacsTitle}
-                            onChange={(e) => handleInputChange(index, e)}
-                        />
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="text"
-                            name="uacsCode"
-                            value={entry.uacsCode}
-                            onChange={(e) => handleInputChange(index, e)}
-                            readOnly
-                        />
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="number"
-                            name="debit"
-                            value={entry.debit}
-                            onChange={(e) => handleInputChange(index, e)}
-                        />
-                        <input
-                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                            type="number"
-                            name="credit"
-                            value={entry.credit}
-                            onChange={(e) => handleInputChange(index, e)}
-                        />
-                    </div>
-                ))}
-                <button
-                    onClick={addRow}
-                    className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
-                >
-                    Add Entry
-                </button>
-            </div>
-        </div>
-    );
-};
+        <>
+            <div className="px-20 pt-10">
+                <h1>create a new voucher</h1>
 
-export default AccountingEntry;
+                {/* Testing purpose */}
+                {/* {data.f_cluster} */}
+                {/* Testing end */}
+
+                <div>
+                    <form onSubmit={submit}>
+                        {/* fund cluster DONE*/}
+                        <input
+                            value={data.f_cluster}
+                            type="text"
+                            // drop down content from database
+
+                            onChange={(e) =>
+                                setData('f_cluster', e.target.value)
+                            }
+                            placeholder="fund cluster"
+                            className={errors.f_cluster && '!ring-red-500'}
+                        />
+                        {errors.f_cluster && (
+                            <div className="text-red-600">
+                                {errors.f_cluster}
+                            </div>
+                        )}
+                        {/* ors_burs_no DONE*/}
+                        <input
+                            value={data.ors_burs_no}
+                            type="number"
+                            onChange={(e) =>
+                                setData('ors_burs_no', e.target.value)
+                            }
+                            placeholder="ors_burs_no"
+                            className={errors.ors_burs_no && '!ring-red-500'}
+                        />
+                        {errors.ors_burs_no && (
+                            <div className="text-red-600">
+                                {errors.ors_burs_no}
+                            </div>
+                        )}
+                        {/* jev_num DONE*/}
+                        <input
+                            value={data.jev_no}
+                            type="text"
+                            onChange={(e) => setData('jev_no', e.target.value)}
+                            placeholder="jev_no"
+                            className={errors.jev_no && '!ring-red-500'}
+                        />
+                        {errors.jev_no && (
+                            <div className="text-red-600">{errors.jev_no}</div>
+                        )}
+                        {/* div_num DONE*/}
+                        <input
+                            value={data.div_num}
+                            type="text"
+                            onChange={(e) => setData('div_num', e.target.value)}
+                            placeholder="div_num"
+                            className={errors.div_num && '!ring-red-500'}
+                        />
+                        {errors.jev_no && (
+                            <div className="text-red-600">{errors.div_num}</div>
+                        )}
+                        {/* uacs_code DONE*/}
+                        <input
+                            value={data.uacs_code}
+                            type="number"
+                            onChange={(e) =>
+                                setData('uacs_code', e.target.value)
+                            }
+                            placeholder="uacs_code"
+                            className={errors.uacs_code && '!ring-red-500'}
+                        />
+                        {errors.uacs_code && (
+                            <div className="text-red-600">
+                                {errors.uacs_code}
+                            </div>
+                        )}
+                        {/* user_id */}
+                        <input
+                            value={data.user_id}
+                            type="number"
+                            onChange={(e) => setData('user_id', e.target.value)}
+                            placeholder="user_id"
+                            className={errors.user_id && '!ring-red-500'}
+                        />
+                        {errors.jev_no && (
+                            <div className="text-red-600">{errors.user_id}</div>
+                        )}
+                        {/* submit button */}
+                        <button
+                            disabled={processing}
+                            className="rounded-md bg-high px-10 py-3 font-bold"
+                        >
+                            Add
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </>
+    );
+}

@@ -20,16 +20,10 @@ export default function Create() {
 
     function submit(e) {
         e.preventDefault();
-        post('/voucher', { ...data, entries });
+        post('/voucher');
     }
 
-    const handleInputChange = (index, event) => {
-        const { name, value } = event.target;
-        const newEntries = [...entries];
-        newEntries[index][name] = value;
-        setEntries(newEntries);
-    };
-
+    // Buttons
     const addRow = (e) => {
         e.preventDefault();
         setEntries([
@@ -46,7 +40,10 @@ export default function Create() {
 
     return (
         <>
-            <form className="rounded border-2 border-black bg-white shadow-md">
+            <form
+                className="rounded border-2 border-black bg-white shadow-md"
+                onSubmit={submit}
+            >
                 {/* Header */}
                 <div className="border-b-2 border-black">
                     <div className="grid grid-cols-6 text-xs">
@@ -55,6 +52,7 @@ export default function Create() {
                         </div>
 
                         <div className="border-l-2 border-black">
+                            {/* fund cluster */}
                             <div className="border-b border-black p-1">
                                 Fund Cluster:
                                 {/* <select
@@ -76,7 +74,26 @@ export default function Create() {
                                         </option>
                                     ))}
                                 </select> */}
+                                <input
+                                    value={data.f_cluster}
+                                    type="text"
+                                    // drop down content from database
+
+                                    onChange={(e) =>
+                                        setData('f_cluster', e.target.value)
+                                    }
+                                    placeholder="fund cluster"
+                                    className={
+                                        errors.f_cluster && '!ring-red-500'
+                                    }
+                                />
+                                {errors.f_cluster && (
+                                    <div className="text-red-600">
+                                        {errors.f_cluster}
+                                    </div>
+                                )}
                             </div>
+
                             <div className="border-b border-black p-1">
                                 Date:
                                 {/* {currentDate} */}
@@ -84,6 +101,22 @@ export default function Create() {
                             <div className="p-1">
                                 DV No.
                                 {/* {formData.generatedCode} */}
+                                <input
+                                    value={data.div_num}
+                                    type="text"
+                                    onChange={(e) =>
+                                        setData('div_num', e.target.value)
+                                    }
+                                    placeholder="div_num"
+                                    className={
+                                        errors.div_num && '!ring-red-500'
+                                    }
+                                />
+                                {errors.jev_no && (
+                                    <div className="text-red-600">
+                                        {errors.div_num}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -150,11 +183,21 @@ export default function Create() {
                         <div className="col-span-2 border-l border-black p-2">
                             <label className="text-xs">ORS/BRS No.</label>
                             <input
-                                className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                id="OrsBrsNo"
+                                value={data.ors_burs_no}
                                 type="number"
-                                name="OrsBrsNo"
+                                onChange={(e) =>
+                                    setData('ors_burs_no', e.target.value)
+                                }
+                                placeholder="ors_burs_no"
+                                className={
+                                    errors.ors_burs_no && '!ring-red-500'
+                                }
                             />
+                            {errors.ors_burs_no && (
+                                <div className="text-red-600">
+                                    {errors.ors_burs_no}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -264,7 +307,18 @@ export default function Create() {
                         <div className="flex flex-col justify-center border-b border-black">
                             {entries.map((entry, index) => (
                                 <div key={index} className="grid grid-cols-4">
-                                    <div className="p-2">
+                                    <div className="flex p-2">
+                                        <div className="mr-2">
+                                            <button
+                                                type="button"
+                                                onClick={addRow}
+                                                className="rounded bg-high px-4 py-2 font-bold"
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faPlus}
+                                                />
+                                            </button>
+                                        </div>
                                         <input
                                             className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                             type="text"
@@ -273,9 +327,20 @@ export default function Create() {
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
                                         <input
-                                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                            type="text"
-                                            name="uacsCode"
+                                            value={data.uacs_code}
+                                            type="number"
+                                            onChange={(e) =>
+                                                setData(
+                                                    'uacs_code',
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="uacs_code"
+                                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                errors.uacs_code
+                                                    ? 'border-red-500 !ring-red-500'
+                                                    : ''
+                                            }`}
                                         />
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
@@ -291,34 +356,29 @@ export default function Create() {
                                             type="number"
                                             name="credit"
                                         />
+                                        <div className="ml-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    removeRow(
+                                                        entries.length - 1
+                                                    )
+                                                }
+                                                className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
+                                                    entries.length <= 2
+                                                        ? 'cursor-not-allowed bg-red-200'
+                                                        : ''
+                                                }`}
+                                                disabled={entries.length <= 2}
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faMinus}
+                                                />
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            removeRow(entries.length - 1)
-                                        }
-                                        className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
-                                            entries.length <= 2
-                                                ? 'cursor-not-allowed opacity-50'
-                                                : ''
-                                        }`}
-                                        disabled={entries.length <= 2}
-                                    >
-                                        <FontAwesomeIcon icon={faMinus} />
-                                    </button>
                                 </div>
                             ))}
-                        </div>
-
-                        {/* Control Buttons outside the form */}
-                        <div className="mt-4 flex justify-between">
-                            <button
-                                type="button"
-                                onClick={addRow}
-                                className="rounded bg-high px-4 py-2 font-bold"
-                            >
-                                <FontAwesomeIcon icon={faPlus} />
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -473,6 +533,20 @@ export default function Create() {
                         <div className="border-l border-black">
                             <div className="border-b border-black p-2">
                                 JEV No.
+                                <input
+                                    value={data.jev_no}
+                                    type="text"
+                                    onChange={(e) =>
+                                        setData('jev_no', e.target.value)
+                                    }
+                                    placeholder="jev_no"
+                                    className={errors.jev_no && '!ring-red-500'}
+                                />
+                                {errors.jev_no && (
+                                    <div className="text-red-600">
+                                        {errors.jev_no}
+                                    </div>
+                                )}
                             </div>
                             <div className="p-2">Date:</div>
                         </div>
@@ -623,6 +697,20 @@ export default function Create() {
                         </div>
                         <div className="flex flex-col items-center justify-center">
                             <span className="font-bold">JACITA P. MORA</span>
+                            <input
+                                value={data.user_id}
+                                type="number"
+                                onChange={(e) =>
+                                    setData('user_id', e.target.value)
+                                }
+                                placeholder="user_id"
+                                className={errors.user_id && '!ring-red-500'}
+                            />
+                            {errors.jev_no && (
+                                <div className="text-red-600">
+                                    {errors.user_id}
+                                </div>
+                            )}
                             <span>Adimistrative Aide VI</span>
                         </div>
                     </div>
@@ -636,22 +724,22 @@ export default function Create() {
                         </div>
                     </div>
                 </div>
+                {/* Submit and Print Buttons */}
+                <div className="flex items-center justify-between">
+                    <button
+                        disabled={processing}
+                        className="rounded-md bg-high px-10 py-3 font-bold"
+                    >
+                        Add
+                    </button>
+                    <button
+                        className="focus:shadow-outline rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700 focus:outline-none"
+                        type="button"
+                    >
+                        Print
+                    </button>
+                </div>
             </form>
-            {/* Submit and Print Buttons */}
-            <div className="flex items-center justify-between py-10">
-                <button
-                    className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                    type="submit"
-                >
-                    Add
-                </button>
-                <button
-                    className="focus:shadow-outline rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700 focus:outline-none"
-                    type="button"
-                >
-                    Print
-                </button>
-            </div>
         </>
     );
 }
