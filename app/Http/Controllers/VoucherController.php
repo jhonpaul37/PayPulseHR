@@ -34,7 +34,6 @@ class VoucherController extends Controller
             'jev_no' => ['required'],
             'ors_burs_no' => ['required'],
             'f_cluster' => ['required'],
-            'div_num' => ['required'],
             'uacs_code' => ['required'],
             'user_id' => ['required']
         ]);
