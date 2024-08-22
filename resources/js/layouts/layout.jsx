@@ -59,12 +59,12 @@ const App = ({ children }) => {
                     selectedKeys={[selectedKey()]}
                     className="bg-main"
                 >
-                    {/* <Menu.Item
+                    <Menu.Item
                         key="1"
                         icon={<FontAwesomeIcon icon={faHouse} />}
                     >
                         <Link href="/">Dashboard</Link>
-                    </Menu.Item> */}
+                    </Menu.Item>
                     <Menu.Item
                         key="2"
                         icon={<FontAwesomeIcon icon={faHouse} />}

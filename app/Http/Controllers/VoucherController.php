@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\voucher;
+use App\Models\accounting_entry;
 use Illuminate\Http\Request;
 
 class VoucherController extends Controller
@@ -15,13 +16,21 @@ class VoucherController extends Controller
         $disVoucher = voucher::latest()->paginate(3);
         return inertia('Voucher',['vouchers' => $disVoucher]);
     }
+    // public function uacsCodes(){
+
+    //     $uacsCodes = accounting_entry::select('UACS_code', 'Account_title')->get();
+    //     return Inertia('Create', [
+    //     'uacsCodes' => $uacsCodes,
+    // ]);
+    // }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return inertia('voucher/Create');
+        $uacsCodes = accounting_entry::all();
+        return inertia('voucher/Create',['uacsCodes'=>$uacsCodes]);
     }
 
     /**

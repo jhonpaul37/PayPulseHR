@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
-export default function Create() {
+export default function Create({ uacsCodes }) {
     const { data, setData, post, errors, processing } = useForm({
         jev_no: '',
         f_cluster: '',
@@ -12,6 +12,7 @@ export default function Create() {
         uacs_code: '',
         user_id: '',
     });
+    console.log(uacsCodes);
 
     const [entries, setEntries] = useState([
         { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
@@ -42,6 +43,110 @@ export default function Create() {
         <>
             <form onSubmit={submit}>
                 <div className="rounded border-2 border-black bg-white shadow-md">
+                    {/* Accounting Entry */}
+                    <div>
+                        <div className="border-b border-black p-2 text-xs">
+                            B. Accounting Entry
+                        </div>
+                        <div>
+                            <div className="grid grid-cols-4 border-b border-black text-xs">
+                                <div className="flex items-center justify-center">
+                                    Account Title
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    UACS Code
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    Debit
+                                </div>
+                                <div className="flex items-center justify-center border-l border-black">
+                                    Credit
+                                </div>
+                            </div>
+                            <div className="flex flex-col justify-center border-b border-black">
+                                {entries.map((entry, index) => (
+                                    <div
+                                        key={index}
+                                        className="grid grid-cols-4"
+                                    >
+                                        <div className="flex p-2">
+                                            <div className="mr-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={addRow}
+                                                    className="rounded bg-high px-4 py-2 font-bold"
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faPlus}
+                                                    />
+                                                </button>
+                                            </div>
+                                            <input
+                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                type="text"
+                                                name="uacsTitle"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-center border-l border-black p-2">
+                                            <input
+                                                value={data.uacs_code}
+                                                type="number"
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'uacs_code',
+                                                        e.target.value
+                                                    )
+                                                }
+                                                placeholder="uacs_code"
+                                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                    errors.uacs_code
+                                                        ? 'border-red-500 !ring-red-500'
+                                                        : ''
+                                                }`}
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-center border-l border-black p-2">
+                                            <input
+                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                type="number"
+                                                name="debit"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-center border-l border-black p-2">
+                                            <input
+                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                type="number"
+                                                name="credit"
+                                            />
+                                            <div className="ml-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        removeRow(
+                                                            entries.length - 1
+                                                        )
+                                                    }
+                                                    className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
+                                                        entries.length <= 2
+                                                            ? 'cursor-not-allowed bg-red-200'
+                                                            : ''
+                                                    }`}
+                                                    disabled={
+                                                        entries.length <= 2
+                                                    }
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faMinus}
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Header */}
                     <div className="border-b-2 border-black">
                         <div className="grid grid-cols-6 text-xs">
@@ -277,17 +382,15 @@ export default function Create() {
                         </div>
                         <div className="flex flex-col items-center justify-center">
                             <div className="mt-2 text-center font-bold">
-                                {/* {namePositions[3]?.name_pos} */} Mary Jane
-                                Alarcado
+                                {/* {namePositions[3]?.name_pos} */} Name
                             </div>
                             <div className="text-xs">
-                                {/* {namePositions[3]?.position} */}My BEBE
-                                Loves
+                                {/* {namePositions[3]?.position} */}Position
                             </div>
                         </div>
                     </div>
                     {/* Accounting Entry */}
-                    <div>
+                    {/* <div>
                         <div className="border-b border-black p-2 text-xs">
                             B. Accounting Entry
                         </div>
@@ -388,7 +491,7 @@ export default function Create() {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Certified and Approved Section */}
                     <div className="grid grid-cols-2 border-b border-black">

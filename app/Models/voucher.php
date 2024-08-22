@@ -18,4 +18,8 @@ class voucher extends Model
         'user_id',
 
     ];
+        public function accounting_entry()
+    {
+        return $this->belongsTo(accounting_entry::class, 'UACS_code', 'Account_title');
+    }
 }
