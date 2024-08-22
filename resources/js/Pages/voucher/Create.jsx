@@ -12,137 +12,209 @@ export default function Create({ uacsCodes }) {
         uacs_code: '',
         user_id: '',
     });
-    console.log(uacsCodes);
 
+    const [query, setQuery] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+
+    // Track the entries for dynamic rows
     const [entries, setEntries] = useState([
         { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
         { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
     ]);
 
-    function submit(e) {
-        e.preventDefault();
-        post('/voucher');
-    }
+    // Handle input change for Account Title
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setQuery(value);
 
-    // Buttons
-    const addRow = (e) => {
-        e.preventDefault();
+        if (value) {
+            const filteredSuggestions = uacsCodes.filter((code) =>
+                code.Account_title.toLowerCase().includes(value.toLowerCase())
+            );
+            setSuggestions(filteredSuggestions);
+        } else {
+            setSuggestions([]);
+        }
+    };
+
+    // Handle suggestion click
+    const handleSuggestionClick = (suggestion) => {
+        setQuery(suggestion.Account_title);
+        setData('uacs_code', suggestion.UACS_code); // Set UACS code
+
+        // Debugging logs to verify state update
+        console.log('Selected Account Title:', suggestion.Account_title);
+        console.log('Setting UACS Code:', suggestion.UACS_code);
+        console.log('Updated form data:', data);
+
+        setSuggestions([]); // Close the suggestions list
+    };
+
+    // Add a new row for accounting entry
+    const addRow = () => {
         setEntries([
             ...entries,
             { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
         ]);
     };
+
+    // Remove the last row for accounting entry
     const removeRow = () => {
         if (entries.length > 2) {
-            const updatedEntries = entries.slice(0, -1);
-            setEntries(updatedEntries);
+            setEntries(entries.slice(0, -1));
         }
     };
+
+    // Handle form submission
+    function submit(e) {
+        e.preventDefault();
+        post('/voucher');
+    }
 
     return (
         <>
             <form onSubmit={submit}>
                 <div className="rounded border-2 border-black bg-white shadow-md">
                     {/* Accounting Entry */}
-                    <div>
-                        <div className="border-b border-black p-2 text-xs">
-                            B. Accounting Entry
-                        </div>
+                    <div className="rounded border-2 border-black bg-white shadow-md">
                         <div>
-                            <div className="grid grid-cols-4 border-b border-black text-xs">
-                                <div className="flex items-center justify-center">
-                                    Account Title
-                                </div>
-                                <div className="flex items-center justify-center border-l border-black">
-                                    UACS Code
-                                </div>
-                                <div className="flex items-center justify-center border-l border-black">
-                                    Debit
-                                </div>
-                                <div className="flex items-center justify-center border-l border-black">
-                                    Credit
-                                </div>
+                            <div className="border-b border-black p-2 text-xs">
+                                B. Accounting Entry
                             </div>
-                            <div className="flex flex-col justify-center border-b border-black">
-                                {entries.map((entry, index) => (
-                                    <div
-                                        key={index}
-                                        className="grid grid-cols-4"
-                                    >
-                                        <div className="flex p-2">
-                                            <div className="mr-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={addRow}
-                                                    className="rounded bg-high px-4 py-2 font-bold"
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faPlus}
+                            <div>
+                                <div className="grid grid-cols-4 border-b border-black text-xs">
+                                    <div className="flex items-center justify-center">
+                                        Account Title
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black">
+                                        UACS Code
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black">
+                                        Debit
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black">
+                                        Credit
+                                    </div>
+                                </div>
+                                <div className="flex flex-col justify-center border-b border-black">
+                                    {entries.map((entry, index) => (
+                                        <div
+                                            key={index}
+                                            className="grid grid-cols-4"
+                                        >
+                                            <div className="flex p-2">
+                                                <div className="mr-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={addRow}
+                                                        className="rounded bg-high px-4 py-2 font-bold"
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faPlus}
+                                                        />
+                                                    </button>
+                                                </div>
+                                                <div className="relative">
+                                                    <input
+                                                        id="uacsInput"
+                                                        type="text"
+                                                        value={query}
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                        className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-high focus:outline-none focus:ring-high sm:text-sm"
+                                                        placeholder="Start typing to search..."
                                                     />
-                                                </button>
+                                                    {suggestions.length > 0 && (
+                                                        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                                                            {suggestions.map(
+                                                                (
+                                                                    suggestion,
+                                                                    index
+                                                                ) => (
+                                                                    <li
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        onClick={() =>
+                                                                            handleSuggestionClick(
+                                                                                suggestion
+                                                                            )
+                                                                        }
+                                                                        className="cursor-pointer px-4 py-2 hover:bg-high hover:text-black"
+                                                                    >
+                                                                        {
+                                                                            suggestion.Account_title
+                                                                        }
+                                                                    </li>
+                                                                )
+                                                            )}
+                                                        </ul>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <input
-                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                type="text"
-                                                name="uacsTitle"
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-center border-l border-black p-2">
-                                            <input
-                                                value={data.uacs_code}
-                                                type="number"
-                                                onChange={(e) =>
-                                                    setData(
-                                                        'uacs_code',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="uacs_code"
-                                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                    errors.uacs_code
-                                                        ? 'border-red-500 !ring-red-500'
-                                                        : ''
-                                                }`}
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-center border-l border-black p-2">
-                                            <input
-                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                type="number"
-                                                name="debit"
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-center border-l border-black p-2">
-                                            <input
-                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                type="number"
-                                                name="credit"
-                                            />
-                                            <div className="ml-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        removeRow(
-                                                            entries.length - 1
+                                            <div className="flex items-center justify-center border-l border-black p-2">
+                                                <input
+                                                    value={data.UACS_code}
+                                                    type="number"
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            'uacs_code',
+                                                            e.target.value
                                                         )
                                                     }
-                                                    className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
-                                                        entries.length <= 2
-                                                            ? 'cursor-not-allowed bg-red-200'
+                                                    placeholder="uacs_code"
+                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                        errors.UACS_code
+                                                            ? 'border-red-500 !ring-red-500'
                                                             : ''
                                                     }`}
-                                                    disabled={
-                                                        entries.length <= 2
-                                                    }
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faMinus}
-                                                    />
-                                                </button>
+                                                />
+                                                {console.log(
+                                                    'Current uacs_code:',
+                                                    data.uacs_code
+                                                )}
+                                            </div>
+                                            <div className="flex items-center justify-center border-l border-black p-2">
+                                                <input
+                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    type="number"
+                                                    name="debit"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-center border-l border-black p-2">
+                                                <input
+                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    type="number"
+                                                    name="credit"
+                                                />
+                                                <div className="ml-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            removeRow(
+                                                                entries.length -
+                                                                    1
+                                                            )
+                                                        }
+                                                        className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
+                                                            entries.length <= 2
+                                                                ? 'cursor-not-allowed bg-red-200'
+                                                                : ''
+                                                        }`}
+                                                        disabled={
+                                                            entries.length <= 2
+                                                        }
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faMinus}
+                                                        />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

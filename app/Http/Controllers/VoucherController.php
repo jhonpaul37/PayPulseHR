@@ -36,24 +36,26 @@ class VoucherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
+public function store(Request $request)
+{
+    $fields = $request->validate([
+        'jev_no' => ['required'],
+        'ors_burs_no' => ['required'],
+        'f_cluster' => ['required'],
+        'uacs_code' => ['required'],
+        'user_id' => ['required']
+    ]);
 
-        $fields = $request->validate([
-            'jev_no' => ['required'],
-            'ors_burs_no' => ['required'],
-            'f_cluster' => ['required'],
-            'uacs_code' => ['required'],
-            'user_id' => ['required']
-        ]);
+    // Set default value for div_num
+    $fields['div_num'] = $fields['div_num'] ?? '0123'; // Replace 'default_value' with the desired default value
 
-        Voucher::create($fields);
+    Voucher::create($fields);
 
-        return redirect ('/voucher');
+    return redirect('/voucher');
 
-        // tests output
-        // dd($request);
-    }
+    // tests output
+    // dd($request);
+}
 
     /**
      * Display the specified resource.
