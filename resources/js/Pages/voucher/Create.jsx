@@ -9,63 +9,92 @@ export default function Create({ uacsCodes }) {
         f_cluster: '',
         ors_vurs_no: '',
         div_num: '',
-        uacs_code: '',
+        uacs_code: [],
         user_id: '',
     });
 
-    const [query, setQuery] = useState('');
-    const [suggestions, setSuggestions] = useState([]);
-
-    // Track the entries for dynamic rows
     const [entries, setEntries] = useState([
-        { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
-        { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
+        {
+            uacsTitle: '',
+            uacsCode: '',
+            debit: '',
+            credit: '',
+            query: '',
+            suggestions: [],
+        },
+        {
+            uacsTitle: '',
+            uacsCode: '',
+            debit: '',
+            credit: '',
+            query: '',
+            suggestions: [],
+        },
     ]);
 
     // Handle input change for Account Title
-    const handleInputChange = (e) => {
+    const handleInputChange = (e, index) => {
         const value = e.target.value;
-        setQuery(value);
+
+        const updatedEntries = [...entries];
+        updatedEntries[index].query = value;
 
         if (value) {
             const filteredSuggestions = uacsCodes.filter((code) =>
                 code.Account_title.toLowerCase().includes(value.toLowerCase())
             );
-            setSuggestions(filteredSuggestions);
+            updatedEntries[index].suggestions = filteredSuggestions;
         } else {
-            setSuggestions([]);
+            updatedEntries[index].suggestions = [];
         }
+
+        setEntries(updatedEntries);
     };
 
     // Handle suggestion click
-    const handleSuggestionClick = (suggestion) => {
-        setQuery(suggestion.Account_title);
-        setData('uacs_code', suggestion.UACS_code); // Set UACS code
+    const handleSuggestionClick = (suggestion, index) => {
+        const updatedEntries = [...entries];
+        updatedEntries[index].uacsTitle = suggestion.Account_title;
+        updatedEntries[index].uacsCode = suggestion.UACS_code;
+        updatedEntries[index].query = suggestion.Account_title;
+        updatedEntries[index].suggestions = [];
 
-        // Debugging logs to verify state update
-        console.log('Selected Account Title:', suggestion.Account_title);
-        console.log('Setting UACS Code:', suggestion.UACS_code);
-        console.log('Updated form data:', data);
+        setEntries(updatedEntries);
 
-        setSuggestions([]); // Close the suggestions list
+        // Update the form data with the array of UACS codes
+        setData(
+            'uacs_code',
+            updatedEntries.map((entry) => entry.uacsCode)
+        );
     };
 
-    // Add a new row for accounting entry
     const addRow = () => {
-        setEntries([
-            ...entries,
-            { uacsTitle: '', uacsCode: '', debit: '', credit: '' },
-        ]);
-    };
-
-    // Remove the last row for accounting entry
-    const removeRow = () => {
-        if (entries.length > 2) {
-            setEntries(entries.slice(0, -1));
+        if (entries.length < 4) {
+            setEntries([
+                ...entries,
+                {
+                    uacsTitle: '',
+                    uacsCode: '',
+                    debit: '',
+                    credit: '',
+                    query: '',
+                    suggestions: [],
+                },
+            ]);
         }
     };
 
-    // Handle form submission
+    const removeRow = () => {
+        if (entries.length > 2) {
+            const updatedEntries = entries.slice(0, -1);
+            setEntries(updatedEntries);
+            setData(
+                'uacs_code',
+                updatedEntries.map((entry) => entry.uacsCode)
+            );
+        }
+    };
+
     function submit(e) {
         e.preventDefault();
         post('/voucher');
@@ -74,9 +103,9 @@ export default function Create({ uacsCodes }) {
     return (
         <>
             <form onSubmit={submit}>
-                <div className="rounded border-2 border-black bg-white shadow-md">
+                <div className="border-2 border-black bg-white shadow-md">
                     {/* Accounting Entry */}
-                    <div className="rounded border-2 border-black bg-white shadow-md">
+                    <div className="">
                         <div>
                             <div className="border-b border-black p-2 text-xs">
                                 B. Accounting Entry
@@ -100,7 +129,7 @@ export default function Create({ uacsCodes }) {
                                     {entries.map((entry, index) => (
                                         <div
                                             key={index}
-                                            className="grid grid-cols-4"
+                                            className="grid grid-cols-4 border-b border-black"
                                         >
                                             <div className="flex p-2">
                                                 <div className="mr-2">
@@ -114,31 +143,35 @@ export default function Create({ uacsCodes }) {
                                                         />
                                                     </button>
                                                 </div>
-                                                <div className="relative">
+                                                <div className="relative w-full">
                                                     <input
-                                                        id="uacsInput"
+                                                        id={`uacsInput-${index}`}
                                                         type="text"
-                                                        value={query}
-                                                        onChange={
-                                                            handleInputChange
+                                                        value={entry.query}
+                                                        onChange={(e) =>
+                                                            handleInputChange(
+                                                                e,
+                                                                index
+                                                            )
                                                         }
-                                                        className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-high focus:outline-none focus:ring-high sm:text-sm"
-                                                        placeholder="Start typing to search..."
+                                                        className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                        placeholder="Typing to search Account Title"
+                                                        autoComplete="off"
                                                     />
-                                                    {suggestions.length > 0 && (
+                                                    {entry.suggestions.length >
+                                                        0 && (
                                                         <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-                                                            {suggestions.map(
+                                                            {entry.suggestions.map(
                                                                 (
                                                                     suggestion,
-                                                                    index
+                                                                    i
                                                                 ) => (
                                                                     <li
-                                                                        key={
-                                                                            index
-                                                                        }
+                                                                        key={i}
                                                                         onClick={() =>
                                                                             handleSuggestionClick(
-                                                                                suggestion
+                                                                                suggestion,
+                                                                                index
                                                                             )
                                                                         }
                                                                         className="cursor-pointer px-4 py-2 hover:bg-high hover:text-black"
@@ -155,25 +188,29 @@ export default function Create({ uacsCodes }) {
                                             </div>
                                             <div className="flex items-center justify-center border-l border-black p-2">
                                                 <input
-                                                    value={data.UACS_code}
-                                                    type="number"
-                                                    onChange={(e) =>
+                                                    value={entry.uacsCode}
+                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    onChange={(e) => {
+                                                        const updatedEntries = [
+                                                            ...entries,
+                                                        ];
+                                                        updatedEntries[
+                                                            index
+                                                        ].uacsCode =
+                                                            e.target.value;
+                                                        setEntries(
+                                                            updatedEntries
+                                                        );
                                                         setData(
                                                             'uacs_code',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="uacs_code"
-                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                        errors.UACS_code
-                                                            ? 'border-red-500 !ring-red-500'
-                                                            : ''
-                                                    }`}
+                                                            updatedEntries.map(
+                                                                (entry) =>
+                                                                    entry.uacsCode
+                                                            )
+                                                        );
+                                                    }}
+                                                    autoComplete="off"
                                                 />
-                                                {console.log(
-                                                    'Current uacs_code:',
-                                                    data.uacs_code
-                                                )}
                                             </div>
                                             <div className="flex items-center justify-center border-l border-black p-2">
                                                 <input
@@ -261,6 +298,7 @@ export default function Create({ uacsCodes }) {
                                         className={
                                             errors.f_cluster && '!ring-red-500'
                                         }
+                                        autoComplete="off"
                                     />
                                     {errors.f_cluster && (
                                         <div className="text-red-600">
@@ -286,6 +324,7 @@ export default function Create({ uacsCodes }) {
                                         className={
                                             errors.div_num && '!ring-red-500'
                                         }
+                                        autoComplete="off"
                                     />
                                 </div>
                             </div>
@@ -306,7 +345,9 @@ export default function Create({ uacsCodes }) {
                                         <input
                                             type="checkbox"
                                             className="form-checkbox"
+                                            autoComplete="off"
                                         />
+
                                         <span className="ml-2">{mode}</span>
                                     </label>
                                 )
@@ -316,6 +357,7 @@ export default function Create({ uacsCodes }) {
                                 <input
                                     type="checkbox"
                                     className="form-checkbox"
+                                    autoComplete="off"
                                 />
                                 <span className="ml-2">
                                     Others (Please Specify)
@@ -323,6 +365,7 @@ export default function Create({ uacsCodes }) {
                                 <input
                                     type="text"
                                     className="ml-2 border-b-2 border-black focus:outline-none"
+                                    autoComplete="off"
                                 />
                             </label>
                         </div>
@@ -345,6 +388,7 @@ export default function Create({ uacsCodes }) {
                                     id="clientName"
                                     type="text"
                                     name="clientName"
+                                    autoComplete="off"
                                 />
                             </div>
                             <div className="col-span-2 border-l border-black p-2">
@@ -356,6 +400,7 @@ export default function Create({ uacsCodes }) {
                                     id="TIN/EmployeeNo"
                                     type="number"
                                     name="TIN/EmployeeNo"
+                                    autoComplete="off"
                                 />
                             </div>
                             <div className="col-span-2 border-l border-black p-2">
@@ -370,6 +415,7 @@ export default function Create({ uacsCodes }) {
                                     className={
                                         errors.ors_burs_no && '!ring-red-500'
                                     }
+                                    autoComplete="off"
                                 />
                                 {errors.ors_burs_no && (
                                     <div className="text-red-600">
@@ -394,6 +440,7 @@ export default function Create({ uacsCodes }) {
                                     id="address"
                                     type="text"
                                     name="address"
+                                    autoComplete="off"
                                     // value={formData.address}
                                     // onChange={handleInputChange}
                                 />
@@ -429,6 +476,7 @@ export default function Create({ uacsCodes }) {
                                 className="w-full rounded border px-3 py-2 shadow focus:outline-none"
                                 type="text"
                                 name="ResponsibilityCenter"
+                                autoComplete="off"
                             />
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
@@ -436,6 +484,7 @@ export default function Create({ uacsCodes }) {
                                 className="w-full rounded border px-3 py-2 shadow focus:outline-none"
                                 type="text"
                                 name="MFO/PAP"
+                                autoComplete="off"
                             />
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
@@ -443,6 +492,7 @@ export default function Create({ uacsCodes }) {
                                 className="w-full rounded border px-3 py-2 shadow focus:outline-none"
                                 type="number"
                                 name="amount"
+                                autoComplete="off"
                             />
                         </div>
                     </div>
@@ -578,6 +628,7 @@ export default function Create({ uacsCodes }) {
                                     <input
                                         type="checkbox"
                                         className="form-checkbox"
+                                        autoComplete="off"
                                     />
                                     <span className="ml-2">Cash available</span>
                                 </label>
@@ -585,6 +636,7 @@ export default function Create({ uacsCodes }) {
                                     <input
                                         type="checkbox"
                                         className="form-checkbox"
+                                        autoComplete="off"
                                     />
                                     <span className="ml-2">
                                         Subject to Authority to Debt Account
@@ -595,6 +647,7 @@ export default function Create({ uacsCodes }) {
                                     <input
                                         type="checkbox"
                                         className="form-checkbox"
+                                        autoComplete="off"
                                     />
                                     <span className="ml-2">
                                         Supporting document complete and amount
@@ -647,6 +700,7 @@ export default function Create({ uacsCodes }) {
                                     className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                     type="text"
                                     placeholder="Amount"
+                                    autoComplete="off"
                                 />
                             </div>
                             <div className="grid grid-cols-4 border-t border-black">
@@ -725,6 +779,7 @@ export default function Create({ uacsCodes }) {
                                         className={
                                             errors.jev_no && '!ring-red-500'
                                         }
+                                        autoComplete="off"
                                     />
                                     {errors.jev_no && (
                                         <div className="text-red-600">
@@ -893,6 +948,7 @@ export default function Create({ uacsCodes }) {
                                     className={
                                         errors.user_id && '!ring-red-500'
                                     }
+                                    autoComplete="off"
                                 />
                                 {errors.jev_no && (
                                     <div className="text-red-600">
