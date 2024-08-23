@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('fund_cluster', function (Blueprint $table) {
             $table->id();
+            $table->string('cluster_code');
             $table->string('desc');
             $table->integer('amount');
             $table->timestamps();

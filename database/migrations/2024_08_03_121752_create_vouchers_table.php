@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('ors_burs_no');
             $table->string('f_cluster');
             $table->string('div_num');
-            $table->integer('uacs_code');
+            $table->json('uacs_code');
             $table->integer('user_id');
             $table->timestamps();
         });

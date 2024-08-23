@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\voucher;
 use App\Models\accounting_entry;
-use Illuminate\Http\Request;
+use App\Models\FundCluster;
+
 
 class VoucherController extends Controller
 {
@@ -16,13 +18,6 @@ class VoucherController extends Controller
         $disVoucher = voucher::latest()->paginate(3);
         return inertia('Voucher',['vouchers' => $disVoucher]);
     }
-    // public function uacsCodes(){
-
-    //     $uacsCodes = accounting_entry::select('UACS_code', 'Account_title')->get();
-    //     return Inertia('Create', [
-    //     'uacsCodes' => $uacsCodes,
-    // ]);
-    // }
 
     /**
      * Show the form for creating a new resource.
@@ -30,7 +25,8 @@ class VoucherController extends Controller
     public function create()
     {
         $uacsCodes = accounting_entry::all();
-        return inertia('voucher/Create',['uacsCodes'=>$uacsCodes]);
+        $fundClusters = FundCluster::all();
+        return inertia('voucher/Create',['uacsCodes'=>$uacsCodes, 'fundClusters' => $fundClusters,]);
     }
 
     /**
@@ -42,13 +38,14 @@ public function store(Request $request)
         'jev_no' => ['required'],
         'ors_burs_no' => ['required'],
         'f_cluster' => ['required'],
-        'uacs_code' => ['required'],
+        'uacs_code' => ['required', 'array'],
         'user_id' => ['required']
     ]);
 
-    // Set default value for div_num
-    $fields['div_num'] = $fields['div_num'] ?? '0123'; // Replace 'default_value' with the desired default value
+    // Set default value for div_num if not provided
+    $fields['div_num'] = $fields['div_num'] ?? '0123';
 
+    // Create the new Voucher record
     Voucher::create($fields);
 
     return redirect('/voucher');

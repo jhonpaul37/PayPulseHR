@@ -9,17 +9,24 @@ class voucher extends Model
 {
     use HasFactory;
 
-        protected $fillable = [
+    protected $fillable = [
         'jev_no',
         'ors_burs_no',
         'f_cluster',
         'div_num',
-        'uacs_code',
+        'uacs_code', // Ensure this is included
         'user_id',
+    ];
 
+    // Optionally, specify casting for the JSON column
+    protected $casts = [
+        'uacs_code' => 'array', // Cast uacs_code to array
     ];
         public function accounting_entry()
     {
-        return $this->belongsTo(accounting_entry::class, 'UACS_code', 'Account_title');
+        return $this->hasMany(accounting_entry::class);
+    }
+    public function fund_cluster(){
+        return $this->hasMany(FundCluster::class);
     }
 }

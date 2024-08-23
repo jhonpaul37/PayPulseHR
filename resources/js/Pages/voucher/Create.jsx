@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
-export default function Create({ uacsCodes }) {
+export default function Create({ uacsCodes, fundClusters }) {
     const { data, setData, post, errors, processing } = useForm({
         jev_no: '',
         f_cluster: '',
@@ -94,6 +94,13 @@ export default function Create({ uacsCodes }) {
             );
         }
     };
+    const currentDate = (() => {
+        const date = new Date();
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = date.getFullYear().toString().slice(-2);
+        return `${day}-${month}-${year}`;
+    })();
 
     function submit(e) {
         e.preventDefault();
@@ -154,7 +161,11 @@ export default function Create({ uacsCodes }) {
                                                                 index
                                                             )
                                                         }
-                                                        className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                            errors.uacs_code
+                                                                ? 'border-red-500'
+                                                                : ''
+                                                        }`}
                                                         placeholder="Typing to search Account Title"
                                                         autoComplete="off"
                                                     />
@@ -189,7 +200,11 @@ export default function Create({ uacsCodes }) {
                                             <div className="flex items-center justify-center border-l border-black p-2">
                                                 <input
                                                     value={entry.uacsCode}
-                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                        errors.uacs_code
+                                                            ? 'border-red-500'
+                                                            : ''
+                                                    }`}
                                                     onChange={(e) => {
                                                         const updatedEntries = [
                                                             ...entries,
@@ -265,53 +280,56 @@ export default function Create({ uacsCodes }) {
 
                             <div className="border-l-2 border-black">
                                 {/* fund cluster */}
-                                <div className="border-b border-black p-1">
+                                <div className="flex border-b border-black p-1">
                                     Fund Cluster:
-                                    {/* <select
-                                    name="fundCluster"
-                                    value={formData.fundCluster}
-                                    onChange={handleInputChange}
-                                    onBlur={updateGeneratedCode}
-                                    className="w-full"
-                                >
-                                    <option value="">
-                                        Select Fund Cluster
-                                    </option>
-                                    {fundClusters.map((cluster) => (
-                                        <option
-                                            key={cluster.F_cluster}
-                                            value={cluster.F_cluster}
-                                        >
-                                            {cluster.F_cluster}
+                                    <select
+                                        value={data.f_cluster}
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                f_cluster: e.target.value,
+                                            });
+                                            console.log(data.f_cluster);
+                                        }}
+                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                            errors.f_cluster
+                                                ? 'border-red-500'
+                                                : ''
+                                        }`}
+                                    >
+                                        <option value="" disabled>
+                                            Select a Fund Cluster
                                         </option>
-                                    ))}
-                                </select> */}
+                                        {fundClusters.map((cluster) => (
+                                            <option
+                                                key={cluster.id}
+                                                value={cluster.id}
+                                                className="text-center"
+                                            >
+                                                {cluster.cluster_code}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {/* Hidden input fund cluster */}
                                     <input
                                         value={data.f_cluster}
                                         type="text"
-                                        // drop down content from database
-
                                         onChange={(e) =>
                                             setData('f_cluster', e.target.value)
                                         }
                                         placeholder="fund cluster"
-                                        className={
-                                            errors.f_cluster && '!ring-red-500'
-                                        }
+                                        className="hidden"
                                         autoComplete="off"
                                     />
-                                    {errors.f_cluster && (
-                                        <div className="text-red-600">
-                                            {errors.f_cluster}
-                                        </div>
-                                    )}
+                                    {/* Debugging */}
+                                    {console.log(data.f_cluster)}
                                 </div>
 
                                 <div className="border-b border-black p-1">
                                     Date:
                                     {/* {currentDate} */}
                                 </div>
-                                <div className="p-1">
+                                <div className="flex p-1">
                                     DV No.
                                     {/* {formData.generatedCode} */}
                                     <input
@@ -512,105 +530,153 @@ export default function Create({ uacsCodes }) {
                         </div>
                     </div>
                     {/* Accounting Entry */}
-                    {/* <div>
-                        <div className="border-b border-black p-2 text-xs">
-                            B. Accounting Entry
-                        </div>
+                    {/* <div className="">
                         <div>
-                            <div className="grid grid-cols-4 border-b border-black text-xs">
-                                <div className="flex items-center justify-center">
-                                    Account Title
-                                </div>
-                                <div className="flex items-center justify-center border-l border-black">
-                                    UACS Code
-                                </div>
-                                <div className="flex items-center justify-center border-l border-black">
-                                    Debit
-                                </div>
-                                <div className="flex items-center justify-center border-l border-black">
-                                    Credit
-                                </div>
+                            <div className="border-b border-black p-2 text-xs">
+                                B. Accounting Entry
                             </div>
-                            <div className="flex flex-col justify-center border-b border-black">
-                                {entries.map((entry, index) => (
-                                    <div
-                                        key={index}
-                                        className="grid grid-cols-4"
-                                    >
-                                        <div className="flex p-2">
-                                            <div className="mr-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={addRow}
-                                                    className="rounded bg-high px-4 py-2 font-bold"
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faPlus}
-                                                    />
-                                                </button>
-                                            </div>
-                                            <input
-                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                type="text"
-                                                name="uacsTitle"
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-center border-l border-black p-2">
-                                            <input
-                                                value={data.uacs_code}
-                                                type="number"
-                                                onChange={(e) =>
-                                                    setData(
-                                                        'uacs_code',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="uacs_code"
-                                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                    errors.uacs_code
-                                                        ? 'border-red-500 !ring-red-500'
-                                                        : ''
-                                                }`}
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-center border-l border-black p-2">
-                                            <input
-                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                type="number"
-                                                name="debit"
-                                            />
-                                        </div>
-                                        <div className="flex items-center justify-center border-l border-black p-2">
-                                            <input
-                                                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                type="number"
-                                                name="credit"
-                                            />
-                                            <div className="ml-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        removeRow(
-                                                            entries.length - 1
-                                                        )
-                                                    }
-                                                    className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
-                                                        entries.length <= 2
-                                                            ? 'cursor-not-allowed bg-red-200'
-                                                            : ''
-                                                    }`}
-                                                    disabled={
-                                                        entries.length <= 2
-                                                    }
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faMinus}
-                                                    />
-                                                </button>
-                                            </div>
-                                        </div>
+                            <div>
+                                <div className="grid grid-cols-4 border-b border-black text-xs">
+                                    <div className="flex items-center justify-center">
+                                        Account Title
                                     </div>
-                                ))}
+                                    <div className="flex items-center justify-center border-l border-black">
+                                        UACS Code
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black">
+                                        Debit
+                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black">
+                                        Credit
+                                    </div>
+                                </div>
+                                <div className="flex flex-col justify-center border-b border-black">
+                                    {entries.map((entry, index) => (
+                                        <div
+                                            key={index}
+                                            className="grid grid-cols-4 border-b border-black"
+                                        >
+                                            <div className="flex p-2">
+                                                <div className="mr-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={addRow}
+                                                        className="rounded bg-high px-4 py-2 font-bold"
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faPlus}
+                                                        />
+                                                    </button>
+                                                </div>
+                                                <div className="relative w-full">
+                                                    <input
+                                                        id={`uacsInput-${index}`}
+                                                        type="text"
+                                                        value={entry.query}
+                                                        onChange={(e) =>
+                                                            handleInputChange(
+                                                                e,
+                                                                index
+                                                            )
+                                                        }
+                                                        className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                        placeholder="Typing to search Account Title"
+                                                        autoComplete="off"
+                                                    />
+                                                    {entry.suggestions.length >
+                                                        0 && (
+                                                        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                                                            {entry.suggestions.map(
+                                                                (
+                                                                    suggestion,
+                                                                    i
+                                                                ) => (
+                                                                    <li
+                                                                        key={i}
+                                                                        onClick={() =>
+                                                                            handleSuggestionClick(
+                                                                                suggestion,
+                                                                                index
+                                                                            )
+                                                                        }
+                                                                        className="cursor-pointer px-4 py-2 hover:bg-high hover:text-black"
+                                                                    >
+                                                                        {
+                                                                            suggestion.Account_title
+                                                                        }
+                                                                    </li>
+                                                                )
+                                                            )}
+                                                        </ul>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-center border-l border-black p-2">
+                                                <input
+                                                    value={entry.uacsCode}
+                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    onChange={(e) => {
+                                                        const updatedEntries = [
+                                                            ...entries,
+                                                        ];
+                                                        updatedEntries[
+                                                            index
+                                                        ].uacsCode =
+                                                            e.target.value;
+                                                        setEntries(
+                                                            updatedEntries
+                                                        );
+                                                        setData(
+                                                            'uacs_code',
+                                                            updatedEntries.map(
+                                                                (entry) =>
+                                                                    entry.uacsCode
+                                                            )
+                                                        );
+                                                    }}
+                                                    autoComplete="off"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-center border-l border-black p-2">
+                                                <input
+                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    type="number"
+                                                    name="debit"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-center border-l border-black p-2">
+                                                <input
+                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    type="number"
+                                                    name="credit"
+                                                />
+                                                <div className="ml-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            removeRow(
+                                                                entries.length -
+                                                                    1
+                                                            )
+                                                        }
+                                                        className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
+                                                            entries.length <= 2
+                                                                ? 'cursor-not-allowed bg-red-200'
+                                                                : ''
+                                                        }`}
+                                                        disabled={
+                                                            entries.length <= 2
+                                                        }
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faMinus}
+                                                        />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div> */}
@@ -787,7 +853,13 @@ export default function Create({ uacsCodes }) {
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-2">Date:</div>
+                                <div className="p-2">
+                                    {' '}
+                                    Date:{' '}
+                                    <span className="font-bold">
+                                        {currentDate}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
