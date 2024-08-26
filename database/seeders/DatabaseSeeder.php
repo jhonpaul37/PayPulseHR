@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
         voucher::factory(5)->create();
 
         DB::table('fund_cluster')->insert([
-            ['cluster_code' =>'07','desc' => 'TF', 'amount'=> '100'],
-            ['cluster_code' =>'01','desc' => 'Regular GAA', 'amount'=> '100'],
-            ['cluster_code' =>'05','desc' => 'STF', 'amount'=> '100'],
-            ['cluster_code' =>'06','desc' => 'IGP', 'amount'=> '100'],
+            ['cluster_code' =>'07','desc' => 'TF', 'amount'=> '0'],
+            ['cluster_code' =>'01','desc' => 'Regular GAA', 'amount'=> '0'],
+            ['cluster_code' =>'05','desc' => 'STF', 'amount'=> '0'],
+            ['cluster_code' =>'06','desc' => 'IGP', 'amount'=> '0'],
         ]);
         DB::table('accounting_entry')->insert([
             ['UACS_code' => '10101010', 'Account_title' => 'Cash Collecting Officers'],

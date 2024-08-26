@@ -32,7 +32,7 @@ export default function Create({ uacsCodes, fundClusters }) {
         },
     ]);
 
-    // Handle input change for Account Title
+    // Handle input Account Title
     const handleInputChange = (e, index) => {
         const value = e.target.value;
 
@@ -51,7 +51,7 @@ export default function Create({ uacsCodes, fundClusters }) {
         setEntries(updatedEntries);
     };
 
-    // Handle suggestion click
+    // Handle suggestion
     const handleSuggestionClick = (suggestion, index) => {
         const updatedEntries = [...entries];
         updatedEntries[index].uacsTitle = suggestion.Account_title;
@@ -61,7 +61,7 @@ export default function Create({ uacsCodes, fundClusters }) {
 
         setEntries(updatedEntries);
 
-        // Update the form data with the array of UACS codes
+        // UACS codes
         setData(
             'uacs_code',
             updatedEntries.map((entry) => entry.uacsCode)
@@ -94,6 +94,7 @@ export default function Create({ uacsCodes, fundClusters }) {
             );
         }
     };
+    //display te current date
     const currentDate = (() => {
         const date = new Date();
         const day = date.getDate();
@@ -101,6 +102,52 @@ export default function Create({ uacsCodes, fundClusters }) {
         const year = date.getFullYear().toString().slice(-2);
         return `${day}-${month}-${year}`;
     })();
+
+    //
+    const [totalDebitAmount, setTotalDebitAmount] = useState(0);
+    const [totalCreditAmount, setTotalCreditAmount] = useState(0);
+    const [balanceError, setBalanceError] = useState(false);
+
+    const handleAmountChange = (e) => {
+        const amount = parseFloat(e.target.value) || 0;
+        setTotalDebitAmount(amount);
+        setTotalCreditAmount(amount);
+        validateBalance();
+    };
+
+    const handleDebitChange = (e, index) => {
+        const value = parseFloat(e.target.value) || 0; // Treat empty input as 0
+        const updatedEntries = [...entries];
+        updatedEntries[index].debit = value;
+
+        setEntries(updatedEntries);
+        validateBalance();
+    };
+
+    const handleCreditChange = (e, index) => {
+        const value = parseFloat(e.target.value) || 0; // Treat empty input as 0
+        const updatedEntries = [...entries];
+        updatedEntries[index].credit = value;
+
+        setEntries(updatedEntries);
+        validateBalance();
+    };
+
+    const validateBalance = () => {
+        const totalDebits = entries.reduce(
+            (sum, entry) => sum + (parseFloat(entry.debit) || 0),
+            0
+        );
+        const totalCredits = entries.reduce(
+            (sum, entry) => sum + (parseFloat(entry.credit) || 0),
+            0
+        );
+
+        setBalanceError(
+            totalDebits !== totalDebitAmount ||
+                totalCredits !== totalCreditAmount
+        );
+    };
 
     function submit(e) {
         e.preventDefault();
@@ -111,166 +158,6 @@ export default function Create({ uacsCodes, fundClusters }) {
         <>
             <form onSubmit={submit}>
                 <div className="border-2 border-black bg-white shadow-md">
-                    {/* Accounting Entry */}
-                    <div className="">
-                        <div>
-                            <div className="border-b border-black p-2 text-xs">
-                                B. Accounting Entry
-                            </div>
-                            <div>
-                                <div className="grid grid-cols-4 border-b border-black text-xs">
-                                    <div className="flex items-center justify-center">
-                                        Account Title
-                                    </div>
-                                    <div className="flex items-center justify-center border-l border-black">
-                                        UACS Code
-                                    </div>
-                                    <div className="flex items-center justify-center border-l border-black">
-                                        Debit
-                                    </div>
-                                    <div className="flex items-center justify-center border-l border-black">
-                                        Credit
-                                    </div>
-                                </div>
-                                <div className="flex flex-col justify-center border-b border-black">
-                                    {entries.map((entry, index) => (
-                                        <div
-                                            key={index}
-                                            className="grid grid-cols-4 border-b border-black"
-                                        >
-                                            <div className="flex p-2">
-                                                <div className="mr-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={addRow}
-                                                        className="rounded bg-high px-4 py-2 font-bold"
-                                                    >
-                                                        <FontAwesomeIcon
-                                                            icon={faPlus}
-                                                        />
-                                                    </button>
-                                                </div>
-                                                <div className="relative w-full">
-                                                    <input
-                                                        id={`uacsInput-${index}`}
-                                                        type="text"
-                                                        value={entry.query}
-                                                        onChange={(e) =>
-                                                            handleInputChange(
-                                                                e,
-                                                                index
-                                                            )
-                                                        }
-                                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                            errors.uacs_code
-                                                                ? 'border-red-500'
-                                                                : ''
-                                                        }`}
-                                                        placeholder="Typing to search Account Title"
-                                                        autoComplete="off"
-                                                    />
-                                                    {entry.suggestions.length >
-                                                        0 && (
-                                                        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-                                                            {entry.suggestions.map(
-                                                                (
-                                                                    suggestion,
-                                                                    i
-                                                                ) => (
-                                                                    <li
-                                                                        key={i}
-                                                                        onClick={() =>
-                                                                            handleSuggestionClick(
-                                                                                suggestion,
-                                                                                index
-                                                                            )
-                                                                        }
-                                                                        className="cursor-pointer px-4 py-2 hover:bg-high hover:text-black"
-                                                                    >
-                                                                        {
-                                                                            suggestion.Account_title
-                                                                        }
-                                                                    </li>
-                                                                )
-                                                            )}
-                                                        </ul>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-center border-l border-black p-2">
-                                                <input
-                                                    value={entry.uacsCode}
-                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                        errors.uacs_code
-                                                            ? 'border-red-500'
-                                                            : ''
-                                                    }`}
-                                                    onChange={(e) => {
-                                                        const updatedEntries = [
-                                                            ...entries,
-                                                        ];
-                                                        updatedEntries[
-                                                            index
-                                                        ].uacsCode =
-                                                            e.target.value;
-                                                        setEntries(
-                                                            updatedEntries
-                                                        );
-                                                        setData(
-                                                            'uacs_code',
-                                                            updatedEntries.map(
-                                                                (entry) =>
-                                                                    entry.uacsCode
-                                                            )
-                                                        );
-                                                    }}
-                                                    autoComplete="off"
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-center border-l border-black p-2">
-                                                <input
-                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                    type="number"
-                                                    name="debit"
-                                                />
-                                            </div>
-                                            <div className="flex items-center justify-center border-l border-black p-2">
-                                                <input
-                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
-                                                    type="number"
-                                                    name="credit"
-                                                />
-                                                <div className="ml-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            removeRow(
-                                                                entries.length -
-                                                                    1
-                                                            )
-                                                        }
-                                                        className={`rounded bg-red-500 px-4 py-2 font-bold text-white ${
-                                                            entries.length <= 2
-                                                                ? 'cursor-not-allowed bg-red-200'
-                                                                : ''
-                                                        }`}
-                                                        disabled={
-                                                            entries.length <= 2
-                                                        }
-                                                    >
-                                                        <FontAwesomeIcon
-                                                            icon={faMinus}
-                                                        />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Header */}
                     <div className="border-b-2 border-black">
                         <div className="grid grid-cols-6 text-xs">
@@ -507,10 +394,12 @@ export default function Create({ uacsCodes, fundClusters }) {
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
                             <input
-                                className="w-full rounded border px-3 py-2 shadow focus:outline-none"
+                                className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${balanceError ? 'border-red-500' : ''}`}
                                 type="number"
                                 name="amount"
                                 autoComplete="off"
+                                onChange={handleAmountChange}
+                                placeholder="Enter amount"
                             />
                         </div>
                     </div>
@@ -530,7 +419,7 @@ export default function Create({ uacsCodes, fundClusters }) {
                         </div>
                     </div>
                     {/* Accounting Entry */}
-                    {/* <div className="">
+                    <div className="">
                         <div>
                             <div className="border-b border-black p-2 text-xs">
                                 B. Accounting Entry
@@ -543,11 +432,33 @@ export default function Create({ uacsCodes, fundClusters }) {
                                     <div className="flex items-center justify-center border-l border-black">
                                         UACS Code
                                     </div>
-                                    <div className="flex items-center justify-center border-l border-black">
-                                        Debit
+                                    <div className="flex flex-col items-center justify-center border-l border-black">
+                                        <div>Debit </div>
+                                        {balanceError && (
+                                            <div className="text-red-500">
+                                                Total Debit:{' '}
+                                                {entries.reduce(
+                                                    (sum, entry) =>
+                                                        sum + entry.debit,
+                                                    0
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex items-center justify-center border-l border-black">
-                                        Credit
+                                    <div className="flex flex-col items-center justify-center border-l border-black">
+                                        <span>Credit</span>
+                                        <span>
+                                            {balanceError && (
+                                                <div className="text-red-500">
+                                                    Total Credits:{' '}
+                                                    {entries.reduce(
+                                                        (sum, entry) =>
+                                                            sum + entry.credit,
+                                                        0
+                                                    )}
+                                                </div>
+                                            )}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col justify-center border-b border-black">
@@ -579,7 +490,11 @@ export default function Create({ uacsCodes, fundClusters }) {
                                                                 index
                                                             )
                                                         }
-                                                        className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                            errors.uacs_code
+                                                                ? 'border-red-500'
+                                                                : ''
+                                                        }`}
                                                         placeholder="Typing to search Account Title"
                                                         autoComplete="off"
                                                     />
@@ -612,9 +527,14 @@ export default function Create({ uacsCodes, fundClusters }) {
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-center border-l border-black p-2">
+                                                {/* READ ONLY INPUT */}
                                                 <input
                                                     value={entry.uacsCode}
-                                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
+                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                                        errors.uacs_code
+                                                            ? 'border-red-500'
+                                                            : ''
+                                                    }`}
                                                     onChange={(e) => {
                                                         const updatedEntries = [
                                                             ...entries,
@@ -635,20 +555,43 @@ export default function Create({ uacsCodes, fundClusters }) {
                                                         );
                                                     }}
                                                     autoComplete="off"
+                                                    readOnly
                                                 />
                                             </div>
                                             <div className="flex items-center justify-center border-l border-black p-2">
-                                                <input
+                                                {/* <input
                                                     className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                                     type="number"
                                                     name="debit"
+                                                /> */}
+                                                <input
+                                                    type="number"
+                                                    value={entry.debit}
+                                                    onChange={(e) =>
+                                                        handleDebitChange(
+                                                            e,
+                                                            index
+                                                        )
+                                                    }
+                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${balanceError && totalDebitAmount !== entries.reduce((sum, entry) => sum + entry.debit, 0) ? 'border-red-500' : ''}`}
                                                 />
                                             </div>
                                             <div className="flex items-center justify-center border-l border-black p-2">
-                                                <input
+                                                {/* <input
                                                     className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                                     type="number"
                                                     name="credit"
+                                                /> */}
+                                                <input
+                                                    type="number"
+                                                    value={entry.credit}
+                                                    onChange={(e) =>
+                                                        handleCreditChange(
+                                                            e,
+                                                            index
+                                                        )
+                                                    }
+                                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${balanceError && totalCreditAmount !== entries.reduce((sum, entry) => sum + entry.credit, 0) ? 'border-red-500' : ''}`}
                                                 />
                                                 <div className="ml-2">
                                                     <button
@@ -679,7 +622,7 @@ export default function Create({ uacsCodes, fundClusters }) {
                                 </div>
                             </div>
                         </div>
-                    </div> */}
+                    </div>
 
                     {/* Certified and Approved Section */}
                     <div className="grid grid-cols-2 border-b border-black">
