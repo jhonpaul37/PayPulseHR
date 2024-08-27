@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AccountingEntry from './components/AccountingEntry';
 
 export default function Create({ uacsCodes, fundClusters }) {
@@ -10,7 +10,30 @@ export default function Create({ uacsCodes, fundClusters }) {
         div_num: '',
         uacs_code: [],
         user_id: '',
+        code: '', // Include the code field here
     });
+    useEffect(() => {
+        if (data.f_cluster) {
+            generateCode();
+        }
+    }, [data.f_cluster]);
+
+    const generateCode = () => {
+        const currentYearMonth = new Date()
+            .toISOString()
+            .slice(2, 7)
+            .replace('-', '');
+        const fundCluster = data.f_cluster;
+        const autoIncrement = '00014'; // This should be fetched from the backend or generated dynamically.
+
+        const generatedCode = `${currentYearMonth}-${fundCluster}-${autoIncrement}`;
+        setData({ ...data, code: generatedCode });
+    };
+
+    const handleSubmit = () => {
+        // Submit the form with the generated code
+        Inertia.post('/your-endpoint', data);
+    };
 
     // used in AccountingEntry Component
     const [entries, setEntries] = useState([
@@ -31,6 +54,7 @@ export default function Create({ uacsCodes, fundClusters }) {
             suggestions: [],
         },
     ]);
+
     const [debitError, setDebitError] = useState(false);
     const [creditError, setCreditError] = useState(false);
     const [totalDebitAmount, setTotalDebitAmount] = useState(0);
@@ -118,19 +142,16 @@ export default function Create({ uacsCodes, fundClusters }) {
                                     Fund Cluster:
                                     <select
                                         value={data.f_cluster}
-                                        onChange={(e) => {
+                                        onChange={(e) =>
                                             setData({
                                                 ...data,
                                                 f_cluster: e.target.value,
-                                            });
-                                            // console.log(data.f_cluster);
-                                        }}
+                                            })
+                                        }
                                         className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
                                             !data.f_cluster
-                                                ? 'border-yellow-500' // Highlight when no valid value is selected
-                                                : errors.f_cluster
-                                                  ? 'border-red-500' // Red border when there's an error
-                                                  : 'border-gray-300' // Default border
+                                                ? 'border-yellow-500'
+                                                : 'border-gray-300'
                                         }`}
                                     >
                                         <option value="" disabled>
@@ -139,26 +160,13 @@ export default function Create({ uacsCodes, fundClusters }) {
                                         {fundClusters.map((cluster) => (
                                             <option
                                                 key={cluster.id}
-                                                value={cluster.id}
+                                                value={cluster.cluster_code}
                                                 className="text-center"
                                             >
                                                 {cluster.cluster_code}
                                             </option>
                                         ))}
                                     </select>
-                                    {/* Hidden input fund cluster */}
-                                    <input
-                                        value={data.f_cluster}
-                                        type="text"
-                                        onChange={(e) =>
-                                            setData('f_cluster', e.target.value)
-                                        }
-                                        placeholder="fund cluster"
-                                        className="hidden"
-                                        autoComplete="off"
-                                    />
-                                    {/* Debugging */}
-                                    {/* {console.log(data.f_cluster)} */}
                                 </div>
 
                                 <div className="border-b border-black p-1">
@@ -538,8 +546,11 @@ export default function Create({ uacsCodes, fundClusters }) {
                             </div>
                             <div className="border-l border-black">
                                 <div className="border-b border-black p-2">
-                                    JEV No.
-                                    <input
+                                    JEV No.{' '}
+                                    <span className="font-bold">
+                                        {data.code || 'No code generated yet'}
+                                    </span>{' '}
+                                    {/* <input
                                         value={data.jev_no}
                                         type="text"
                                         onChange={(e) =>
@@ -550,7 +561,7 @@ export default function Create({ uacsCodes, fundClusters }) {
                                             errors.jev_no && '!ring-red-500'
                                         }
                                         autoComplete="off"
-                                    />
+                                    /> */}
                                 </div>
                                 <div className="p-2">
                                     {' '}

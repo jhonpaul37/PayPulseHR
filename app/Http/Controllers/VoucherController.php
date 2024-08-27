@@ -29,16 +29,21 @@ class VoucherController extends Controller
         return inertia('voucher/Create',['uacsCodes'=>$uacsCodes, 'fundClusters' => $fundClusters,]);
     }
 
+    // Helper method to generate JEV No.
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+            $lastVoucher = Voucher::orderBy('id', 'desc')->first();
+    $incrementNumber = $lastVoucher ? $lastVoucher->incrementing_number + 1 : 1;
+    $formattedNumber = str_pad($incrementNumber, 5, '0', STR_PAD_LEFT);
 
+    $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $formattedNumber;
 
         $fields = $request->validate([
-            'jev_no' => ['required'],
+            'jev_no' => $code,
             'ors_burs_no' => ['required'],
             'f_cluster' => ['required'],
             'uacs_code' => ['required', 'array'],
@@ -56,6 +61,7 @@ class VoucherController extends Controller
         // tests output
         // dd($request);
     }
+
 
     /**
      * Display the specified resource.
