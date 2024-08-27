@@ -14,7 +14,7 @@ class voucher extends Model
         'ors_burs_no',
         'f_cluster',
         'div_num',
-        'uacs_code', // Ensure this is included
+        'uacs_code',
         'user_id',
     ];
 
