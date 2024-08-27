@@ -29,30 +29,33 @@ class VoucherController extends Controller
         return inertia('voucher/Create',['uacsCodes'=>$uacsCodes, 'fundClusters' => $fundClusters,]);
     }
 
+
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request)
-{
-    $fields = $request->validate([
-        'jev_no' => ['required'],
-        'ors_burs_no' => ['required'],
-        'f_cluster' => ['required'],
-        'uacs_code' => ['required', 'array'],
-        'user_id' => ['required']
-    ]);
+    public function store(Request $request)
+    {
 
-    // Set default value for div_num if not provided
-    $fields['div_num'] = $fields['div_num'] ?? '0123';
 
-    // Create the new Voucher record
-    Voucher::create($fields);
+        $fields = $request->validate([
+            'jev_no' => ['required'],
+            'ors_burs_no' => ['required'],
+            'f_cluster' => ['required'],
+            'uacs_code' => ['required', 'array'],
+            'user_id' => ['required']
+        ]);
 
-    return redirect('/voucher');
+        // Set default value for div_num if not provided
+        $fields['div_num'] = $fields['div_num'] ?? '0123';
 
-    // tests output
-    // dd($request);
-}
+
+        Voucher::create($fields);
+
+        return redirect('/voucher');
+
+        // tests output
+        // dd($request);
+    }
 
     /**
      * Display the specified resource.

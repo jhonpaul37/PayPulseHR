@@ -47,6 +47,31 @@ const App = ({ children }) => {
         return '1'; // Default to Home
     };
 
+    // Define your menu items
+    const menuItems = [
+        {
+            key: '1',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/">Dashboard</Link>,
+        },
+        // Uncomment this if you need a separate Dashboard menu item
+        // {
+        //     key: '2',
+        //     icon: <FontAwesomeIcon icon={faHouse} />,
+        //     label: <Link href="/dashboard">Dashboard</Link>,
+        // },
+        {
+            key: '3',
+            icon: <FontAwesomeIcon icon={faFolder} />,
+            label: <Link href="/voucher">Voucher</Link>,
+        },
+        {
+            key: '4',
+            icon: <FontAwesomeIcon icon={faGear} />,
+            label: <Link href="/settings">Settings</Link>,
+        },
+    ];
+
     return (
         <Layout className="h-screen">
             <StyledSider trigger={null} collapsible collapsed={collapsed}>
@@ -57,30 +82,9 @@ const App = ({ children }) => {
                     theme="dark"
                     mode="inline"
                     selectedKeys={[selectedKey()]}
+                    items={menuItems} // Use items prop
                     className="bg-main"
-                >
-                    <Menu.Item
-                        key="1"
-                        icon={<FontAwesomeIcon icon={faHouse} />}
-                    >
-                        <Link href="/">Dashboard</Link>
-                    </Menu.Item>
-                    {/* <Menu.Item
-                        key="2"
-                        icon={<FontAwesomeIcon icon={faHouse} />}
-                    >
-                        <Link href="/dashboard">Dashboard</Link>
-                    </Menu.Item> */}
-                    <Menu.Item
-                        key="3"
-                        icon={<FontAwesomeIcon icon={faFolder} />}
-                    >
-                        <Link href="/voucher">Voucher</Link>
-                    </Menu.Item>
-                    <Menu.Item key="4" icon={<FontAwesomeIcon icon={faGear} />}>
-                        <Link href="/settings">Settings</Link>
-                    </Menu.Item>
-                </StyledMenu>
+                />
             </StyledSider>
 
             {/* Navbar */}
@@ -100,6 +104,7 @@ const App = ({ children }) => {
                     />
                     {/* Search */}
                     <div>search</div>
+                    {/* User Profile */}
                     <div>User Profile</div>
                 </Header>
 
