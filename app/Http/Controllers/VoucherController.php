@@ -36,31 +36,33 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-            $lastVoucher = Voucher::orderBy('id', 'desc')->first();
-    $incrementNumber = $lastVoucher ? $lastVoucher->incrementing_number + 1 : 1;
-    $formattedNumber = str_pad($incrementNumber, 5, '0', STR_PAD_LEFT);
+        // Retrieve the last voucher to determine the next incrementing number
+        $lastVoucher = Voucher::orderBy('id', 'desc')->first();
+        $incrementNumber = $lastVoucher ? $lastVoucher->incrementing_number + 1 : 1;
+        $formattedNumber = str_pad($incrementNumber, 5, '0', STR_PAD_LEFT);
 
-    $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $formattedNumber;
+        // Generate the code using the current year-month and the selected fund cluster
+        $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $formattedNumber;
 
+        // Validate the request fields
         $fields = $request->validate([
-            'jev_no' => $code,
             'ors_burs_no' => ['required'],
             'f_cluster' => ['required'],
             'uacs_code' => ['required', 'array'],
             'user_id' => ['required']
         ]);
 
-        // Set default value for div_num if not provided
+        // Add the generated code and default div_num to the fields
+        $fields['jev_no'] = $code;
         $fields['div_num'] = $fields['div_num'] ?? '0123';
 
-
+        // Create the voucher record in the database
         Voucher::create($fields);
 
+        // Redirect to the voucher listing page
         return redirect('/voucher');
-
-        // tests output
-        // dd($request);
     }
+
 
 
     /**

@@ -30,11 +30,6 @@ export default function Create({ uacsCodes, fundClusters }) {
         setData({ ...data, code: generatedCode });
     };
 
-    const handleSubmit = () => {
-        // Submit the form with the generated code
-        Inertia.post('/your-endpoint', data);
-    };
-
     // used in AccountingEntry Component
     const [entries, setEntries] = useState([
         {
