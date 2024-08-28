@@ -18,9 +18,9 @@ class voucher extends Model
         'user_id',
     ];
 
-    // Optionally, specify casting for the JSON column
+
     protected $casts = [
-        'uacs_code' => 'array', // Cast uacs_code to array
+        'uacs_code' => 'array', // uacs_code to array
     ];
         public function accounting_entry()
     {

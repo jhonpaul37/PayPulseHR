@@ -10,24 +10,47 @@ export default function Create({ uacsCodes, fundClusters }) {
         div_num: '',
         uacs_code: [],
         user_id: '',
-        code: '', // Include the code field here
+        code: '',
+        autoIncrement: '',
     });
+
     useEffect(() => {
         if (data.f_cluster) {
-            generateCode();
+            fetchAutoIncrementValue();
         }
     }, [data.f_cluster]);
 
-    const generateCode = () => {
+    //Jev Number Generate
+    const fetchAutoIncrementValue = async () => {
+        try {
+            const response = await fetch('/get-auto-increment');
+            const result = await response.json();
+
+            if (result.incrementNumber) {
+                setData((prevData) => ({
+                    ...prevData,
+                    autoIncrement: result.incrementNumber,
+                }));
+                generateCode(result.incrementNumber);
+            }
+        } catch (error) {
+            console.error('Failed to fetch auto-increment value:', error);
+        }
+    };
+
+    const generateCode = (incrementNumber) => {
         const currentYearMonth = new Date()
             .toISOString()
             .slice(2, 7)
             .replace('-', '');
         const fundCluster = data.f_cluster;
-        const autoIncrement = '00014'; // This should be fetched from the backend or generated dynamically.
 
-        const generatedCode = `${currentYearMonth}-${fundCluster}-${autoIncrement}`;
-        setData({ ...data, code: generatedCode });
+        // Generate the code using the autoIncrement value
+        const generatedCode = `${currentYearMonth}-${fundCluster}-${incrementNumber}`;
+        setData((prevData) => ({
+            ...prevData,
+            code: generatedCode,
+        }));
     };
 
     // used in AccountingEntry Component
@@ -545,18 +568,6 @@ export default function Create({ uacsCodes, fundClusters }) {
                                     <span className="font-bold">
                                         {data.code || 'No code generated yet'}
                                     </span>{' '}
-                                    {/* <input
-                                        value={data.jev_no}
-                                        type="text"
-                                        onChange={(e) =>
-                                            setData('jev_no', e.target.value)
-                                        }
-                                        placeholder="jev_no"
-                                        className={
-                                            errors.jev_no && '!ring-red-500'
-                                        }
-                                        autoComplete="off"
-                                    /> */}
                                 </div>
                                 <div className="p-2">
                                     {' '}

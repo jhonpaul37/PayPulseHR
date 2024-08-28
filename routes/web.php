@@ -9,6 +9,7 @@ Route::get('/', function () {
 });
 
 Route::resource('voucher',VoucherController::class);
+Route::get('get-auto-increment', [VoucherController::class, 'getAutoIncrement']);
 
 Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
 

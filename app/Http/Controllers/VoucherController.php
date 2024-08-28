@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use App\Models\voucher;
 use App\Models\accounting_entry;
 use App\Models\FundCluster;
@@ -34,17 +35,25 @@ class VoucherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    public function getAutoIncrement()
+    {
+        // Retrieve the last voucher ID
+        $latestVoucher = Voucher::latest('id')->first();
+        $incrementNumber = $latestVoucher ? str_pad($latestVoucher->id + 1, 5, '0', STR_PAD_LEFT) : '00001';
+
+        return response()->json([
+            'incrementNumber' => $incrementNumber
+        ]);
+    }
     public function store(Request $request)
     {
-        // Retrieve the last voucher to determine the next incrementing number
-        $lastVoucher = Voucher::orderBy('id', 'desc')->first();
-        $incrementNumber = $lastVoucher ? $lastVoucher->incrementing_number + 1 : 1;
-        $formattedNumber = str_pad($incrementNumber, 5, '0', STR_PAD_LEFT);
+        // Get lastest ID to determine the next incrementing number
+        $latestVoucher = Voucher::latest('id')->first();
+        $incrementNumber = $latestVoucher ? str_pad($latestVoucher->id + 1, 5, '0', STR_PAD_LEFT) : '00001';
 
-        // Generate the code using the current year-month and the selected fund cluster
-        $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $formattedNumber;
+        // Generate the code using the Format yearMonth-fundCluster-autoIncrement
+        $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $incrementNumber;
 
-        // Validate the request fields
         $fields = $request->validate([
             'ors_burs_no' => ['required'],
             'f_cluster' => ['required'],
@@ -56,10 +65,9 @@ class VoucherController extends Controller
         $fields['jev_no'] = $code;
         $fields['div_num'] = $fields['div_num'] ?? '0123';
 
-        // Create the voucher record in the database
+
         Voucher::create($fields);
 
-        // Redirect to the voucher listing page
         return redirect('/voucher');
     }
 
