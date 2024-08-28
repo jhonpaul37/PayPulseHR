@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 
 export default function Voucher({ vouchers }) {
+    const voucherUrl = `/voucher/${vouchers.id}`;
     return (
         <div className="">
             {/* button to add */}
@@ -14,17 +15,23 @@ export default function Voucher({ vouchers }) {
             {/* display the recent*/}
             <div className="my-10">
                 <div className="mb-2">Recent</div>
-                {vouchers.data.map((vouchers) => (
-                    <div key={vouchers.id} className="my-2 border bg-white p-4">
+                {vouchers.data.map((voucher) => (
+                    <div key={voucher.id} className="my-2 border bg-white p-4">
                         <div className="text-sm text-gray-500">
                             <span>Created at </span>
                             <span>
                                 {new Date(
-                                    vouchers.created_at
+                                    voucher.created_at
                                 ).toLocaleDateString()}
                             </span>
                         </div>
-                        <p>{vouchers.jev_no}</p>
+                        <p>{voucher.jev_no}</p>
+                        <Link
+                            href={`/voucher/${voucher.id}`}
+                            className="font-bold text-main"
+                        >
+                            View
+                        </Link>
                     </div>
                 ))}
             </div>

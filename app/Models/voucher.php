@@ -29,4 +29,7 @@ class voucher extends Model
     public function fund_cluster(){
         return $this->hasMany(FundCluster::class);
     }
+        public function users(){
+        return $this->hasMany(User::class);
+    }
 }

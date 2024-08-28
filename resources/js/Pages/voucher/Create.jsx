@@ -20,7 +20,6 @@ export default function Create({ uacsCodes, fundClusters }) {
         }
     }, [data.f_cluster]);
 
-    //Jev Number Generate
     const fetchAutoIncrementValue = async () => {
         try {
             const response = await fetch('/get-auto-increment');
@@ -50,6 +49,13 @@ export default function Create({ uacsCodes, fundClusters }) {
         setData((prevData) => ({
             ...prevData,
             code: generatedCode,
+        }));
+    };
+
+    const handleInputChange = (e) => {
+        setData((prevData) => ({
+            ...prevData,
+            [e.target.name]: e.target.value,
         }));
     };
 
@@ -563,11 +569,18 @@ export default function Create({ uacsCodes, fundClusters }) {
                                 <div className="p-2">Printed Name:</div>
                             </div>
                             <div className="border-l border-black">
-                                <div className="border-b border-black p-2">
-                                    JEV No.{' '}
-                                    <span className="font-bold">
-                                        {data.code || 'No code generated yet'}
-                                    </span>{' '}
+                                <div className="flex border-b border-black p-2">
+                                    <span>JEV No. </span>
+                                    <input
+                                        name="jev_no"
+                                        value={data.code}
+                                        type="text"
+                                        onChange={handleInputChange}
+                                        placeholder="Auto Generated"
+                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${errors.jev_no ? '!ring-red-500' : ''}`}
+                                        autoComplete="off"
+                                        readOnly
+                                    />
                                 </div>
                                 <div className="p-2">
                                     {' '}

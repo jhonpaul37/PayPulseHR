@@ -5,6 +5,7 @@ import { faHouse, faGear, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
 import styled from 'styled-components';
+// import UserContext from '../contexts/contexts';
 
 const { Header, Sider } = Layout;
 
@@ -39,7 +40,8 @@ const ScrollableContent = styled(Layout.Content)`
 
 const App = ({ children }) => {
     const [collapsed, setCollapsed] = useState(true);
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const { auth } = props;
 
     const selectedKey = () => {
         if (url.startsWith('/dashboard')) return '2';
@@ -47,19 +49,12 @@ const App = ({ children }) => {
         return '1'; // Default to Home
     };
 
-    // Define your menu items
     const menuItems = [
         {
             key: '1',
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/">Dashboard</Link>,
         },
-        // Uncomment this if you need a separate Dashboard menu item
-        // {
-        //     key: '2',
-        //     icon: <FontAwesomeIcon icon={faHouse} />,
-        //     label: <Link href="/dashboard">Dashboard</Link>,
-        // },
         {
             key: '3',
             icon: <FontAwesomeIcon icon={faFolder} />,
@@ -73,6 +68,7 @@ const App = ({ children }) => {
     ];
 
     return (
+        // <UserContext.Provider value={auth.user}>
         <Layout className="h-screen">
             <StyledSider trigger={null} collapsible collapsed={collapsed}>
                 <div className="flex h-16 items-center justify-center bg-mainD">
@@ -105,13 +101,14 @@ const App = ({ children }) => {
                     {/* Search */}
                     <div>search</div>
                     {/* User Profile */}
-                    <div>User Profile</div>
+                    <div>{auth.user ? auth.user.name : 'Guest'}</div>
                 </Header>
 
                 {/* Scrollable content below with the same design */}
                 <ScrollableContent>{children}</ScrollableContent>
             </Layout>
         </Layout>
+        // </UserContext.Provider>
     );
 };
 

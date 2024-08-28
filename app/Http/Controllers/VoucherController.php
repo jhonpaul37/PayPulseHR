@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use App\Models\voucher;
 use App\Models\accounting_entry;
 use App\Models\FundCluster;
@@ -45,6 +44,7 @@ class VoucherController extends Controller
             'incrementNumber' => $incrementNumber
         ]);
     }
+
     public function store(Request $request)
     {
         // Get lastest ID to determine the next incrementing number
@@ -78,7 +78,7 @@ class VoucherController extends Controller
      */
     public function show(voucher $voucher)
     {
-        //
+        return inertia('voucher/Show');
     }
 
     /**
