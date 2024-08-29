@@ -6,20 +6,23 @@ export default function Show({ voucher }) {
         const year = date.getFullYear().toString().slice(-2);
         return `${day}-${month}-${year}`;
     };
+    // voucher.uacs_code = [
+    //     {
+    //         account_title: 'Cash',
+    //         uacs_code: '101010',
+    //         debit: 1000,
+    //         credit: 0,
+    //     },
+    //     {
+    //         account_title: 'Accounts Payable',
+    //         uacs_code: '201010',
+    //         debit: 0,
+    //         credit: 1000,
+    //     },
+    // ];
 
     return (
         <>
-            {/* <div className="my-10">
-                <div className="my-2 border bg-white p-4">
-                    <div className="text-sm text-gray-500">
-                        <span>Created at </span>
-                        <span>
-                            {new Date(voucher.created_at).toLocaleDateString()}
-                        </span>
-                    </div>
-                    <p>{voucher.jev_no}</p>
-                </div>
-            </div> */}
             <div className="border-2 border-black bg-white shadow-md">
                 {/* Header */}
                 <div className="border-b-2 border-black">
@@ -55,7 +58,7 @@ export default function Show({ voucher }) {
                         Mode of Payment
                     </div>
                     <div className="col-span-6 flex justify-between border-l border-black px-5">
-                        {/* {['MDS Check', 'Commercial Check', 'ADA'].map(
+                        {['MDS Check', 'Commercial Check', 'ADA'].map(
                             (mode) => (
                                 <label
                                     key={mode}
@@ -70,7 +73,7 @@ export default function Show({ voucher }) {
                                     <span className="ml-2">{mode}</span>
                                 </label>
                             )
-                        )} */}
+                        )}
 
                         <label className="inline-flex items-center">
                             <input
@@ -232,19 +235,10 @@ export default function Show({ voucher }) {
                 </div>
 
                 {/* Accounting Entry */}
-                {/* <AccountingEntry
-                    uacsCodes={uacsCodes}
-                    entries={entries}
-                    balanceError={balanceError}
-                    debitError={debitError}
-                    creditError={creditError}
-                    errors={errors}
-                    handleDebitChange={handleDebitChange}
-                    handleCreditChange={handleCreditChange}
-                    setEntries={setEntries}
-                    setData={setData}
-                /> */}
                 <div>
+                    <div className="border-b border-black p-2 text-xs">
+                        B. Accounting Entry
+                    </div>
                     <div className="border-b border-black p-2 text-xs">
                         B. Accounting Entry
                     </div>
@@ -257,7 +251,7 @@ export default function Show({ voucher }) {
                                 UACS Code
                             </div>
                             <div className="flex flex-col items-center justify-center border-l border-black">
-                                <div>Debit </div>
+                                <div>Debit</div>
                             </div>
                             <div className="flex flex-col items-center justify-center border-l border-black">
                                 <span>Credit</span>
@@ -271,12 +265,11 @@ export default function Show({ voucher }) {
                                 <div className="grid grid-cols-4 border-b border-black">
                                     <div className="flex p-2">
                                         <div className="mr-2">
-                                            {uacs.accountTitle}
+                                            {uacs.Account_title}
                                         </div>
-                                        <div className="relative w-full"></div>
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
-                                        {uacs.uacs_code}
+                                        {uacs.UACS_code}
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
                                         {/* {item.debit} */}

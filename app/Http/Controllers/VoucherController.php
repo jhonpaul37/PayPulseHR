@@ -78,9 +78,21 @@ class VoucherController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(voucher $voucher)
+    // public function show(voucher $voucher)
+    // {
+    //     return inertia('voucher/Show',['voucher' => $voucher]);
+    // }
+    public function show($id)
     {
-        return inertia('voucher/Show',['voucher' => $voucher]);
+        $voucher = Voucher::find($id);
+
+        $voucher->uacs_code = array_map(function($code) {
+            return accounting_entry::where('UACS_code', $code)->first(['UACS_code', 'Account_title']);
+        }, $voucher->uacs_code);
+
+        return Inertia::render('voucher/Show', [
+            'voucher' => $voucher,
+        ]);
     }
 
 
