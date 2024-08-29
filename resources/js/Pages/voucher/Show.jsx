@@ -239,9 +239,6 @@ export default function Show({ voucher }) {
                     <div className="border-b border-black p-2 text-xs">
                         B. Accounting Entry
                     </div>
-                    <div className="border-b border-black p-2 text-xs">
-                        B. Accounting Entry
-                    </div>
                     <div>
                         <div className="grid grid-cols-4 border-b border-black text-xs">
                             <div className="flex items-center justify-center">
@@ -525,32 +522,30 @@ export default function Show({ voucher }) {
                     <div className="grid grid-cols-5 text-center">
                         <div className="border-b border-black"></div>
                         <div className="col-span-4 border-l border-black">
-                            {/* {entries.map((entry, index) => (
+                            {voucher.uacs_code.map((uacs, index) => (
                                 <div
                                     key={index}
                                     className="grid grid-cols-5 border-b border-black"
                                 >
                                     <div className="col-span-2 flex items-center justify-center p-2">
-                                        {entry.uacsTitle}
+                                        {uacs.Account_title}
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
-                                        {entry.uacsCode}
+                                        {uacs.UACS_code}
                                     </div>
-                                    <div className="flex items-center justify-center border-l border-black p-2">
-
-                                    </div>
+                                    <div className="flex items-center justify-center border-l border-black p-2"></div>
                                     <div className="flex flex-col border-l border-black">
                                         <div className="grid grid-cols-2">
                                             <div className="p-2">
-                                                {entry.debit}
+                                                {/* {item.debit} */}
                                             </div>
                                             <div className="border-l border-black p-2">
-                                                {entry.credit}
+                                                {/* {item.credit} */}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            ))} */}
+                            ))}
                         </div>
                     </div>
 

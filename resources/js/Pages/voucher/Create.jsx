@@ -577,7 +577,7 @@ export default function Create({ uacsCodes, fundClusters }) {
                                         type="text"
                                         onChange={handleInputChange}
                                         placeholder="Auto Generated"
-                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${errors.jev_no ? '!ring-red-500' : ''}`}
+                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none ${errors.jev_no ? '!ring-red-500' : ''}`}
                                         autoComplete="off"
                                         readOnly
                                     />
