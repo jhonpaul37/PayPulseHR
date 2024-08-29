@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
+import { useRoute } from '../../../vendor/tightenco/ziggy';
 
 export default function Voucher({ vouchers }) {
-    const voucherUrl = `/voucher/${vouchers.id}`;
+    const route = useRoute();
     return (
         <div className="">
             {/* button to add */}
@@ -26,8 +27,14 @@ export default function Voucher({ vouchers }) {
                             </span>
                         </div>
                         <p>{voucher.jev_no}</p>
-                        <Link
+                        {/* <Link
                             href={`/voucher/${voucher.id}`}
+                            className="font-bold text-main"
+                        >
+                            View
+                        </Link> */}
+                        <Link
+                            href={route(`voucher.show`, voucher)}
                             className="font-bold text-main"
                         >
                             View

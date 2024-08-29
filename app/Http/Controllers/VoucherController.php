@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\voucher;
 use App\Models\accounting_entry;
 use App\Models\FundCluster;
+use Inertia\Inertia;
+
 
 
 class VoucherController extends Controller
@@ -78,8 +80,9 @@ class VoucherController extends Controller
      */
     public function show(voucher $voucher)
     {
-        return inertia('voucher/Show');
+        return inertia('voucher/Show',['voucher' => $voucher]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
