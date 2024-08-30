@@ -19,6 +19,12 @@ return new class extends Migration
             $table->string('div_num');
             $table->json('uacs_code');
             $table->integer('user_id');
+            $table->integer('amount');
+            $table->integer('ApproveAmount');
+            $table->string('particulars');
+            $table->string('address');
+            $table->string('payee');
+            $table->integer('tin_no');
             $table->timestamps();
         });
     }

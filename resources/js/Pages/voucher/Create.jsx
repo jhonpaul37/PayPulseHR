@@ -12,6 +12,12 @@ export default function Create({ uacsCodes, fundClusters }) {
         user_id: '',
         code: '',
         autoIncrement: '',
+        amount: '',
+        ApproveAmount: '',
+        particulars: '',
+        address: '',
+        payee: '',
+        tin_no: '',
     });
 
     useEffect(() => {
@@ -88,10 +94,12 @@ export default function Create({ uacsCodes, fundClusters }) {
     // checks the debit change
     const handleAmountChange = (e) => {
         const amount = parseFloat(e.target.value) || 0;
+        setData('amount', e.target.value);
         setTotalDebitAmount(amount);
         setTotalCreditAmount(amount);
         validateBalance();
     };
+
     // checks the debit change
     const handleDebitChange = (e, index) => {
         const value = e.target.value;
@@ -173,10 +181,8 @@ export default function Create({ uacsCodes, fundClusters }) {
                                             })
                                         }
                                         className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                            !data.f_cluster
-                                                ? 'border-yellow-500'
-                                                : 'border-gray-300'
-                                        }`}
+                                            !data.f_cluster ? 'border-high' : ''
+                                        } ${errors.f_cluster ? 'border-red-500' : 'border-gray-300'}`}
                                     >
                                         <option value="" disabled>
                                             Select a Fund Cluster
@@ -206,11 +212,9 @@ export default function Create({ uacsCodes, fundClusters }) {
                                         onChange={(e) =>
                                             setData('div_num', e.target.value)
                                         }
-                                        placeholder="div_num"
-                                        className={
-                                            errors.div_num && '!ring-red-500'
-                                        }
+                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                         autoComplete="off"
+                                        readOnly
                                     />
                                 </div>
                             </div>
@@ -270,11 +274,17 @@ export default function Create({ uacsCodes, fundClusters }) {
 
                             <div className="col-span-2 flex items-center border-l border-black p-2">
                                 <input
-                                    className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                    id="clientName"
-                                    type="text"
                                     name="clientName"
                                     autoComplete="off"
+                                    type="text"
+                                    placeholder="Client Name"
+                                    value={data.payee}
+                                    onChange={(e) => {
+                                        setData('payee', e.target.value);
+                                    }}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                        !data.payee ? 'border-high' : ''
+                                    } ${errors.payee ? 'border-red-500' : 'border-gray-300'}`}
                                 />
                             </div>
                             <div className="col-span-2 border-l border-black p-2">
@@ -282,11 +292,16 @@ export default function Create({ uacsCodes, fundClusters }) {
                                     TIN/Employee No.
                                 </label>
                                 <input
-                                    className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                    id="TIN/EmployeeNo"
                                     type="number"
-                                    name="TIN/EmployeeNo"
                                     autoComplete="off"
+                                    placeholder="TIN/Employee No."
+                                    value={data.tin_no}
+                                    onChange={(e) => {
+                                        setData('tin_no', e.target.value);
+                                    }}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                        !data.tin_no ? 'border-high' : ''
+                                    } ${errors.tin_no ? 'border-red-500' : 'border-gray-300'}`}
                                 />
                             </div>
                             <div className="col-span-2 border-l border-black p-2">
@@ -298,17 +313,10 @@ export default function Create({ uacsCodes, fundClusters }) {
                                         setData('ors_burs_no', e.target.value)
                                     }
                                     placeholder="ors_burs_no"
-                                    className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
                                         !data.ors_burs_no ? 'border-high' : ''
-                                    } ${errors.ors_burs_no ? '!ring-red-500' : ''}`}
-                                    autoComplete="off"
+                                    } ${errors.ors_burs_no ? 'border-red-500' : 'border-gray-300'}`}
                                 />
-
-                                {/* {errors.ors_burs_no && (
-                                    <div className="text-red-600">
-                                        {errors.ors_burs_no}
-                                    </div>
-                                )} */}
                             </div>
                         </div>
 
@@ -323,13 +331,17 @@ export default function Create({ uacsCodes, fundClusters }) {
                             </div>
                             <div className="col-span-6 border-l border-black p-2">
                                 <input
-                                    className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                    id="address"
                                     type="text"
                                     name="address"
                                     autoComplete="off"
-                                    // value={formData.address}
-                                    // onChange={handleInputChange}
+                                    placeholder="Address"
+                                    value={data.address}
+                                    onChange={(e) => {
+                                        setData('address', e.target.value);
+                                    }}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                        !data.address ? 'border-high' : ''
+                                    } ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
                                 />
                             </div>
                         </div>
@@ -353,9 +365,15 @@ export default function Create({ uacsCodes, fundClusters }) {
                     <div className="grid grid-cols-10 border-b border-black">
                         <div className="col-span-4 flex items-center p-2">
                             <textarea
-                                className="w-full rounded border px-3 py-2 shadow focus:outline-none"
                                 name="particulars"
                                 rows="4"
+                                value={data.particulars}
+                                onChange={(e) => {
+                                    setData('particulars', e.target.value);
+                                }}
+                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                    !data.particulars ? 'border-high' : ''
+                                } ${errors.particulars ? 'border-red-500' : 'border-gray-300'}`}
                             />
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
@@ -376,14 +394,15 @@ export default function Create({ uacsCodes, fundClusters }) {
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
                             <input
-                                className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${
-                                    !data.amount ? 'border-high' : ''
-                                } ${balanceError ? 'border-red-500' : ''}`}
+                                placeholder="Enter amount"
                                 type="number"
                                 name="amount"
                                 autoComplete="off"
-                                onChange={handleAmountChange}
-                                placeholder="Enter amount"
+                                value={data.amount}
+                                onChange={handleAmountChange} // Use only handleAmountChange here
+                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                    !data.amount ? 'border-high' : ''
+                                } ${errors.amount ? 'border-red-500' : 'border-gray-300'}`}
                             />
                         </div>
                     </div>
@@ -499,10 +518,19 @@ export default function Create({ uacsCodes, fundClusters }) {
                             <div className="flex h-28 items-center justify-center p-2">
                                 {' '}
                                 <input
-                                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                     type="text"
-                                    placeholder="Amount"
                                     autoComplete="off"
+                                    placeholder="Approve Amount"
+                                    value={data.ApproveAmount}
+                                    onChange={(e) => {
+                                        setData(
+                                            'ApproveAmount',
+                                            e.target.value
+                                        );
+                                    }}
+                                    className={`focus:shadow-outline mx-10 w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                        !data.ApproveAmount ? 'border-high' : ''
+                                    } ${errors.ApproveAmount ? 'border-red-500' : 'border-gray-300'}`}
                                 />
                             </div>
                             <div className="grid grid-cols-4 border-t border-black">
@@ -570,17 +598,21 @@ export default function Create({ uacsCodes, fundClusters }) {
                             </div>
                             <div className="border-l border-black">
                                 <div className="flex border-b border-black p-2">
-                                    <span>JEV No. </span>
+                                    <span className="mr-2">JEV No. </span>
                                     <input
                                         name="jev_no"
                                         value={data.code}
                                         type="text"
                                         onChange={handleInputChange}
                                         placeholder="Auto Generated"
-                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none ${errors.jev_no ? '!ring-red-500' : ''}`}
+                                        className={`focus:shadow-outline w-full appearance-none rounded border border-blue-500 px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                         autoComplete="off"
                                         readOnly
                                     />
+                                    {/* <span className="ml-2 font-bold">
+                                        {' '}
+                                        {data.code}
+                                    </span> */}
                                 </div>
                                 <div className="p-2">
                                     {' '}

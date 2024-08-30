@@ -186,11 +186,7 @@ const AccountingEntry = ({
                                 <div className="flex items-center justify-center border-l border-black p-2">
                                     <input
                                         value={entry.uacsCode}
-                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                            errors.uacs_code
-                                                ? 'border-red-500'
-                                                : ''
-                                        }`}
+                                        className={`focus:shadow-outline w-full appearance-none rounded border border-blue-500 px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                         onChange={(e) => {
                                             const updatedEntries = [...entries];
                                             updatedEntries[index].uacsCode =

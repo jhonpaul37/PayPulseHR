@@ -16,6 +16,12 @@ class voucher extends Model
         'div_num',
         'uacs_code',
         'user_id',
+        'amount',
+        'ApproveAmount',
+        'particulars',
+        'address',
+        'payee',
+        'tin_no'
     ];
 
 

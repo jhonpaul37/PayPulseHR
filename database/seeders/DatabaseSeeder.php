@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        voucher::factory(5)->create();
 
         DB::table('fund_cluster')->insert([
             ['cluster_code' =>'07','desc' => 'TF', 'amount'=> '0'],

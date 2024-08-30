@@ -60,7 +60,13 @@ class VoucherController extends Controller
             'ors_burs_no' => ['required'],
             'f_cluster' => ['required'],
             'uacs_code' => ['required', 'array'],
-            'user_id' => ['required']
+            'user_id' => ['required'],
+            'amount' => ['required'],
+            'ApproveAmount' => ['required'],
+            'particulars' => ['required'],
+            'address' => ['required'],
+            'payee' => ['required'],
+            'tin_no' => ['required'],
         ]);
 
         // Add the generated code and default div_num to the fields
