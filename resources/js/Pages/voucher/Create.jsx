@@ -1,7 +1,9 @@
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import AccountingEntry from './components/AccountingEntry';
 import FundCluster from './components/FundCluster';
+import { UserContext } from '../../contexts/contexts';
 
 export default function Create({ uacsCodes, fundClusters }) {
     const { data, setData, post, errors, processing } = useForm({
@@ -21,6 +23,8 @@ export default function Create({ uacsCodes, fundClusters }) {
         tin_no: '',
         bankName: '',
     });
+    const userContext = useContext(UserContext);
+    console.log(userContext);
 
     useEffect(() => {
         if (data.f_cluster) {
