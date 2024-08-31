@@ -3,11 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FundClusterController;
 use App\Http\Controllers\VoucherController;
-<<<<<<< Updated upstream
-=======
+
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
->>>>>>> Stashed changes
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -16,9 +14,9 @@ Route::get('/', function () {
     return Inertia::render('Home'); // Adjust to your actual Inertia page component
 });
 
-<<<<<<< Updated upstream
+
 Route::resource('voucher',VoucherController::class);
-=======
+
 Route::get('/login', function () {
     return Inertia::render('Login'); // Adjust to your actual Inertia page component
 })->middleware('guest');
@@ -26,7 +24,7 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return Inertia::render('Register'); // Adjust to your actual Inertia page component
 })->middleware('guest');
->>>>>>> Stashed changes
+
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
