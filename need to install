@@ -3,6 +3,9 @@ DOMpurify
 run this in terminal
 npm install dompurify
 
+laravel breeze
+composer require laravel/breeze --dev
+
 Font Awesome
 run this in terminal
 npm i --save @fortawesome/fontawesome-svg-core
