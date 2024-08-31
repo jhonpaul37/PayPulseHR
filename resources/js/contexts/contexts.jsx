@@ -1,23 +1,40 @@
-import { createContext } from 'react';
-export const UserContext = (createContext < User) | (undefined > undefined);
+import React, { Component, createContext } from 'react';
 
-// class UserContext extends Component {
-//     state = { user: null };
-//     fetchUserData = async () => {
-//         try {
-//             const response = await Inertia.get('/user-data'); // Endpoint to get user data
-//             this.setState({ user: response.data });
-//         } catch (error) {
-//             console.error('Error fetching user data:', error);
-//         }
+export const userContext = createContext();
+
+class userContextProvider extends Component {
+    state = {
+        isUser: true
+     }
+    render() {
+        return ();
+    }
+}
+
+export default userContextProvider;
+
+
+// import React, { Component, createContext } from 'react';
+
+// // Create the context
+// export const UserContext = createContext();
+
+// // Create the context provider component
+// class UserContextProvider extends Component {
+//     state = {
+//         isUser: true
 //     };
+
 //     render() {
 //         return (
-//             <UserContext.Provider value={this.state.user}>
+//             <UserContext.Provider value={{
+//                 isUser: this.state.isUser
+//             }}>
 //                 {this.props.children}
 //             </UserContext.Provider>
 //         );
 //     }
 // }
 
-// export default UserContext;
+// export default UserContextProvider;
+

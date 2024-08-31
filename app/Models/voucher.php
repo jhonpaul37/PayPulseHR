@@ -10,23 +10,27 @@ class voucher extends Model
     use HasFactory;
 
     protected $fillable = [
-        'jev_no',
         'ors_burs_no',
         'f_cluster',
-        'div_num',
         'uacs_code',
+        'debit',
+        'credit',
         'user_id',
         'amount',
         'ApproveAmount',
         'particulars',
         'address',
         'payee',
-        'tin_no'
+        'tin_no',
+        'jev_no',
+        'div_num',
+        'bankName'
     ];
 
-
     protected $casts = [
-        'uacs_code' => 'array', // uacs_code to array
+        'uacs_code' => 'array',
+        'debit' => 'array',
+        'credit' => 'array',
     ];
         public function accounting_entry()
     {

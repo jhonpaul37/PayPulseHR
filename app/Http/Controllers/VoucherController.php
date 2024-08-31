@@ -48,36 +48,46 @@ class VoucherController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Get lastest ID to determine the next incrementing number
-        $latestVoucher = Voucher::latest('id')->first();
-        $incrementNumber = $latestVoucher ? str_pad($latestVoucher->id + 1, 5, '0', STR_PAD_LEFT) : '00001';
+{
+    // Get latest ID to determine the next incrementing number
+    $latestVoucher = Voucher::latest('id')->first();
+    $incrementNumber = $latestVoucher ? str_pad($latestVoucher->id + 1, 5, '0', STR_PAD_LEFT) : '00001';
 
-        // Generate the code using the Format yearMonth-fundCluster-autoIncrement
-        $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $incrementNumber;
+    // Generate the code using the format yearMonth-fundCluster-autoIncrement
+    $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $incrementNumber;
 
-        $fields = $request->validate([
-            'ors_burs_no' => ['required'],
-            'f_cluster' => ['required'],
-            'uacs_code' => ['required', 'array'],
-            'user_id' => ['required'],
-            'amount' => ['required'],
-            'ApproveAmount' => ['required'],
-            'particulars' => ['required'],
-            'address' => ['required'],
-            'payee' => ['required'],
-            'tin_no' => ['required'],
-        ]);
+    // Validate the request fields, including uacs_code, debit, and credit as arrays
+    $fields = $request->validate([
+        'ors_burs_no' => ['required'],
+        'f_cluster' => ['required'],
+        'uacs_code' => ['required', 'array'],
+        'debit' => ['required', 'array'],
+        'credit' => ['required', 'array'],
+        'user_id' => ['required'],
+        'amount' => ['required'],
+        'ApproveAmount' => ['required'],
+        'particulars' => ['required'],
+        'address' => ['required'],
+        'payee' => ['required'],
+        'tin_no' => ['required'],
+        'bankName' => ['required'],
+    ]);
 
-        // Add the generated code and default div_num to the fields
-        $fields['jev_no'] = $code;
-        $fields['div_num'] = $fields['div_num'] ?? '0123';
+    // Add the generated code and default div_num to the fields
+    $fields['jev_no'] = $code;
+    $fields['div_num'] = $fields['div_num'] ?? '0123';
 
+    // Store uacs_code, debit, and credit as JSON-encoded arrays in the database
+    $fields['uacs_code'] = json_encode($request->uacs_code);
+    $fields['debit'] = json_encode($request->debit);
+    $fields['credit'] = json_encode($request->credit);
 
-        Voucher::create($fields);
+    // Create a new voucher record
+    Voucher::create($fields);
 
-        return redirect('/voucher');
-    }
+    // Redirect to the voucher page
+    return redirect('/voucher');
+}
 
 
 
@@ -92,15 +102,18 @@ class VoucherController extends Controller
     {
         $voucher = Voucher::find($id);
 
+
+        // Decode uacs_code if it's a JSON string
+        $uacs_codes = is_string($voucher->uacs_code) ? json_decode($voucher->uacs_code, true) : $voucher->uacs_code;
+
         $voucher->uacs_code = array_map(function($code) {
             return accounting_entry::where('UACS_code', $code)->first(['UACS_code', 'Account_title']);
-        }, $voucher->uacs_code);
+        }, $uacs_codes);
 
         return Inertia::render('voucher/Show', [
             'voucher' => $voucher,
         ]);
     }
-
 
     /**
      * Show the form for editing the specified resource.

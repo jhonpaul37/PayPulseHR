@@ -76,6 +76,7 @@ const AccountingEntry = ({
             updatedEntries.map((entry) => entry.uacsCode)
         );
     };
+
     return (
         <div className="">
             <div>
@@ -151,9 +152,9 @@ const AccountingEntry = ({
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
                                                 !entry.query &&
                                                 !errors.uacs_code
-                                                    ? 'border-high' // Highlight when empty
+                                                    ? 'border-high'
                                                     : errors.uacs_code
-                                                      ? 'border-red-500' // error
+                                                      ? 'border-red-500'
                                                       : 'border-gray-300'
                                             }`}
                                             placeholder="Typing to search Account Title"
@@ -185,21 +186,8 @@ const AccountingEntry = ({
                                 </div>
                                 <div className="flex items-center justify-center border-l border-black p-2">
                                     <input
-                                        value={entry.uacsCode}
+                                        value={entry.uacs_code}
                                         className={`focus:shadow-outline w-full appearance-none rounded border border-blue-500 px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                        onChange={(e) => {
-                                            const updatedEntries = [...entries];
-                                            updatedEntries[index].uacsCode =
-                                                e.target.value;
-                                            setEntries(updatedEntries);
-                                            setData(
-                                                'uacs_code',
-                                                updatedEntries.map(
-                                                    (entry) => entry.uacsCode
-                                                )
-                                            );
-                                        }}
-                                        autoComplete="off"
                                         readOnly
                                     />
                                 </div>
@@ -214,9 +202,9 @@ const AccountingEntry = ({
                                         }
                                         className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
                                             !entry.credit
-                                                ? 'border-high' // Highlight when empty
+                                                ? 'border-high'
                                                 : balanceError && debitError
-                                                  ? 'border-red-500' // error
+                                                  ? 'border-red-500'
                                                   : 'border-gray-300'
                                         }`}
                                     />
@@ -234,9 +222,9 @@ const AccountingEntry = ({
                                         }
                                         className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
                                             !entry.credit
-                                                ? 'border-high' // Highlight when empty
+                                                ? 'border-high'
                                                 : balanceError && creditError
-                                                  ? 'border-red-500' //  error
+                                                  ? 'border-red-500'
                                                   : 'border-gray-300'
                                         }`}
                                     />
@@ -246,7 +234,7 @@ const AccountingEntry = ({
                                             onClick={removeRow}
                                             className={`rounded px-4 py-2 font-bold text-white ${
                                                 entries.length <= 2
-                                                    ? 'cursor-not-allowed bg-red-200' // Lighter color
+                                                    ? 'cursor-not-allowed bg-red-200'
                                                     : 'bg-red-500 hover:bg-red-600'
                                             }`}
                                             disabled={entries.length <= 2}

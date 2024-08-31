@@ -98,13 +98,10 @@ const App = ({ children }) => {
                         onClick={() => setCollapsed(!collapsed)}
                         className="h-16 w-16 text-lg"
                     />
-                    {/* Search */}
                     <div>search</div>
-                    {/* User Profile */}
                     <div>{auth.user ? auth.user.name : 'Guest'}</div>
                 </Header>
 
-                {/* Scrollable content below with the same design */}
                 <ScrollableContent>{children}</ScrollableContent>
             </Layout>
         </Layout>

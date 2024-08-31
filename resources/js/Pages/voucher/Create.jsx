@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AccountingEntry from './components/AccountingEntry';
+import FundCluster from './components/FundCluster';
 
 export default function Create({ uacsCodes, fundClusters }) {
     const { data, setData, post, errors, processing } = useForm({
@@ -18,6 +19,7 @@ export default function Create({ uacsCodes, fundClusters }) {
         address: '',
         payee: '',
         tin_no: '',
+        bankName: '',
     });
 
     useEffect(() => {
@@ -70,16 +72,16 @@ export default function Create({ uacsCodes, fundClusters }) {
         {
             uacsTitle: '',
             uacsCode: '',
-            debit: '',
-            credit: '',
+            debit: 0,
+            credit: 0,
             query: '',
             suggestions: [],
         },
         {
             uacsTitle: '',
             uacsCode: '',
-            debit: '',
-            credit: '',
+            debit: 0,
+            credit: 0,
             query: '',
             suggestions: [],
         },
@@ -102,21 +104,25 @@ export default function Create({ uacsCodes, fundClusters }) {
 
     // checks the debit change
     const handleDebitChange = (e, index) => {
-        const value = e.target.value;
         const updatedEntries = [...entries];
-        updatedEntries[index].debit = value === '' ? 0 : parseFloat(value);
+        updatedEntries[index].debit = parseFloat(e.target.value) || 0;
         setEntries(updatedEntries);
-        validateBalance();
+        setData(
+            'debit',
+            updatedEntries.map((entry) => entry.debit)
+        );
     };
     // checks the credit change
     const handleCreditChange = (e, index) => {
-        const value = e.target.value;
         const updatedEntries = [...entries];
-        updatedEntries[index].credit = value === '' ? 0 : parseFloat(value);
+        updatedEntries[index].credit = parseFloat(e.target.value) || 0;
         setEntries(updatedEntries);
-        validateBalance();
+        setData(
+            'credit',
+            updatedEntries.map((entry) => entry.credit)
+        );
     };
-
+    //check the debit and credit total is equal to amount
     const validateBalance = () => {
         const totalDebits = entries.reduce(
             (sum, entry) => sum + (parseFloat(entry.debit) || 0),
@@ -159,7 +165,9 @@ export default function Create({ uacsCodes, fundClusters }) {
 
     return (
         <>
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="w-[1500px]">
+                <FundCluster />
+                {/* A4 size className="h-[3508px] w-[2480px] bg-white" */}
                 <div className="border-2 border-black bg-white shadow-md">
                     {/* Header */}
                     <div className="border-b-2 border-black">
@@ -592,9 +600,25 @@ export default function Create({ uacsCodes, fundClusters }) {
                             </div>
                             <div className="border-l border-black">
                                 <div className="border-b border-black p-2">
-                                    Bank Name & Account Number:
+                                    <label>Bank Name & Account Number:</label>
+                                    <input
+                                        autoComplete="off"
+                                        type="text"
+                                        value={data.bankName}
+                                        onChange={(e) => {
+                                            setData('bankName', e.target.value);
+                                        }}
+                                        className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                            !data.bankName ? 'border-high' : ''
+                                        } ${errors.bankName ? 'border-red-500' : 'border-gray-300'}`}
+                                    />
                                 </div>
-                                <div className="p-2">Printed Name:</div>
+                                <div className="p-2">
+                                    Printed Name:{' '}
+                                    <span className="ml-2 font-bold">
+                                        {data.payee}
+                                    </span>
+                                </div>
                             </div>
                             <div className="border-l border-black">
                                 <div className="flex border-b border-black p-2">
@@ -609,17 +633,10 @@ export default function Create({ uacsCodes, fundClusters }) {
                                         autoComplete="off"
                                         readOnly
                                     />
-                                    {/* <span className="ml-2 font-bold">
-                                        {' '}
-                                        {data.code}
-                                    </span> */}
                                 </div>
                                 <div className="p-2">
                                     {' '}
-                                    Date:{' '}
-                                    <span className="font-bold">
-                                        {currentDate}
-                                    </span>
+                                    Date: <span className="font-bold"></span>
                                 </div>
                             </div>
                         </div>
@@ -644,8 +661,18 @@ export default function Create({ uacsCodes, fundClusters }) {
                             <label>Agency Name</label>
                         </div>
                         <div className="flex flex-col justify-center border-l border-black p-2">
-                            <span>No.</span>
-                            <span>Date</span>
+                            <span>
+                                No.{' '}
+                                <span className="ml-2 font-bold">
+                                    {data.code}
+                                </span>
+                            </span>
+                            <span>
+                                Date{' '}
+                                <span className="ml-2 font-bold">
+                                    {currentDate}
+                                </span>
+                            </span>
                         </div>
                     </div>
 

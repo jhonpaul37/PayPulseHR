@@ -6,21 +6,23 @@ export default function Show({ voucher }) {
         const year = date.getFullYear().toString().slice(-2);
         return `${day}-${month}-${year}`;
     };
-    // voucher.uacs_code = [
-    //     {
-    //         account_title: 'Cash',
-    //         uacs_code: '101010',
-    //         debit: 1000,
-    //         credit: 0,
-    //     },
-    //     {
-    //         account_title: 'Accounts Payable',
-    //         uacs_code: '201010',
-    //         debit: 0,
-    //         credit: 1000,
-    //     },
-    // ];
+    let debitArray = [];
+    let creditArray = [];
 
+    try {
+        debitArray = JSON.parse(voucher.debit);
+        creditArray = JSON.parse(voucher.credit);
+    } catch (error) {
+        console.error('Error parsing JSON:', error);
+    }
+    const totalDebit = debitArray.reduce(
+        (acc, val) => acc + (parseFloat(val) || 0),
+        0
+    );
+    const totalCredit = creditArray.reduce(
+        (acc, val) => acc + (parseFloat(val) || 0),
+        0
+    );
     return (
         <>
             <div className="border-2 border-black bg-white shadow-md">
@@ -101,67 +103,33 @@ export default function Show({ voucher }) {
                             </label>
                         </div>
 
-                        <div className="col-span-2 flex items-center border-l border-black p-2">
-                            <input
-                                className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                id="clientName"
-                                type="text"
-                                name="clientName"
-                                autoComplete="off"
-                            />
+                        <div className="col-span-2 flex items-center border-l border-black p-2 font-bold">
+                            {voucher.payee}
                         </div>
                         <div className="col-span-2 border-l border-black p-2">
                             <label className="text-xs">TIN/Employee No.</label>
-                            <input
-                                className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                id="TIN/EmployeeNo"
-                                type="number"
-                                name="TIN/EmployeeNo"
-                                autoComplete="off"
-                            />
+                            <span className="font-bold">{voucher.tin_no}</span>
                         </div>
                         <div className="col-span-2 border-l border-black p-2">
                             <label className="text-xs">ORS/BRS No.</label>
-                            {/* <input
-                                value={data.ors_burs_no}
-                                type="number"
-                                onChange={(e) =>
-                                    setData('ors_burs_no', e.target.value)
-                                }
-                                placeholder="ors_burs_no"
-                                className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${
-                                    !data.ors_burs_no ? 'border-high' : ''
-                                } ${errors.ors_burs_no ? '!ring-red-500' : ''}`}
-                                autoComplete="off"
-                            /> */}
-
-                            {/* {errors.ors_burs_no && (
-                                    <div className="text-red-600">
-                                        {errors.ors_burs_no}
-                                    </div>
-                                )} */}
+                            <span className="font-bold">
+                                {' '}
+                                {voucher.ors_burs_no}
+                            </span>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-8 items-center border-b border-black">
                         <div className="col-span-2 flex p-2">
-                            <label
-                                className="block text-sm font-bold"
-                                htmlFor="address"
-                            >
+                            <label className="block text-sm font-bold">
                                 Address
                             </label>
                         </div>
                         <div className="col-span-6 border-l border-black p-2">
-                            <input
-                                className="focus:shadow-outline w-full appearance-none rounded border leading-tight shadow focus:outline-none"
-                                id="address"
-                                type="text"
-                                name="address"
-                                autoComplete="off"
-                                // value={formData.address}
-                                // onChange={handleInputChange}
-                            />
+                            <span className="font-bold">
+                                {' '}
+                                {voucher.address}{' '}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -183,9 +151,11 @@ export default function Show({ voucher }) {
                 {/* Input Section */}
                 <div className="grid grid-cols-10 border-b border-black">
                     <div className="col-span-4 flex items-center p-2">
+                        {/* <span className="font-bold">{voucher.particulars}</span> */}
                         <textarea
-                            className="w-full rounded border px-3 py-2 shadow focus:outline-none"
-                            name="particulars"
+                            value={voucher.particulars}
+                            className="w-full rounded px-3 py-2 font-bold focus:outline-none"
+                            readOnly
                             rows="4"
                         />
                     </div>
@@ -205,17 +175,8 @@ export default function Show({ voucher }) {
                             autoComplete="off"
                         />
                     </div>
-                    <div className="col-span-2 flex items-center border-l border-black p-2">
-                        {/* <input
-                            className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${
-                                !data.amount ? 'border-high' : ''
-                            } ${balanceError ? 'border-red-500' : ''}`}
-                            type="number"
-                            name="amount"
-                            autoComplete="off"
-                            onChange={handleAmountChange}
-                            placeholder="Enter amount"
-                        /> */}
+                    <div className="col-span-2 flex items-center justify-center border-l border-black p-2">
+                        <span className="font-bold">{voucher.amount}</span>
                     </div>
                 </div>
                 {/* Certified Section */}
@@ -269,10 +230,14 @@ export default function Show({ voucher }) {
                                         {uacs.UACS_code}
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
-                                        {/* {item.debit} */}
+                                        {debitArray[index] !== undefined
+                                            ? debitArray[index]
+                                            : '0'}
                                     </div>
                                     <div className="flex items-center justify-center border-l border-black p-2">
-                                        {/* {item.credit} */}
+                                        {creditArray[index] !== undefined
+                                            ? creditArray[index]
+                                            : '0'}
                                     </div>
                                 </div>
                             </div>
@@ -361,12 +326,16 @@ export default function Show({ voucher }) {
                         </div>
                         <div className="flex h-28 items-center justify-center p-2">
                             {' '}
-                            <input
+                            <span className="font-bold">
+                                {' '}
+                                {voucher.ApproveAmount}
+                            </span>
+                            {/* <input
                                 className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                 type="text"
                                 placeholder="Amount"
                                 autoComplete="off"
-                            />
+                            /> */}
                         </div>
                         <div className="grid grid-cols-4 border-t border-black">
                             <div className="flex flex-col justify-between">
@@ -427,9 +396,17 @@ export default function Show({ voucher }) {
                         </div>
                         <div className="border-l border-black">
                             <div className="border-b border-black p-2">
-                                Bank Name & Account Number:
+                                <span>Bank Name & Account Number:</span>
+                                <span className="ml-2 font-bold">
+                                    {voucher.bankName}
+                                </span>
                             </div>
-                            <div className="p-2">Printed Name:</div>
+                            <div className="p-2">
+                                <span>Printed Name:</span>
+                                <span className="ml-2 font-bold">
+                                    {voucher.payee}
+                                </span>
+                            </div>
                         </div>
                         <div className="border-l border-black">
                             <div className="flex border-b border-black p-2">
@@ -437,23 +414,10 @@ export default function Show({ voucher }) {
                                 <span className="ml-5 text-center font-bold">
                                     {voucher.jev_no}
                                 </span>
-                                {/* <input
-                                    name="jev_no"
-                                    value={data.code}
-                                    type="text"
-                                    onChange={handleInputChange}
-                                    placeholder="Auto Generated"
-                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${errors.jev_no ? '!ring-red-500' : ''}`}
-                                    autoComplete="off"
-                                    readOnly
-                                /> */}
                             </div>
                             <div className="p-2">
                                 {' '}
                                 <span>Date: </span>
-                                <span className="ml-5 font-bold">
-                                    {formatDate(voucher.created_at)}
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -478,8 +442,18 @@ export default function Show({ voucher }) {
                         <label>Agency Name</label>
                     </div>
                     <div className="flex flex-col justify-center border-l border-black p-2">
-                        <span>No.</span>
-                        <span>Date</span>
+                        <span>
+                            No.
+                            <span className="ml-2 font-bold">
+                                {voucher.jev_no}
+                            </span>
+                        </span>
+                        <span>
+                            Date{' '}
+                            <span className="ml-2 font-bold">
+                                {formatDate(voucher.created_at)}
+                            </span>
+                        </span>
                     </div>
                 </div>
 
@@ -537,10 +511,15 @@ export default function Show({ voucher }) {
                                     <div className="flex flex-col border-l border-black">
                                         <div className="grid grid-cols-2">
                                             <div className="p-2">
-                                                {/* {item.debit} */}
+                                                {debitArray[index] !== undefined
+                                                    ? debitArray[index]
+                                                    : '0'}
                                             </div>
                                             <div className="border-l border-black p-2">
-                                                {/* {item.credit} */}
+                                                {creditArray[index] !==
+                                                undefined
+                                                    ? creditArray[index]
+                                                    : '0'}
                                             </div>
                                         </div>
                                     </div>
@@ -559,11 +538,11 @@ export default function Show({ voucher }) {
                                 </div>
                                 <div className="flex items-center justify-center border-l border-black">
                                     <div className="grid w-full grid-cols-2">
-                                        <div className="p-2 text-center">
-                                            {/* {totalDebit.toFixed(2)} */}
+                                        <div className="p-2 text-center font-bold">
+                                            {totalDebit.toFixed(2)}
                                         </div>
-                                        <div className="border-l border-black p-2 text-center">
-                                            {/* {totalCredit.toFixed(2)} */}
+                                        <div className="border-l border-black p-2 text-center font-bold">
+                                            {totalCredit.toFixed(2)}
                                         </div>
                                     </div>
                                 </div>

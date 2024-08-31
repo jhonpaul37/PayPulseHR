@@ -18,15 +18,19 @@ return new class extends Migration
             $table->string('f_cluster');
             $table->string('div_num');
             $table->json('uacs_code');
+            $table->json('debit');
+            $table->json('credit');
             $table->integer('user_id');
             $table->integer('amount');
             $table->integer('ApproveAmount');
             $table->string('particulars');
             $table->string('address');
             $table->string('payee');
+            $table->string('bankName');
             $table->integer('tin_no');
             $table->timestamps();
         });
+
     }
 
     /**
