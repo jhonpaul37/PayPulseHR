@@ -87,7 +87,6 @@ const App = ({ children }) => {
                 />
             </StyledSider>
 
-            {/* Navbar */}
             <Layout className="flex h-screen flex-col">
                 <Header className="flex justify-between bg-white shadow-md">
                     <Button
@@ -115,4 +114,26 @@ const App = ({ children }) => {
     );
 };
 
-export default App;
+// Dashboard Component
+const Auth = () => {
+    const { auth } = usePage().props;
+
+    return (
+        <div>
+            <h1 className="flex items-center justify-center text-xl">
+                Welcome,{' '}
+                <span className="ml-1 font-bold">
+                    {auth.user ? auth.user.name : 'Guest'}!
+                </span>
+            </h1>
+        </div>
+    );
+};
+
+export default function MainPage() {
+    return (
+        <App>
+            <Auth />
+        </App>
+    );
+}
