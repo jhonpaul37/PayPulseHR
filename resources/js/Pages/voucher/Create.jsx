@@ -816,7 +816,7 @@ export default function Create({ uacsCodes, fundClusters }) {
                 <div className="flex items-center justify-between pt-5">
                     <button
                         disabled={processing}
-                        className="rounded-md bg-high px-10 py-3 font-bold"
+                        className="bg-high rounded-md px-10 py-3 font-bold"
                     >
                         Add
                     </button>

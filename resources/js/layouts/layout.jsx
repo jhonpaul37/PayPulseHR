@@ -71,7 +71,7 @@ const App = ({ children }) => {
         // <UserContext.Provider value={auth.user}>
         <Layout className="h-screen">
             <StyledSider trigger={null} collapsible collapsed={collapsed}>
-                <div className="flex h-16 items-center justify-center bg-mainD">
+                <div className="bg-mainD flex h-16 items-center justify-center">
                     <span className="text-xl text-white">Logo</span>
                 </div>
                 <StyledMenu
@@ -105,7 +105,7 @@ const App = ({ children }) => {
                 <ScrollableContent>{children}</ScrollableContent>
             </Layout>
         </Layout>
-        // </UserContext.Provider>
+        //</UserContext.Provider>
     );
 };
 
