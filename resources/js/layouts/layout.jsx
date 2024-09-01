@@ -5,7 +5,7 @@ import { faHouse, faGear, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
 import styled from 'styled-components';
-// import UserContext from '../contexts/contexts';
+import UserContext from '../contexts/contexts';
 
 const { Header, Sider } = Layout;
 

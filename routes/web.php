@@ -9,7 +9,7 @@ Route::get('/', function () {
     return inertia('Home');
 });
 
-// Route::get('/user-data', [UserController::class, 'userData']);
+
 
 Route::resource('voucher',VoucherController::class);
 Route::get('get-auto-increment', [VoucherController::class, 'getAutoIncrement']);

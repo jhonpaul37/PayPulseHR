@@ -170,7 +170,7 @@ export default function Create({ uacsCodes, fundClusters }) {
     return (
         <>
             <form onSubmit={submit} className="w-[1500px]">
-                <FundCluster />
+                {/* <FundCluster /> */}
                 {/* A4 size className="h-[3508px] w-[2480px] bg-white" */}
                 <div className="border-2 border-black bg-white shadow-md">
                     {/* Header */}
