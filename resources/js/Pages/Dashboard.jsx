@@ -1,5 +1,5 @@
 import React from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import FundCluster from '@/Pages/DashboardComponents/FundCluster';
 import ChartComponent from '@/Pages/DashboardComponents/ChartComponent';
 import { usePage } from '@inertiajs/react';
