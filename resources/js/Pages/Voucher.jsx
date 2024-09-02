@@ -1,12 +1,11 @@
 import { Link } from '@inertiajs/react';
 import { useRoute } from '../../../vendor/tightenco/ziggy';
-import UserContext from '../contexts/contexts';
-import React, { useContext } from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function Voucher({ vouchers }) {
+export default function Voucher({ vouchers, auth }) {
     const route = useRoute();
     return (
-        <UserContext>
+        <AuthenticatedLayout user={auth.user}>
             <div className="">
                 {/* button to add */}
                 <Link
@@ -67,12 +66,14 @@ export default function Voucher({ vouchers }) {
                             <span
                                 key={link.label}
                                 className="m-1 p-1 text-slate-300"
-                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                dangerouslySetInnerHTML={{
+                                    __html: link.label,
+                                }}
                             ></span>
                         )
                     )}
                 </div>
             </div>
-        </UserContext>
+        </AuthenticatedLayout>
     );
 }
