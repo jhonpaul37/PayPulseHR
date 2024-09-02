@@ -1,20 +1,27 @@
+import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import FundCluster from '@/Pages/DashboardComponents/FundCluster';
+import ChartComponent from '@/Pages/DashboardComponents/ChartComponent';
+import { usePage } from '@inertiajs/react';
 
-export default function Dashboard({ auth }) {
+const Dashboard = ({ auth }) => {
+    const { chartData, fundClusters } = usePage().props;
+
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Dashboard" />
-
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            You're logged in!
-                        </div>
+            <div>
+                <h1>Dashboard</h1>
+                <div className="flex flex-col">
+                    <div>
+                        <FundCluster fundClusters={fundClusters} />
+                    </div>
+                    <div className="w-full rounded-md border p-2">
+                        <ChartComponent chartData={chartData} />
                     </div>
                 </div>
             </div>
         </AuthenticatedLayout>
     );
-}
+};
+
+export default Dashboard;

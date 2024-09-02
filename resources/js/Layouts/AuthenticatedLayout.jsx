@@ -1,169 +1,155 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHouse, faGear, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { Button, Layout, Menu } from 'antd';
+import styled from 'styled-components';
 
-export default function Authenticated({ user, header, children }) {
+const { Header, Sider, Content } = Layout;
+
+// Styled components
+const StyledSider = styled(Sider)`
+    background-color: #741d20 !important;
+`;
+
+const StyledMenu = styled(Menu)`
+    .ant-menu-item {
+        color: white !important;
+    }
+
+    .ant-menu-item-icon {
+        color: white !important;
+    }
+
+    .ant-menu-item-selected {
+        background-color: #f0c519 !important;
+        color: white !important;
+    }
+`;
+
+const ScrollableContent = styled(Content)`
+    margin: 2rem; /* Equivalent to m-8 in Tailwind */
+    padding: 2.5rem; /* Equivalent to p-10 in Tailwind */
+    background-color: white;
+    border-radius: 0.5rem; /* Equivalent to rounded-md in Tailwind */
+    overflow-y: auto;
+    flex-grow: 1;
+`;
+
+const AuthenticatedLayout = ({ user, header, children }) => {
+    const [collapsed, setCollapsed] = useState(true);
+    const { url, props } = usePage();
+    const { auth } = props;
+
+    const selectedKey = () => {
+        if (url.startsWith('/dashboard')) return '1';
+        if (url.startsWith('/voucher')) return '3';
+        if (url.startsWith('/settings')) return '4';
+        return '1'; // Default to Home
+    };
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
+    const menuItems = [
+        {
+            key: '1',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/dashboard">Dashboard</Link>,
+        },
+        {
+            key: '3',
+            icon: <FontAwesomeIcon icon={faFolder} />,
+            label: <Link href="/voucher">Voucher</Link>,
+        },
+        {
+            key: '4',
+            icon: <FontAwesomeIcon icon={faGear} />,
+            label: <Link href="/settings">Settings</Link>,
+        },
+    ];
+
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center"></div>
+        <Layout className="h-screen">
+            <StyledSider trigger={null} collapsible collapsed={collapsed}>
+                <div className="flex h-16 items-center justify-center bg-mainD">
+                    <span className="text-xl text-white">Logo</span>
+                </div>
+                <StyledMenu
+                    theme="dark"
+                    mode="inline"
+                    selectedKeys={[selectedKey()]}
+                    items={menuItems}
+                    className="bg-main"
+                />
+            </StyledSider>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
+            {/* Navbar */}
+            <Layout className="flex h-screen flex-col">
+                <Header className="flex justify-between bg-white shadow-md">
+                    <Button
+                        type="text"
+                        icon={
+                            collapsed ? (
+                                <MenuUnfoldOutlined />
+                            ) : (
+                                <MenuFoldOutlined />
+                            )
+                        }
+                        onClick={() => setCollapsed(!collapsed)}
+                        className="h-16 w-16 text-lg"
+                    />
+                    <div>Search</div>
+                    <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div className="relative ms-3">
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <span className="inline-flex rounded-md">
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                        >
+                                            {user.name}
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                            <svg
+                                                className="-me-0.5 ms-2 h-4 w-4"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
                                             >
-                                                {user.name}
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </Dropdown.Trigger>
 
-                                                <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
-
-                                    <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
-                                            Profile
-                                        </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <div className="-me-2 flex items-center sm:hidden">
-                            <button
-                                onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (previousState) => !previousState
-                                    )
-                                }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    className="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
+                                <Dropdown.Content>
+                                    <Dropdown.Link href={route('profile.edit')}>
+                                        Profile
+                                    </Dropdown.Link>
+                                    <Dropdown.Link
+                                        href={route('logout')}
+                                        method="post"
+                                        as="button"
+                                    >
+                                        Log Out
+                                    </Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
                         </div>
                     </div>
-                </div>
+                </Header>
 
-                <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
-                >
-                    <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <div className="border-t border-gray-200 pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
-                                {user.name}
-                            </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user.email}
-                            </div>
-                        </div>
-
-                        <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                method="post"
-                                href={route('logout')}
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-
-            <main>{children}</main>
-        </div>
+                <ScrollableContent>{children}</ScrollableContent>
+            </Layout>
+        </Layout>
     );
-}
+};
+
+export default AuthenticatedLayout;
