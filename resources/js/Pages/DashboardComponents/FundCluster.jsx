@@ -3,20 +3,27 @@ import PropTypes from 'prop-types';
 
 const FundCluster = ({ fundClusters = [] }) => {
     return (
-        <div className="rounded-md bg-high p-2">
-            <h2>Fund Clusters</h2>
-            <ul>
+        <div className="rounded-md border p-3 shadow">
+            <h2 className="mb-3 font-bold">Balance Accounts</h2>
+
+            <div className="flex w-full justify-between gap-5">
                 {fundClusters.length === 0 ? (
-                    <li>No data available</li>
+                    <div>No data available</div>
                 ) : (
                     fundClusters.map((cluster) => (
-                        <li key={cluster.id}>
-                            <strong>{cluster.cluster_code}</strong>:{' '}
-                            {cluster.desc} - ${cluster.amount}
-                        </li>
+                        <div
+                            key={cluster.id}
+                            className="flex w-full flex-col rounded-md border bg-gray-100 p-2"
+                        >
+                            Total Balance
+                            <strong className="text-xl font-bold">
+                                ₱{cluster.amount.toLocaleString()}
+                            </strong>
+                            <span>Cluster {cluster.cluster_code}</span>
+                        </div>
                     ))
                 )}
-            </ul>
+            </div>
         </div>
     );
 };

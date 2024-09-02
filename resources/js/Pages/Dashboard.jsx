@@ -1,5 +1,5 @@
 import React from 'react';
-import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FundCluster from '@/Pages/DashboardComponents/FundCluster';
 import ChartComponent from '@/Pages/DashboardComponents/ChartComponent';
 import { usePage } from '@inertiajs/react';
@@ -10,9 +10,8 @@ const Dashboard = ({ auth }) => {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>
-                <h1>Dashboard</h1>
                 <div className="flex flex-col">
-                    <div>
+                    <div className="mb-10">
                         <FundCluster fundClusters={fundClusters} />
                     </div>
                     <div className="w-full rounded-md border p-2">
