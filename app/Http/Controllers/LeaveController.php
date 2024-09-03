@@ -8,9 +8,9 @@ use Inertia\Inertia;
 class LeaveController extends Controller
 {
 
-    public function index()
+    public function leave()
     {
-        return Inertia::render('Leave/Index');
+        return Inertia::render('Leave/leave');
     }
 
 }

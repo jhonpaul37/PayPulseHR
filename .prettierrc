@@ -5,5 +5,19 @@
     "printWidth": 80,
     "tabWidth": 4,
     "useTabs": false,
-    "plugins": ["prettier-plugin-tailwindcss"]
+    "plugins": ["prettier-plugin-tailwindcss"],
+    "jsxSingleQuote": false,
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "always",
+    "endOfLine": "lf",
+    "overrides": [
+        {
+            "files": "*.jsx",
+            "options": {
+                "printWidth": 100,
+                "tabWidth": 4
+            }
+        }
+    ]
 }

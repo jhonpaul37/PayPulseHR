@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     // Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/voucher',VoucherController::class);
-    Route::get('/leave', [LeaveController::class, 'index'])->name('leave');
+    Route::get('/leave', [LeaveController::class, 'leave'])->name('leave');
 });
 
 // for the User Profit

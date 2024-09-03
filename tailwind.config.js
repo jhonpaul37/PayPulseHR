@@ -18,7 +18,13 @@ export default {
                 high: '#F0C519',
             },
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                copperplate: [
+                    'CopperplateGothicRegular',
+                    'Arial',
+                    'sans-serif',
+                ],
+                times: ['Times New Roman', 'serif'],
+                oldenglish: ['OldEnglish', 'serif'],
             },
         },
     },

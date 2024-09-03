@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Copperplate Gothic Regular */
+@font-face {
+    font-family: 'CopperplateGothicRegular';
+    src:
+        url('fonts/Copperplate Gothic Bold Regular.ttf') format('woff'),
+        url('fonts/Copperplate Gothic Bold Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Times New Roman */
+@font-face {
+    font-family: 'TimesNewRoman';
+    src:
+        url('fonts/Times new roman.ttf') format('woff'),
+        url('fonts/Times new roman.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Old English */
+@font-face {
+    font-family: 'OldEnglish';
+    src:
+        url('fonts/OldEnglishFive.ttf') format('woff'),
+        url('fonts/OldEnglishFive.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
