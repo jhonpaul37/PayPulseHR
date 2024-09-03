@@ -7,7 +7,7 @@ const Index = ({ auth }) => {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>
-                <div>
+                <div className='border-2 border-black p-3'>
                     <div className='mb-5'>
                         <label className='font-bold flex justify-center border-t-2 border-b-2 border-black p-1'>LEAVE REQUEST FORM</label>
                     </div>
@@ -42,9 +42,9 @@ const Index = ({ auth }) => {
                                 )}
                         </div>
                     </div>
-                    <div className='border-2 mt-5  border-black'>
-                        <label className='font-bold '>INCLUSIVE DATES:</label>
-                        <div>
+                    <div className='mt-5  '>
+                        <div className='border-t-2 border-r-2 border-l-2 border-black p-2 bg-blue-100'><label className='font-bold '>INCLUSIVE DATES:</label></div>
+                        <div className='flex border-2 border-black p-2 '>
                             <div>From:</div>
                             <div>TO:</div>
                             <div>TOTAL NO. OF DAYS:</div>
