@@ -1,7 +1,7 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import FundCluster from '@/Pages/DashboardComponents/FundCluster';
-import ChartComponent from '@/Pages/DashboardComponents/ChartComponent';
+import FundCluster from '@/Pages/Dashboard/FundCluster';
+import ChartComponent from '@/Pages/Dashboard/ChartComponent';
 import { usePage } from '@inertiajs/react';
 
 const Dashboard = ({ auth }) => {

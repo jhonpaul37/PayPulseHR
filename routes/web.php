@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FundClusterController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\DashboardController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\LeaveController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     // Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/voucher',VoucherController::class);
+    Route::get('/leave', [LeaveController::class, 'index'])->name('leave');
 });
 
 // for the User Profit
