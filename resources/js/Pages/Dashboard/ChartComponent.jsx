@@ -25,7 +25,7 @@ const ChartComponent = ({ chartData }) => {
         labels: chartData.labels,
         datasets: [
             {
-                label: 'Sample Data',
+                label: 'Expenses',
                 data: chartData.data,
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
