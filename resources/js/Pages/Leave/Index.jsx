@@ -21,10 +21,10 @@ const Index = ({ auth }) => {
                         </div>
                         <div></div>
                     </div>
-                    <div className='border p-2'>
-                        <label className='font-bold border-b border-black bg-high'>TYPE OF LEAVE:</label>
-                        <div className='flex flex-col'>
-                                {['Vacation Leave', 'Sick Leave', 'Special Previlege Leave','Mandatory/Forced Leave','Materbity Leave','Paternity Leave','Terminal Leave','Rehabiition Leave','Compensatory Time-Off'].map(
+                    <div className=' mt-5 '>
+                        <div className='border-t-2 border-l-2 border-r-2 border-black p-2 bg-blue-100'><label className='font-bold  '>TYPE OF LEAVE:</label></div>
+                        <div className='border-2 border-black p-2 flex flex-col'>
+                                {['Vacation Leave', 'Sick Leave', 'Special Previlege Leave','Mandatory/Forced Leave','Materbity Leave','Paternity Leave','Terminal Leave','Rehabiition Leave','Compensatory Time-Off','Others (please specify)'].map(
                                     (mode) => (
                                         <label
                                             key={mode}
@@ -41,6 +41,17 @@ const Index = ({ auth }) => {
                                     )
                                 )}
                         </div>
+                    </div>
+                    <div className='border-2 mt-5  border-black'>
+                        <label className='font-bold '>INCLUSIVE DATES:</label>
+                        <div>
+                            <div>From:</div>
+                            <div>TO:</div>
+                            <div>TOTAL NO. OF DAYS:</div>
+                        </div>
+                    </div>
+                    <div className='flex justify-center font-bold mt-10'>
+                        <span className='border-t-2 border-black px-10 '>Signature of Requestor</span>
                     </div>
                 </div>
             </div>
