@@ -48,10 +48,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
     };
 
     const generateCode = (incrementNumber) => {
-        const currentYearMonth = new Date()
-            .toISOString()
-            .slice(2, 7)
-            .replace('-', '');
+        const currentYearMonth = new Date().toISOString().slice(2, 7).replace('-', '');
         const fundCluster = data.f_cluster;
 
         // Generate the code using the autoIncrement value
@@ -126,10 +123,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
     };
     //check the debit and credit total is equal to amount
     const validateBalance = () => {
-        const totalDebits = entries.reduce(
-            (sum, entry) => sum + (parseFloat(entry.debit) || 0),
-            0
-        );
+        const totalDebits = entries.reduce((sum, entry) => sum + (parseFloat(entry.debit) || 0), 0);
         const totalCredits = entries.reduce(
             (sum, entry) => sum + (parseFloat(entry.credit) || 0),
             0
@@ -142,14 +136,8 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
         setCreditError(creditError);
         setBalanceError(debitError || creditError);
     };
-    const totalDebit = entries.reduce(
-        (sum, entry) => sum + (parseFloat(entry.debit) || 0),
-        0
-    );
-    const totalCredit = entries.reduce(
-        (sum, entry) => sum + (parseFloat(entry.credit) || 0),
-        0
-    );
+    const totalDebit = entries.reduce((sum, entry) => sum + (parseFloat(entry.debit) || 0), 0);
+    const totalCredit = entries.reduce((sum, entry) => sum + (parseFloat(entry.credit) || 0), 0);
 
     //display te current date
     const currentDate = (() => {
@@ -192,9 +180,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                                 })
                                             }
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                !data.f_cluster
-                                                    ? 'border-high'
-                                                    : ''
+                                                !data.f_cluster ? 'border-high' : ''
                                             } ${errors.f_cluster ? 'border-red-500' : 'border-gray-300'}`}
                                         >
                                             <option value="" disabled>
@@ -222,12 +208,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                         <input
                                             value={data.div_num}
                                             type="text"
-                                            onChange={(e) =>
-                                                setData(
-                                                    'div_num',
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => setData('div_num', e.target.value)}
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                             autoComplete="off"
                                             readOnly
@@ -238,26 +219,19 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                         </div>
                         {/* Mode of Payment */}
                         <div className="grid grid-cols-8 border-b-2 border-black">
-                            <div className="col-span-2 p-2 font-bold">
-                                Mode of Payment
-                            </div>
+                            <div className="col-span-2 p-2 font-bold">Mode of Payment</div>
                             <div className="col-span-6 flex justify-between border-l border-black px-5">
-                                {['MDS Check', 'Commercial Check', 'ADA'].map(
-                                    (mode) => (
-                                        <label
-                                            key={mode}
-                                            className="inline-flex items-center"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="form-checkbox"
-                                                autoComplete="off"
-                                            />
+                                {['MDS Check', 'Commercial Check', 'ADA'].map((mode) => (
+                                    <label key={mode} className="inline-flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            className="form-checkbox"
+                                            autoComplete="off"
+                                        />
 
-                                            <span className="ml-2">{mode}</span>
-                                        </label>
-                                    )
-                                )}
+                                        <span className="ml-2">{mode}</span>
+                                    </label>
+                                ))}
 
                                 <label className="inline-flex items-center">
                                     <input
@@ -265,9 +239,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                         className="form-checkbox"
                                         autoComplete="off"
                                     />
-                                    <span className="ml-2">
-                                        Others (Please Specify)
-                                    </span>
+                                    <span className="ml-2">Others (Please Specify)</span>
                                     <input
                                         type="text"
                                         className="ml-2 border-b-2 border-black focus:outline-none"
@@ -280,10 +252,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                         <div>
                             <div className="grid grid-cols-8 border-b border-black">
                                 <div className="col-span-2 flex items-center gap-2 p-2">
-                                    <label
-                                        className="font-bold"
-                                        htmlFor="clientName"
-                                    >
+                                    <label className="font-bold" htmlFor="clientName">
                                         Payee
                                     </label>
                                 </div>
@@ -304,9 +273,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                     />
                                 </div>
                                 <div className="col-span-2 border-l border-black p-2">
-                                    <label className="text-xs">
-                                        TIN/Employee No.
-                                    </label>
+                                    <label className="text-xs">TIN/Employee No.</label>
                                     <input
                                         type="number"
                                         autoComplete="off"
@@ -321,23 +288,14 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                     />
                                 </div>
                                 <div className="col-span-2 border-l border-black p-2">
-                                    <label className="text-xs">
-                                        ORS/BRS No.
-                                    </label>
+                                    <label className="text-xs">ORS/BRS No.</label>
                                     <input
                                         value={data.ors_burs_no}
                                         type="number"
-                                        onChange={(e) =>
-                                            setData(
-                                                'ors_burs_no',
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={(e) => setData('ors_burs_no', e.target.value)}
                                         placeholder="ors_burs_no"
                                         className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                            !data.ors_burs_no
-                                                ? 'border-high'
-                                                : ''
+                                            !data.ors_burs_no ? 'border-high' : ''
                                         } ${errors.ors_burs_no ? 'border-red-500' : 'border-gray-300'}`}
                                     />
                                 </div>
@@ -345,10 +303,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
 
                             <div className="grid grid-cols-8 items-center border-b border-black">
                                 <div className="col-span-2 flex p-2">
-                                    <label
-                                        className="block text-sm font-bold"
-                                        htmlFor="address"
-                                    >
+                                    <label className="block text-sm font-bold" htmlFor="address">
                                         Address
                                     </label>
                                 </div>
@@ -432,8 +387,8 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                         {/* Certified Section */}
                         <div className="border-b border-black p-2">
                             <div className="text-xs">
-                                A. Certified: Expenses/Cash Advance necessary,
-                                lawful and incurred under my direct supervision
+                                A. Certified: Expenses/Cash Advance necessary, lawful and incurred
+                                under my direct supervision
                             </div>
                             <div className="flex flex-col items-center justify-center">
                                 <div className="mt-2 text-center font-bold">
@@ -463,9 +418,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                         <div className="grid grid-cols-2 border-b border-black">
                             {/* C Section */}
                             <div className="">
-                                <div className="border-b border-black p-2">
-                                    C. Certified
-                                </div>
+                                <div className="border-b border-black p-2">C. Certified</div>
                                 <div className="flex h-28 flex-col justify-center p-2">
                                     {' '}
                                     <label className="inline-flex items-center">
@@ -474,8 +427,16 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                             className="form-checkbox"
                                             autoComplete="off"
                                         />
+                                        <span className="ml-2">Cash available</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            className="form-checkbox"
+                                            autoComplete="off"
+                                        />
                                         <span className="ml-2">
-                                            Cash available
+                                            Subject to Authority to Debt Account (when applicable)
                                         </span>
                                     </label>
                                     <label className="inline-flex items-center">
@@ -485,28 +446,14 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                             autoComplete="off"
                                         />
                                         <span className="ml-2">
-                                            Subject to Authority to Debt Account
-                                            (when applicable)
-                                        </span>
-                                    </label>
-                                    <label className="inline-flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            className="form-checkbox"
-                                            autoComplete="off"
-                                        />
-                                        <span className="ml-2">
-                                            Supporting document complete and
-                                            amount claim proper
+                                            Supporting document complete and amount claim proper
                                         </span>
                                     </label>
                                 </div>
 
                                 <div className="grid grid-cols-4 border-t border-black">
                                     <div className="flex flex-col justify-between">
-                                        <div className="border-b border-black p-2">
-                                            Signature
-                                        </div>
+                                        <div className="border-b border-black p-2">Signature</div>
                                         <div className="border-b border-black p-2">
                                             Printed Name
                                         </div>
@@ -516,9 +463,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                     </div>
 
                                     <div className="col-span-3 border-l border-black text-center">
-                                        <div className="border-b border-black p-2">
-                                            Empty space
-                                        </div>
+                                        <div className="border-b border-black p-2">Empty space</div>
                                         <div className="border-b border-black p-2 font-bold">
                                             RHEA ANGELLICA D. ADDATU, CPA
                                         </div>
@@ -527,8 +472,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                                 College Accountant
                                             </div>
                                             <div className="p-2">
-                                                Head, Accounting Unit/Authorized
-                                                Representative
+                                                Head, Accounting Unit/Authorized Representative
                                             </div>
                                         </div>
                                     </div>
@@ -548,23 +492,16 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                         placeholder="Approve Amount"
                                         value={data.ApproveAmount}
                                         onChange={(e) => {
-                                            setData(
-                                                'ApproveAmount',
-                                                e.target.value
-                                            );
+                                            setData('ApproveAmount', e.target.value);
                                         }}
                                         className={`focus:shadow-outline mx-10 w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                            !data.ApproveAmount
-                                                ? 'border-high'
-                                                : ''
+                                            !data.ApproveAmount ? 'border-high' : ''
                                         } ${errors.ApproveAmount ? 'border-red-500' : 'border-gray-300'}`}
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 border-t border-black">
                                     <div className="flex flex-col justify-between">
-                                        <div className="border-b border-black p-2">
-                                            Signature
-                                        </div>
+                                        <div className="border-b border-black p-2">Signature</div>
                                         <div className="border-b border-black p-2">
                                             Printed Name
                                         </div>
@@ -574,9 +511,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                     </div>
 
                                     <div className="col-span-3 border-l border-black text-center">
-                                        <div className="border-b border-black p-2">
-                                            Empty space
-                                        </div>
+                                        <div className="border-b border-black p-2">Empty space</div>
                                         <div className="border-b border-black p-2 font-bold">
                                             RHEA ANGELLICA D. ADDATU, CPA
                                         </div>
@@ -585,8 +520,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                                 College Accountant
                                             </div>
                                             <div className="p-2">
-                                                Head, Accounting Unit/Authorized
-                                                Representative
+                                                Head, Accounting Unit/Authorized Representative
                                             </div>
                                         </div>
                                     </div>
@@ -595,55 +529,38 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                         </div>
                         {/* Receipt of Payment */}
                         <div className="border-b border-black">
-                            <div className="border-b border-black p-2">
-                                E. Receipt of Payment
-                            </div>
+                            <div className="border-b border-black p-2">E. Receipt of Payment</div>
                             <div className="grid grid-cols-5">
                                 <div className="col-span-1">
-                                    <div className="border-b border-black p-2">
-                                        Check/ADA No.
-                                    </div>
+                                    <div className="border-b border-black p-2">Check/ADA No.</div>
                                     <div className="p-2">Signatures</div>
                                 </div>
                                 <div className="border-l border-black">
-                                    <div className="border-b border-black p-2">
-                                        //for signature
-                                    </div>
+                                    <div className="border-b border-black p-2">//for signature</div>
                                     <div className="p-2">//for signature</div>
                                 </div>
                                 <div className="border-l border-black">
-                                    <div className="border-b border-black p-2">
-                                        Date:
-                                    </div>
+                                    <div className="border-b border-black p-2">Date:</div>
                                     <div className="p-2">Date:</div>
                                 </div>
                                 <div className="border-l border-black">
                                     <div className="border-b border-black p-2">
-                                        <label>
-                                            Bank Name & Account Number:
-                                        </label>
+                                        <label>Bank Name & Account Number:</label>
                                         <input
                                             autoComplete="off"
                                             type="text"
                                             value={data.bankName}
                                             onChange={(e) => {
-                                                setData(
-                                                    'bankName',
-                                                    e.target.value
-                                                );
+                                                setData('bankName', e.target.value);
                                             }}
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
-                                                !data.bankName
-                                                    ? 'border-high'
-                                                    : ''
+                                                !data.bankName ? 'border-high' : ''
                                             } ${errors.bankName ? 'border-red-500' : 'border-gray-300'}`}
                                         />
                                     </div>
                                     <div className="p-2">
                                         Printed Name:{' '}
-                                        <span className="ml-2 font-bold">
-                                            {data.payee}
-                                        </span>
+                                        <span className="ml-2 font-bold">{data.payee}</span>
                                     </div>
                                 </div>
                                 <div className="border-l border-black">
@@ -662,8 +579,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                     </div>
                                     <div className="p-2">
                                         {' '}
-                                        Date:{' '}
-                                        <span className="font-bold"></span>
+                                        Date: <span className="font-bold"></span>
                                     </div>
                                 </div>
                             </div>
@@ -672,33 +588,21 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                         <div className="border-b border-black p-2">
                             Official Receipt No. & Date/Other Documents
                         </div>
-                        <div className="flex justify-end border-b border-black p-2">
-                            Annex-3
-                        </div>
+                        <div className="flex justify-end border-b border-black p-2">Annex-3</div>
 
                         {/* Journal Entry Voucher */}
                         <div className="grid grid-cols-3 border-b border-black">
                             <div className="col-span-2 flex flex-col items-center justify-center p-2">
-                                <label className="font-bold">
-                                    Journal Entry Voucher
-                                </label>
-                                <label className="font-bold">
-                                    BATANES STATE COLLEGE
-                                </label>
+                                <label className="font-bold">Journal Entry Voucher</label>
+                                <label className="font-bold">BATANES STATE COLLEGE</label>
                                 <label>Agency Name</label>
                             </div>
                             <div className="flex flex-col justify-center border-l border-black p-2">
                                 <span>
-                                    No.{' '}
-                                    <span className="ml-2 font-bold">
-                                        {data.code}
-                                    </span>
+                                    No. <span className="ml-2 font-bold">{data.code}</span>
                                 </span>
                                 <span>
-                                    Date{' '}
-                                    <span className="ml-2 font-bold">
-                                        {currentDate}
-                                    </span>
+                                    Date <span className="ml-2 font-bold">{currentDate}</span>
                                 </span>
                             </div>
                         </div>
@@ -724,14 +628,10 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                             Ref
                                         </div>
                                         <div className="flex flex-col border-l border-black">
-                                            <div className="border-b border-black">
-                                                Amount
-                                            </div>
+                                            <div className="border-b border-black">Amount</div>
                                             <div className="grid grid-cols-2">
                                                 <div>Debit</div>
-                                                <div className="border-l border-black">
-                                                    Credit
-                                                </div>
+                                                <div className="border-l border-black">Credit</div>
                                             </div>
                                         </div>
                                     </div>
@@ -758,9 +658,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                             </div>
                                             <div className="flex flex-col border-l border-black">
                                                 <div className="grid grid-cols-2">
-                                                    <div className="p-2">
-                                                        {entry.debit}
-                                                    </div>
+                                                    <div className="p-2">{entry.debit}</div>
                                                     <div className="border-l border-black p-2">
                                                         {entry.credit}
                                                     </div>
@@ -801,25 +699,17 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                                     Prepared by:
                                 </div>
                                 <div className="flex flex-col items-center justify-center">
-                                    <span className="font-bold">
-                                        JACITA P. MORA
-                                    </span>
+                                    <span className="font-bold">JACITA P. MORA</span>
                                     <input
                                         value={data.user_id}
                                         type="number"
-                                        onChange={(e) =>
-                                            setData('user_id', e.target.value)
-                                        }
+                                        onChange={(e) => setData('user_id', e.target.value)}
                                         placeholder="user_id"
-                                        className={
-                                            errors.user_id && '!ring-red-500'
-                                        }
+                                        className={errors.user_id && '!ring-red-500'}
                                         autoComplete="off"
                                     />
                                     {errors.jev_no && (
-                                        <div className="text-red-600">
-                                            {errors.user_id}
-                                        </div>
+                                        <div className="text-red-600">{errors.user_id}</div>
                                     )}
                                     <span>Adimistrative Aide VI</span>
                                 </div>
@@ -827,9 +717,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                             <div className="border-l border-black p-2">
                                 <div> Approved by:</div>
                                 <div className="flex flex-col items-center justify-center">
-                                    <span className="font-bold">
-                                        RHEA ANGELLICA D. ADDATU, CPA
-                                    </span>
+                                    <span className="font-bold">RHEA ANGELLICA D. ADDATU, CPA</span>
                                     <span>Accountant II</span>
                                 </div>
                             </div>

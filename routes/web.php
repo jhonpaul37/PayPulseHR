@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/voucher',VoucherController::class);
     Route::get('/leave', [LeaveController::class, 'leave'])->name('leave');
+    Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
 });
 
 // for the User Profit
