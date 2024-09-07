@@ -41,6 +41,10 @@ class LeaveController extends Controller
         return redirect()->route('leave')->with('success', 'Leave request submitted successfully.');
     }
 
+    public function AppLeaveForm()
+    {
 
+        return Inertia::render('Leave/appLeaveForm');
+    }
 
 }

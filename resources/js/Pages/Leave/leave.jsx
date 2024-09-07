@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import BSCLogo from '../../../assets/BSC_LOGO.png';
+import FormHeader from './FormHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const Leave = ({ auth }) => {
-    const [formData, setFormData] = useState({
+    const [data, setData] = useState({
         requestor_name: '',
         office_unit: '',
         request_date: '',
         leave_type: [],
-        other_leave_type: '', // State for "Others (please specify)"
+        other_leave_type: '',
         from_date: '',
         to_date: '',
         total_days: '',
     });
+
+    const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
         const currentDate = (() => {
@@ -24,38 +26,59 @@ const Leave = ({ auth }) => {
             return `${year}-${month}-${day}`;
         })();
 
-        setFormData((prevData) => ({
+        setData((prevData) => ({
             ...prevData,
             request_date: currentDate,
         }));
     }, []);
+    //data for the type of leave
+    const TypeOfLeave = [
+        'Vacation Leave',
+        'Sick Leave',
+        'Special Privilege Leave',
+        'Mandatory/Forced Leave',
+        'Maternity Leave',
+        'Paternity Leave',
+        'Terminal Leave',
+        'Rehabilitation Leave',
+        'Compensatory Time-Off',
+        'Others (please specify)',
+    ];
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
+        setData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
+
+        // Clear validation error if input have value
+        if (value !== '') {
+            setValidationErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: '',
+            }));
+        }
     };
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
 
         if (checked) {
-            setFormData((prevData) => ({
+            setData((prevData) => ({
                 ...prevData,
                 leave_type: [...prevData.leave_type, name],
             }));
         } else {
-            setFormData((prevData) => ({
+            setData((prevData) => ({
                 ...prevData,
                 leave_type: prevData.leave_type.filter((type) => type !== name),
             }));
         }
     };
-
+    // auto calculate the total days
     const calculateTotalDays = (name, value) => {
-        const { from_date, to_date } = formData;
+        const { from_date, to_date } = data;
 
         const startDate = name === 'from_date' ? new Date(value) : new Date(from_date);
         const endDate = name === 'to_date' ? new Date(value) : new Date(to_date);
@@ -63,59 +86,66 @@ const Leave = ({ auth }) => {
         if (startDate && endDate && startDate <= endDate) {
             const timeDifference = endDate - startDate;
             const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
-            setFormData((prevData) => ({
+            setData((prevData) => ({
                 ...prevData,
                 total_days: daysDifference,
             }));
         } else {
-            setFormData((prevData) => ({
+            setData((prevData) => ({
                 ...prevData,
                 total_days: '',
             }));
         }
     };
+    //error validation code
+    const validateForm = () => {
+        const errors = {};
 
+        if (!data.requestor_name) {
+            errors.requestor_name = 'Name of requestor is required.';
+        }
+
+        if (!data.office_unit) {
+            errors.office_unit = 'Office/Unit is required.';
+        }
+
+        if (!data.from_date) {
+            errors.from_date = 'From Date is required.';
+        }
+
+        if (!data.to_date) {
+            errors.to_date = 'To Date is required.';
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
+    };
+    //submit button
     const submit = (e) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
+
         const formattedData = {
-            ...formData,
-            other_leave_type: formData.leave_type.includes('Others (please specify)')
-                ? formData.other_leave_type
+            ...data,
+            other_leave_type: data.leave_type.includes('Others (please specify)')
+                ? data.other_leave_type
                 : '',
         };
 
         Inertia.post('/leave', formattedData);
         console.log('Submitted Data:', formattedData);
     };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>
                 <form onSubmit={submit}>
                     <div className="border-2 border-black p-4">
-                        <div className="relative mb-5 flex items-center justify-center">
-                            <img
-                                src={BSCLogo}
-                                alt="Batanes State College Logo"
-                                className="mr-4 h-20 w-20"
-                            />
-                            <div className="flex flex-col items-center">
-                                <span className="font-oldenglish">Republic of the Philippines</span>
-                                <span className="font-copperplate text-2xl tracking-wide">
-                                    BATANES STATE COLLEGE
-                                </span>
-                                <span className="font-times">San Antonio, Basco, Batanes</span>
-                                <div className="">
-                                    <span className="mr-2">www.bscbatanes.edu.ph</span>
-                                    <span className="mr-2">batanes_bsat@yahoo.com</span>
-                                    <span>09057867863</span>
-                                </div>
-                            </div>
-                            <div className="absolute right-0 top-0 flex flex-col text-end">
-                                <span>BSC-FORM-HRP-001</span>
-                                <span>REF#: ________________________</span>
-                            </div>
-                        </div>
+                        <FormHeader />
 
                         <div className="mb-5">
                             <label className="flex justify-center border-b-2 border-t-2 border-black p-1 font-bold">
@@ -130,10 +160,15 @@ const Leave = ({ auth }) => {
                                         type="text"
                                         autoComplete="off"
                                         name="requestor_name"
-                                        value={formData.requestor_name}
+                                        value={data.requestor_name}
                                         onChange={handleInputChange}
-                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none`}
+                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.requestor_name ? 'border-red-500' : ''}`}
                                     />
+                                    {validationErrors.requestor_name && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {validationErrors.requestor_name}
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="mr-2 font-bold">Office/Unit:</label>
@@ -141,10 +176,15 @@ const Leave = ({ auth }) => {
                                         type="text"
                                         autoComplete="off"
                                         name="office_unit"
-                                        value={formData.office_unit}
+                                        value={data.office_unit}
                                         onChange={handleInputChange}
-                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none`}
+                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.office_unit ? 'border-red-500' : ''}`}
                                     />
+                                    {validationErrors.office_unit && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {validationErrors.office_unit}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-col">
@@ -154,9 +194,9 @@ const Leave = ({ auth }) => {
                                         type="date"
                                         autoComplete="off"
                                         name="request_date"
-                                        value={formData.request_date}
+                                        value={data.request_date}
                                         onChange={handleInputChange}
-                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none`}
+                                        className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
                                     />
                                 </div>
                             </div>
@@ -169,39 +209,28 @@ const Leave = ({ auth }) => {
                             </div>
                             <div className="flex flex-col border-t-2 border-black p-2">
                                 <div className="grid grid-cols-3">
-                                    {[
-                                        'Vacation Leave',
-                                        'Sick Leave',
-                                        'Special Privilege Leave',
-                                        'Mandatory/Forced Leave',
-                                        'Maternity Leave',
-                                        'Paternity Leave',
-                                        'Terminal Leave',
-                                        'Rehabilitation Leave',
-                                        'Compensatory Time-Off',
-                                        'Others (please specify)',
-                                    ].map((mode) => (
+                                    {TypeOfLeave.map((type, index) => (
                                         <label
-                                            key={mode}
+                                            key={index}
                                             className={`inline-flex items-center ${
-                                                mode === 'Others (please specify)'
+                                                type === 'Others (please specify)'
                                                     ? 'col-span-3'
                                                     : ''
                                             }`}
                                         >
                                             <input
                                                 type="checkbox"
-                                                name={mode}
-                                                checked={formData.leave_type.includes(mode)}
+                                                name={type}
+                                                checked={data.leave_type.includes(type)}
                                                 onChange={handleCheckboxChange}
                                                 className="form-checkbox"
                                                 autoComplete="off"
                                             />
-                                            <span className="ml-2">{mode}</span>
+                                            <span className="ml-2">{type}</span>
                                         </label>
                                     ))}
                                 </div>
-                                {formData.leave_type.includes('Others (please specify)') && (
+                                {data.leave_type.includes('Others (please specify)') && (
                                     <div className="mt-2">
                                         <label className="mr-2 font-bold">
                                             Specify Leave Type:
@@ -209,8 +238,9 @@ const Leave = ({ auth }) => {
                                         <input
                                             type="text"
                                             name="other_leave_type"
-                                            value={formData.other_leave_type}
+                                            value={data.other_leave_type}
                                             onChange={handleInputChange}
+                                            autoComplete="off"
                                             className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
                                         />
                                     </div>
@@ -218,8 +248,11 @@ const Leave = ({ auth }) => {
                             </div>
                         </div>
 
-                        <div className="mt-5">
-                            <div className="flex flex-col">
+                        <div className="mt-5 border-2 border-black">
+                            <div className="border-black bg-blue-100 p-2">
+                                <label className="font-bold">INCLUSIVE DATES:</label>
+                            </div>
+                            <div className="flex flex-col border-t-2 border-black p-5">
                                 <div className="flex justify-evenly">
                                     <div className="mb-2">
                                         <label className="mr-2 font-bold">From Date:</label>
@@ -227,46 +260,54 @@ const Leave = ({ auth }) => {
                                             type="date"
                                             autoComplete="off"
                                             name="from_date"
-                                            value={formData.from_date}
+                                            value={data.from_date}
                                             onChange={(e) => {
                                                 handleInputChange(e);
                                                 calculateTotalDays(e.target.name, e.target.value);
                                             }}
-                                            className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
+                                            className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.from_date ? 'border-red-500' : ''}`}
                                         />
+                                        {validationErrors.from_date && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {validationErrors.from_date}
+                                            </p>
+                                        )}
                                     </div>
+
                                     <div>
                                         <label className="mr-2 font-bold">To Date:</label>
                                         <input
                                             type="date"
                                             autoComplete="off"
                                             name="to_date"
-                                            value={formData.to_date}
+                                            value={data.to_date}
                                             onChange={(e) => {
                                                 handleInputChange(e);
                                                 calculateTotalDays(e.target.name, e.target.value);
                                             }}
-                                            className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
+                                            className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.to_date ? 'border-red-500' : ''}`}
                                         />
+                                        {validationErrors.to_date && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {validationErrors.to_date}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
-                                <div className="flex justify-center">
-                                    <div className="mb-2">
-                                        <label className="mr-2 font-bold">Total Days:</label>
-                                        <input
-                                            type="text"
-                                            readOnly
-                                            name="total_days"
-                                            value={formData.total_days}
-                                            className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
-                                        />
-                                    </div>
+                                <div className="flex items-center justify-center">
+                                    <label className="mr-2 font-bold">Total Days:</label>
+                                    <span>{data.total_days}</span>
                                 </div>
                             </div>
                         </div>
+                        <div className="flex justify-center pt-10">
+                            <span className="border-t border-black px-16 font-bold">
+                                Signature of Requestor
+                            </span>
+                        </div>
                     </div>
                     <div className="mt-5 flex justify-end">
-                        <button type="submit" className="rounded bg-high px-4 py-2 font-bold">
+                        <button type="submit" className="rounded-md bg-high px-4 py-2 font-bold">
                             Submit
                         </button>
                     </div>

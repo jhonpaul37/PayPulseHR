@@ -1,6 +1,5 @@
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import React, { useContext } from 'react';
 import AccountingEntry from './components/AccountingEntry';
 import FundCluster from './components/FundCluster';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -32,7 +31,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
 
     const fetchAutoIncrementValue = async () => {
         try {
-            const response = await fetch('/get-auto-increment');
+            const response = await fetch('/autoIncrement');
             const result = await response.json();
 
             if (result.incrementNumber) {
@@ -158,7 +157,6 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
             <AuthenticatedLayout user={auth.user}>
                 <form onSubmit={submit} className="w-[1500px]">
                     {/* <FundCluster /> */}
-                    {/* A4 size className="h-[3508px] w-[2480px] bg-white" */}
                     <div className="border-2 border-black bg-white shadow-md">
                         {/* Header */}
                         <div className="border-b-2 border-black">

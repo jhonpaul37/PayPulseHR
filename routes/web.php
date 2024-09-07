@@ -15,17 +15,20 @@ Route::get('/', function () {
     ]);
 });
 
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 // Routing
 Route::middleware('auth')->group(function () {
-    // Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
+    //Accounting
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/voucher',VoucherController::class);
+    Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
+    Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
+
+    //HR
     Route::get('/leave', [LeaveController::class, 'leave'])->name('leave');
     Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
+    Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+
+    //Payroll
 });
 
 // for the User Profit
@@ -34,12 +37,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
-
-Route::get('get-auto-increment', [VoucherController::class, 'getAutoIncrement']);
-
-Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
 
 
 require __DIR__.'/auth.php';
