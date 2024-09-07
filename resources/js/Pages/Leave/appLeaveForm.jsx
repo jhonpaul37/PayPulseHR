@@ -13,6 +13,12 @@ function AppLeaveForm({ auth }) {
         position: '',
         salary: '',
     });
+    const [selectedLeaveTypes, setSelectedLeaveTypes] = useState([]);
+
+    // Handler for leave type change from AvailLeave component
+    const handleLeaveTypeChange = (leaveTypes) => {
+        setSelectedLeaveTypes(leaveTypes); // Store the selected leave types in the parent state
+    };
 
     // Function to update specific fields in formData
     const handleInputChange = (e) => {
@@ -23,9 +29,19 @@ function AppLeaveForm({ auth }) {
         }));
     };
 
+    const handleSubmit = (event) => {
+        event.preventDefault(); // Prevent page refresh on form submit
+
+        // Log the selected leave types to the console for testing
+        console.log('Form Submitted! Selected Leave Types:', selectedLeaveTypes);
+        console.log('Form Data:', formData);
+
+        // You can send the form data to your backend or process it further here
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
-            <form action="submit">
+            <form onSubmit={handleSubmit}>
                 <div className="border border-black">
                     <div className="p-4">
                         <FormHeader />
@@ -76,7 +92,7 @@ function AppLeaveForm({ auth }) {
                     <div className="flex justify-evenly border-t border-black p-2">
                         <span>
                             <label className="mr-2">3. DATE OF FILING</label>
-                            <input type="text" placeholder="Date//curentdate" />
+                            <input type="text" placeholder="Date" />
                         </span>
                         <span>
                             <label className="mr-2">4. POSITION</label>
@@ -105,7 +121,7 @@ function AppLeaveForm({ auth }) {
                         </label>
                     </div>
                     {/* Type of Leave */}
-                    <AvailLeave />
+                    <AvailLeave onLeaveTypeChange={handleLeaveTypeChange} />
                     <div>
                         <label className="flex justify-center border-b border-t border-black font-bold">
                             7. DETAILS OF ACTION ON APPLICATION

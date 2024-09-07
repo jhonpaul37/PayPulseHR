@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function AvailLeave() {
+function AvailLeave({ onLeaveTypeChange }) {
     const avail = [
         'Vacation Leave',
         'Mandatory',
@@ -29,6 +29,11 @@ function AvailLeave() {
             setLeaveType(leaveType.filter((item) => item !== name)); // Remove the unchecked item
         }
     };
+
+    // Use useEffect to pass the selected leave types to the parent when they change
+    useEffect(() => {
+        onLeaveTypeChange(leaveType); // Pass the selected leave types to the parent component
+    }, [leaveType, onLeaveTypeChange]);
 
     return (
         <div className="">
