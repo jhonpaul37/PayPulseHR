@@ -8,9 +8,9 @@ use Inertia\Inertia;
 class LeaveController extends Controller
 {
 
-    public function leave()
+    public function LeaveRequstForm()
     {
-        return Inertia::render('Leave/leave');
+        return Inertia::render('Leave/LeaveRequstForm');
     }
     public function store(Request $request)
     {
@@ -38,13 +38,17 @@ class LeaveController extends Controller
 
         $leaveRequest->save();
 
-        return redirect()->route('leave')->with('success', 'Leave request submitted successfully.');
+        return redirect()->route('LeaveRequstForm')->with('success', 'Leave request submitted successfully.');
+    }
+        public function leaveRequest()
+    {
+        $LeaveRequest = Leave::all();
+        return Inertia::render('Leave/LeaveRequest',['LeaveRequest'=>$LeaveRequest]);
     }
 
     public function AppLeaveForm()
     {
-
-        return Inertia::render('Leave/appLeaveForm');
+        return Inertia::render('Leave/AppLeaveForm');
     }
 
 }

@@ -12,12 +12,17 @@ function AppLeaveForm({ auth }) {
         dateOfFiling: '',
         position: '',
         salary: '',
+        leaveAvail: '',
+        leaveDetails: {},
     });
-    const [selectedLeaveTypes, setSelectedLeaveTypes] = useState([]);
 
     // Handler for leave type change from AvailLeave component
-    const handleLeaveTypeChange = (leaveTypes) => {
-        setSelectedLeaveTypes(leaveTypes); // Store the selected leave types in the parent state
+    const handleLeaveTypeChange = (leaveType, leaveDetails) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            leaveAvail: leaveType, // Update the leave type
+            leaveDetails: leaveDetails, // Store the leave details
+        }));
     };
 
     // Function to update specific fields in formData
@@ -30,13 +35,10 @@ function AppLeaveForm({ auth }) {
     };
 
     const handleSubmit = (event) => {
-        event.preventDefault(); // Prevent page refresh on form submit
+        event.preventDefault();
 
-        // Log the selected leave types to the console for testing
-        console.log('Form Submitted! Selected Leave Types:', selectedLeaveTypes);
-        console.log('Form Data:', formData);
-
-        // You can send the form data to your backend or process it further here
+        // Log the entire formData including leaveAvail
+        console.log('Form Submitted! Form Data:', formData);
     };
 
     return (
@@ -57,6 +59,7 @@ function AppLeaveForm({ auth }) {
                                 name="office"
                                 value={formData.office}
                                 onChange={handleInputChange}
+                                placeholder="Date"
                                 autoComplete="off"
                             />
                         </span>
@@ -101,6 +104,7 @@ function AppLeaveForm({ auth }) {
                                 name="position"
                                 value={formData.position}
                                 onChange={handleInputChange}
+                                placeholder="position"
                                 autoComplete="off"
                             />
                         </span>
@@ -111,6 +115,7 @@ function AppLeaveForm({ auth }) {
                                 name="salary"
                                 value={formData.salary}
                                 onChange={handleInputChange}
+                                placeholder="salary"
                                 autoComplete="off"
                             />
                         </span>

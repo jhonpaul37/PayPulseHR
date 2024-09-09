@@ -3,7 +3,7 @@ import { Inertia } from '@inertiajs/inertia';
 import FormHeader from './FormHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const Leave = ({ auth }) => {
+const LeaveRequstForm = ({ auth }) => {
     const [data, setData] = useState({
         requestor_name: '',
         office_unit: '',
@@ -136,7 +136,7 @@ const Leave = ({ auth }) => {
                 : '',
         };
 
-        Inertia.post('/leave', formattedData);
+        Inertia.post('/LeaveRequstForm', formattedData);
         console.log('Submitted Data:', formattedData);
     };
 
@@ -317,4 +317,4 @@ const Leave = ({ auth }) => {
     );
 };
 
-export default Leave;
+export default LeaveRequstForm;
