@@ -24,8 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
 
     //HR
-    Route::get('/LeaveRequstForm', [LeaveController::class, 'LeaveRequstForm'])->name('LeaveRequstForm');
-    Route::post('/LeaveRequstForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
+    Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
+    Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
 
     Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
     Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');

@@ -47,7 +47,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/dashboard')) return '1';
         if (url.startsWith('/voucher')) return '3';
         if (url.startsWith('/settings')) return '4';
-        if (url.startsWith('/LeaveRequstForm')) return '5';
+        if (url.startsWith('/leaveRequestForm')) return '5';
         return '1'; // Default to Home
     };
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -71,7 +71,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faFolder} />,
-            label: <Link href="/LeaveRequstForm">Leave</Link>,
+            label: <Link href="/leaveRequestForm">Leave</Link>,
         },
     ];
 

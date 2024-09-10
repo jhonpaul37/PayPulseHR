@@ -3,7 +3,7 @@ import { Inertia } from '@inertiajs/inertia';
 import FormHeader from './FormHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const LeaveRequstForm = ({ auth }) => {
+const leaveRequestForm = ({ auth }) => {
     const [data, setData] = useState({
         requestor_name: '',
         office_unit: '',
@@ -317,4 +317,4 @@ const LeaveRequstForm = ({ auth }) => {
     );
 };
 
-export default LeaveRequstForm;
+export default leaveRequestForm;

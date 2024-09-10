@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Link } from '@inertiajs/react';
 
 export default function LeaveRequest({ LeaveRequest, auth }) {
     // Log the LeaveRequest to ensure it's what you expect
@@ -10,8 +11,8 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                 {/* Display recent requests */}
                 <div className="my-10">
                     <div className="mb-2">Recent</div>
-                    {LeaveRequest.length > 0 ? (
-                        LeaveRequest.map((request) => (
+                    {LeaveRequest.data.length > 0 ? (
+                        LeaveRequest.data.map((request) => (
                             <div key={request.id} className="my-2 border bg-white p-4">
                                 <div className="text-sm text-gray-500">
                                     <span>Requestor: {request.requestor_name}</span>
@@ -20,7 +21,6 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                     <br />
                                     <span>Request Date: {request.request_date}</span>
                                     <br />
-                                    <span>From Date: {request.from_date}</span>
                                 </div>
                             </div>
                         ))
@@ -32,7 +32,7 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                 {/* Pagination recent */}
                 <div className="fixed bg-white py-5">
                     {/* Example of how to handle pagination links */}
-                    {/* {LeaveRequest.links.map((link) =>
+                    {LeaveRequest.links.map((link) =>
                         link.url ? (
                             <Link
                                 key={link.label}
@@ -54,7 +54,7 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                 }}
                             ></span>
                         )
-                    )} */}
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>
