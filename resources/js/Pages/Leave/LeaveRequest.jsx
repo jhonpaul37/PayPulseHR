@@ -1,5 +1,6 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Link } from '@inertiajs/react';
+// import { useRoute } from '../../../vendor/tightenco/ziggy';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function LeaveRequest({ LeaveRequest, auth }) {
     // Log the LeaveRequest to ensure it's what you expect
@@ -21,6 +22,19 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                     <br />
                                     <span>Request Date: {request.request_date}</span>
                                     <br />
+                                    <Link
+                                        href={`/leaveRequest/show/${request.id}`}
+                                        className="font-bold text-main"
+                                    >
+                                        Read more...
+                                    </Link>
+
+                                    {/* <Link
+                                        href={route(`voucher.show`, voucher)}
+                                        className="font-bold text-main"
+                                    >
+                                        View
+                                    </Link> */}
                                 </div>
                             </div>
                         ))

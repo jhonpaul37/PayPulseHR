@@ -40,10 +40,17 @@ class LeaveController extends Controller
 
         return redirect()->route('leaveRequestForm')->with('success', 'Leave request submitted successfully.');
     }
-        public function leaveRequest()
+
+
+    public function leaveRequest()
     {
-        $LeaveRequest = Leave::latest()->paginate();
+        $LeaveRequest = Leave::latest()->paginate(5);
         return Inertia::render('Leave/LeaveRequest',['LeaveRequest'=>$LeaveRequest]);
+    }
+    public function leaveRequestShow($id)
+    {
+        $LeaveRequest = Leave::find($id);
+        return Inertia::render('Leave/LeaveRequestShow',['LeaveRequest'=>$LeaveRequest]);
     }
 
     public function AppLeaveForm()

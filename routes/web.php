@@ -26,8 +26,9 @@ Route::middleware('auth')->group(function () {
     //HR
     Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
     Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
-
+    Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('showLeaveRequest.show');
     Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
+
     Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
     //Payroll
