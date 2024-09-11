@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { useRoute } from '../../../vendor/tightenco/ziggy';
+import { useRoute } from '@ziggy';
+
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Voucher({ vouchers, auth }) {

@@ -1,7 +1,7 @@
 import { Component, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AvailLeave from './AvailLeave';
-import FormHeader from './FormHeader';
+import AvailLeave from './components/AvailLeave';
+import FormHeader from './components/FormHeader';
 
 function AppLeaveForm({ auth }) {
     const [formData, setFormData] = useState({

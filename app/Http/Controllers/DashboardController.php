@@ -17,7 +17,7 @@ class DashboardController extends Controller
             'data' => [65],
         ];
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Dashboard/Dashboard', [
             'chartData' => $chartData,'fundClusters' => $fundClusters
         ]);
     }

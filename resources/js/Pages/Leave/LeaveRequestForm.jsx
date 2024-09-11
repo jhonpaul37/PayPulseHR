@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import FormHeader from './FormHeader';
+import FormHeader from './components/FormHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const leaveRequestForm = ({ auth }) => {

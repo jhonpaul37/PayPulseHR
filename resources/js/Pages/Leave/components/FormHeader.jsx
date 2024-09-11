@@ -1,6 +1,6 @@
 // FormHeader.jsx
 import React, { Component } from 'react';
-import BSCLogo from '../../../assets/BSC_LOGO.png';
+import BSCLogo from '../../../../assets/BSC_LOGO.png';
 
 class FormHeader extends Component {
     constructor(props) {

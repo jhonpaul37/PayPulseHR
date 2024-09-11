@@ -18,7 +18,7 @@ class VoucherController extends Controller
     public function index()
     {
         $disVoucher = voucher::latest()->paginate(5);
-        return inertia('Voucher',['vouchers' => $disVoucher]);
+        return inertia('voucher/Voucher',['vouchers' => $disVoucher]);
     }
 
     /**

@@ -1,11 +1,10 @@
 import { Link } from '@inertiajs/react';
-// import { useRoute } from '../../../vendor/tightenco/ziggy';
+import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function LeaveRequest({ LeaveRequest, auth }) {
-    // Log the LeaveRequest to ensure it's what you expect
     console.log('LeaveRequest:', LeaveRequest);
-
+    const route = useRoute();
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="">
@@ -22,19 +21,19 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                     <br />
                                     <span>Request Date: {request.request_date}</span>
                                     <br />
-                                    <Link
+                                    {/* <Link
                                         href={`/leaveRequest/show/${request.id}`}
                                         className="font-bold text-main"
                                     >
                                         Read more...
-                                    </Link>
+                                    </Link> */}
 
-                                    {/* <Link
-                                        href={route(`voucher.show`, voucher)}
+                                    <Link
+                                        href={route(`LeaveRequest.show`, request)}
                                         className="font-bold text-main"
                                     >
                                         View
-                                    </Link> */}
+                                    </Link>
                                 </div>
                             </div>
                         ))
@@ -45,7 +44,6 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
 
                 {/* Pagination recent */}
                 <div className="fixed bg-white py-5">
-                    {/* Example of how to handle pagination links */}
                     {LeaveRequest.links.map((link) =>
                         link.url ? (
                             <Link

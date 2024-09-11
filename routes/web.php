@@ -17,17 +17,20 @@ Route::get('/', function () {
 
 // Routing
 Route::middleware('auth')->group(function () {
+
     //Accounting
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/voucher',VoucherController::class);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
     Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
 
     //HR
     Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
     Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
-    Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('showLeaveRequest.show');
+
     Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
+    Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
+    //Application Leave Form
 
     Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 

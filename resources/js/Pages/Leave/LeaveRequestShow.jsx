@@ -1,8 +1,11 @@
-import FormHeader from './FormHeader';
+import { Link } from '@inertiajs/react';
+import { useRoute } from '@ziggy';
+import FormHeader from './components/FormHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const LeaveRequestShow = ({ LeaveRequest, auth }) => {
     console.log('LeaveRequest:', LeaveRequest);
+    const route = useRoute();
     const TypeOfLeave = [
         'Vacation Leave',
         'Sick Leave',
@@ -115,9 +118,10 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
                                     <label className="mr-2 font-bold">From Date:</label>
                                     <input
                                         type="date"
-                                        autoComplete="off"
+                                        value={LeaveRequest.from_date || ''}
                                         name="from_date"
                                         className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none`}
+                                        readOnly
                                     />
                                 </div>
 
@@ -125,15 +129,16 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
                                     <label className="mr-2 font-bold">To Date:</label>
                                     <input
                                         type="date"
-                                        autoComplete="off"
+                                        value={LeaveRequest.to_date || ''}
                                         name="to_date"
                                         className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none`}
+                                        readOnly
                                     />
                                 </div>
                             </div>
                             <div className="flex items-center justify-center">
                                 <label className="mr-2 font-bold">Total Days:</label>
-                                <span></span>
+                                <span>{LeaveRequest.total_days}</span>
                             </div>
                         </div>
                     </div>
@@ -142,6 +147,14 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
                             Signature of Requestor
                         </span>
                     </div>
+                </div>
+                <div className="mt-5 flex justify-end">
+                    <Link
+                        href={route(`Appleave`)}
+                        className="rounded-md bg-high px-4 py-2 font-bold"
+                    >
+                        Process Request
+                    </Link>
                 </div>
             </div>
         </AuthenticatedLayout>
