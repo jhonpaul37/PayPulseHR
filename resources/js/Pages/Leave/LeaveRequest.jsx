@@ -21,12 +21,6 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                     <br />
                                     <span>Request Date: {request.request_date}</span>
                                     <br />
-                                    {/* <Link
-                                        href={`/leaveRequest/show/${request.id}`}
-                                        className="font-bold text-main"
-                                    >
-                                        Read more...
-                                    </Link> */}
 
                                     <Link
                                         href={route(`LeaveRequest.show`, request)}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AvailLeave({ onLeaveTypeChange }) {
+function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
     const avail = [
         'Vacation Leave',
         'Mandatory',
@@ -66,8 +66,29 @@ function AvailLeave({ onLeaveTypeChange }) {
             <div className="grid grid-cols-2">
                 <div className="p-1">
                     <label>6.A TYPE OF LEAVE TO BE AVAILED OF</label>
+
+                    {/* {typeOfLeave} */}
                     <div className="flex flex-col p-4">
                         {avail.map((type, index) => (
+                            <label
+                                key={index}
+                                className={`inline-flex items-center ${
+                                    type === 'Others (please specify)' ? 'col-span-3' : ''
+                                }`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="leaveType"
+                                    value={type}
+                                    checked={typeOfLeave.includes(type)}
+                                    onChange={handleRadioChange}
+                                    className="form-radio"
+                                    autoComplete="off"
+                                />
+                                <span className="ml-2">{type}</span>
+                            </label>
+                        ))}
+                        {/* {avail.map((type, index) => (
                             <label
                                 key={index}
                                 className={`inline-flex items-center ${
@@ -85,11 +106,12 @@ function AvailLeave({ onLeaveTypeChange }) {
                                 />
                                 <span className="ml-2">{type}</span>
                             </label>
-                        ))}
+                        ))} */}
                     </div>
                 </div>
                 <div className="border-l border-black p-1">
                     <label>6.B DETAILS OF LEAVE</label>
+
                     <div className="p-4">
                         {/* Vacation/Special Privilege Leave */}
                         <div>
@@ -137,6 +159,7 @@ function AvailLeave({ onLeaveTypeChange }) {
                                     value={leaveDetails.vacationLeaveText}
                                     disabled={!isVacationLeave}
                                     onChange={handleDetailsChange}
+                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 />
                             </div>
                         </div>
@@ -185,6 +208,7 @@ function AvailLeave({ onLeaveTypeChange }) {
                                     value={leaveDetails.sickLeaveText}
                                     disabled={!isSickLeave}
                                     onChange={handleDetailsChange}
+                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 />
                             </div>
                         </div>
@@ -207,6 +231,7 @@ function AvailLeave({ onLeaveTypeChange }) {
                                         value={leaveDetails.specialBenefitsWomenText}
                                         disabled={!isSpecialBenefitsForWomen}
                                         onChange={handleDetailsChange}
+                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     />
                                 </label>
                             </div>
@@ -298,9 +323,15 @@ function AvailLeave({ onLeaveTypeChange }) {
                 <div className="border-t border-black p-1">
                     <label>6.C NUMBER OF WORKING DAYS APPLIED FOR</label>
                     <div className="flex flex-col p-4">
-                        <input type="text" />
+                        <input
+                            type="text"
+                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                        />
                         <span>INCLUSIVE DATES</span>
-                        <input type="text" />
+                        <input
+                            type="text"
+                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                        />
                     </div>
                 </div>
                 <div className="border-l border-t border-black p-1">

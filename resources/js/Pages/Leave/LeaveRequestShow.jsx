@@ -6,6 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 const LeaveRequestShow = ({ LeaveRequest, auth }) => {
     console.log('LeaveRequest:', LeaveRequest);
     const route = useRoute();
+
     const TypeOfLeave = [
         'Vacation Leave',
         'Sick Leave',
@@ -84,7 +85,6 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
                                             type="checkbox"
                                             name={type}
                                             className="form-checkbox"
-                                            autoComplete="off"
                                             checked={LeaveRequest.leave_type.includes(type)}
                                             readOnly
                                         />
@@ -150,7 +150,7 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
                 </div>
                 <div className="mt-5 flex justify-end">
                     <Link
-                        href={route(`Appleave`)}
+                        href={route(`Appleave`, LeaveRequest.id)}
                         className="rounded-md bg-high px-4 py-2 font-bold"
                     >
                         Process Request

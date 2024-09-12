@@ -1,11 +1,14 @@
-import { Component, useState } from 'react';
+import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AvailLeave from './components/AvailLeave';
 import FormHeader from './components/FormHeader';
 
-function AppLeaveForm({ auth }) {
+function AppLeaveForm({ LeaveRequest, auth }) {
+    // check if the data is existing
+    // console.log('LeaveRequest:', LeaveRequest);
+
     const [formData, setFormData] = useState({
-        office: '',
+        office_unit: '',
         lastName: '',
         firstName: '',
         middleName: '',
@@ -20,24 +23,23 @@ function AppLeaveForm({ auth }) {
     const handleLeaveTypeChange = (leaveType, leaveDetails) => {
         setFormData((prevState) => ({
             ...prevState,
-            leaveAvail: leaveType, // Update the leave type
-            leaveDetails: leaveDetails, // Store the leave details
+            leaveAvail: leaveType,
+            leaveDetails: leaveDetails,
         }));
     };
 
     // Function to update specific fields in formData
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
+        setFormData({
+            ...formData,
             [name]: value,
-        }));
+        });
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-        // Log the entire formData including leaveAvail
         console.log('Form Submitted! Form Data:', formData);
     };
 
@@ -56,11 +58,10 @@ function AppLeaveForm({ auth }) {
                             <label className="mr-2"> 1. OFFICE/DEPARTMENT</label>
                             <input
                                 type="text"
-                                name="office"
-                                value={formData.office}
-                                onChange={handleInputChange}
-                                placeholder="Date"
-                                autoComplete="off"
+                                name="office_unit"
+                                value={LeaveRequest.office_unit}
+                                className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                readOnly
                             />
                         </span>
                         <span className="flex items-center justify-between">
@@ -95,7 +96,13 @@ function AppLeaveForm({ auth }) {
                     <div className="flex justify-evenly border-t border-black p-2">
                         <span>
                             <label className="mr-2">3. DATE OF FILING</label>
-                            <input type="text" placeholder="Date" />
+                            <input
+                                type="text"
+                                name="office_unit"
+                                value={LeaveRequest.request_date}
+                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                readOnly
+                            />
                         </span>
                         <span>
                             <label className="mr-2">4. POSITION</label>
@@ -104,6 +111,7 @@ function AppLeaveForm({ auth }) {
                                 name="position"
                                 value={formData.position}
                                 onChange={handleInputChange}
+                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 placeholder="position"
                                 autoComplete="off"
                             />
@@ -115,6 +123,7 @@ function AppLeaveForm({ auth }) {
                                 name="salary"
                                 value={formData.salary}
                                 onChange={handleInputChange}
+                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 placeholder="salary"
                                 autoComplete="off"
                             />
@@ -126,7 +135,10 @@ function AppLeaveForm({ auth }) {
                         </label>
                     </div>
                     {/* Type of Leave */}
-                    <AvailLeave onLeaveTypeChange={handleLeaveTypeChange} />
+                    <AvailLeave
+                        onLeaveTypeChange={handleLeaveTypeChange}
+                        typeOfLeave={LeaveRequest.leave_type}
+                    />
                     <div>
                         <label className="flex justify-center border-b border-t border-black font-bold">
                             7. DETAILS OF ACTION ON APPLICATION
@@ -137,8 +149,12 @@ function AppLeaveForm({ auth }) {
                             <label className=""> 7.A CERTIFICATION OF LEAVE CREDITS</label>
                             <div className="p-2">
                                 <div className="flex justify-center">
-                                    <label htmlFor="">
-                                        As <input type="text" className="" />
+                                    <label className="flex items-center">
+                                        As{' '}
+                                        <input
+                                            type="text"
+                                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                        />
                                     </label>
                                 </div>
                                 <div className="overflow-x-auto px-10 pt-5">
@@ -194,7 +210,11 @@ function AppLeaveForm({ auth }) {
                                     <label htmlFor=""> For approval</label>
                                     <div className="flex flex-col">
                                         <label htmlFor=""> For disapproval due to</label>
-                                        <textarea name="" id=""></textarea>
+                                        <textarea
+                                            name=""
+                                            id=""
+                                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                        ></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -211,20 +231,36 @@ function AppLeaveForm({ auth }) {
                             <label> 7.C APPROVED FOR:</label>
                             <div className="flex flex-col p-2">
                                 <label>
-                                    <input type="text" /> days with pay
+                                    <input
+                                        type="text"
+                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    />{' '}
+                                    days with pay
                                 </label>
                                 <label>
-                                    <input type="text" /> days without pay
+                                    <input
+                                        type="text"
+                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    />{' '}
+                                    days without pay
                                 </label>
                                 <label>
-                                    <input type="text" /> others (Specify)
+                                    <input
+                                        type="text"
+                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    />{' '}
+                                    others (Specify)
                                 </label>
                             </div>
                         </div>
                         <div className="p-1">
                             <label>7.D DISAPPROVED DUE TO:</label>
                             <div className="p-2">
-                                <textarea name="" id="" className="w-full"></textarea>
+                                <textarea
+                                    name=""
+                                    id=""
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                ></textarea>
                             </div>
                         </div>
                     </div>

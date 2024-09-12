@@ -136,7 +136,7 @@ const leaveRequestForm = ({ auth }) => {
                 : '',
         };
 
-        Inertia.post('/LeaveRequstForm', formattedData);
+        Inertia.post(route('LeaveRequstForm.store'), formattedData);
         console.log('Submitted Data:', formattedData);
     };
 

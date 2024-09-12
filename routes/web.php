@@ -32,7 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
     //Application Leave Form
 
-    Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+    Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+
+    //Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave'); seperate from with leave request
 
     //Payroll
 });
