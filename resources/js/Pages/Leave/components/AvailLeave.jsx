@@ -18,7 +18,7 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
         'Others',
     ];
 
-    const [leaveType, setLeaveType] = useState('');
+    const [leaveType, setLeaveType] = useState({ typeOfLeave });
     const [leaveDetails, setLeaveDetails] = useState({
         vacationLeave: '',
         sickLeave: '',
@@ -42,11 +42,9 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
     };
 
     useEffect(() => {
-        // Call the parent's function when leaveType or leaveDetails change
         onLeaveTypeChange(leaveType, leaveDetails);
     }, [leaveType, leaveDetails]);
 
-    // Handler for leave details change
     const handleDetailsChange = (e) => {
         const { name, value } = e.target;
         setLeaveDetails((prevDetails) => ({
@@ -54,6 +52,7 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
             [name]: value,
         }));
     };
+    // console.log(leaveType);
 
     const isVacationLeave =
         leaveType === 'Vacation Leave' || leaveType === 'Special Privilege Leave';
@@ -69,7 +68,7 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
 
                     {/* {typeOfLeave} */}
                     <div className="flex flex-col p-4">
-                        {avail.map((type, index) => (
+                        {/* {avail.map((type, index) => (
                             <label
                                 key={index}
                                 className={`inline-flex items-center ${
@@ -79,16 +78,16 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
                                 <input
                                     type="radio"
                                     name="leaveType"
-                                    value={type}
                                     checked={typeOfLeave.includes(type)}
+                                    value={type}
                                     onChange={handleRadioChange}
                                     className="form-radio"
                                     autoComplete="off"
                                 />
                                 <span className="ml-2">{type}</span>
                             </label>
-                        ))}
-                        {/* {avail.map((type, index) => (
+                        ))} */}
+                        {avail.map((type, index) => (
                             <label
                                 key={index}
                                 className={`inline-flex items-center ${
@@ -106,7 +105,7 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
                                 />
                                 <span className="ml-2">{type}</span>
                             </label>
-                        ))} */}
+                        ))}
                     </div>
                 </div>
                 <div className="border-l border-black p-1">
@@ -314,50 +313,6 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
                                 </label>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Other Fields */}
-            <div className="grid grid-cols-2">
-                <div className="border-t border-black p-1">
-                    <label>6.C NUMBER OF WORKING DAYS APPLIED FOR</label>
-                    <div className="flex flex-col p-4">
-                        <input
-                            type="text"
-                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                        />
-                        <span>INCLUSIVE DATES</span>
-                        <input
-                            type="text"
-                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                        />
-                    </div>
-                </div>
-                <div className="border-l border-t border-black p-1">
-                    <label>6.D COMMUTATION</label>
-                    <div className="flex flex-col p-4">
-                        <label>
-                            <input
-                                type="radio"
-                                name="commutation"
-                                className="form-radio"
-                                autoComplete="off"
-                            />{' '}
-                            <span className="mx-2">Not Requested</span>
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="commutation"
-                                className="form-radio"
-                                autoComplete="off"
-                            />{' '}
-                            <span className="mx-2">Requested</span>
-                        </label>
-                        <label className="mt-10 border-t border-black">
-                            <span className="flex justify-center">(Signature of Applicant)</span>
-                        </label>
                     </div>
                 </div>
             </div>

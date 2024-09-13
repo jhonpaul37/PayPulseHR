@@ -139,6 +139,53 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                         onLeaveTypeChange={handleLeaveTypeChange}
                         typeOfLeave={LeaveRequest.leave_type}
                     />
+                    <div className="grid grid-cols-2">
+                        <div className="border-t border-black p-1">
+                            <label>6.C NUMBER OF WORKING DAYS APPLIED FOR</label>
+                            <div className="flex flex-col p-4">
+                                <input
+                                    type="text"
+                                    value={LeaveRequest.total_days}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    readOnly
+                                />
+                                <span>INCLUSIVE DATES</span>
+                                <input
+                                    type="text"
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    readOnly
+                                />
+                            </div>
+                        </div>
+                        <div className="border-l border-t border-black p-1">
+                            <label>6.D COMMUTATION</label>
+                            <div className="flex flex-col p-4">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="commutation"
+                                        className="form-radio"
+                                        autoComplete="off"
+                                    />{' '}
+                                    <span className="mx-2">Not Requested</span>
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="commutation"
+                                        className="form-radio"
+                                        autoComplete="off"
+                                    />{' '}
+                                    <span className="mx-2">Requested</span>
+                                </label>
+                                <label className="mt-10 border-t border-black">
+                                    <span className="flex justify-center">
+                                        (Signature of Applicant)
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div>
                         <label className="flex justify-center border-b border-t border-black font-bold">
                             7. DETAILS OF ACTION ON APPLICATION

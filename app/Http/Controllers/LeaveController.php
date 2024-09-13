@@ -44,7 +44,7 @@ class LeaveController extends Controller
 
     public function leaveRequest()
     {
-        $LeaveRequest = Leave::latest()->paginate(5);
+        $LeaveRequest = Leave::latest()->paginate(6);
         return Inertia::render('Leave/LeaveRequest',['LeaveRequest'=>$LeaveRequest]);
     }
     public function leaveRequestShow($id)
