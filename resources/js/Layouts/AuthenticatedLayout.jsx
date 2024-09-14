@@ -27,6 +27,17 @@ const StyledMenu = styled(Menu)`
         background-color: #f0c519 !important;
         color: white !important;
     }
+
+    .ant-menu-item-group-title {
+        color: white !important;
+        font-weight: bold;
+        padding-left: 24px;
+    }
+    .ant-menu-item-divider {
+        background-color: white !important; /* Set divider color to white */
+        height: 1px; /* Adjust thickness of the divider */
+        margin: 8px 0; /* Optional: Adjust the margin between items */
+    }
 `;
 
 const ScrollableContent = styled(Content)`
@@ -54,6 +65,19 @@ const AuthenticatedLayout = ({ user, children }) => {
 
     const menuItems = [
         {
+            key: 'payrollTitle',
+            label: !collapsed ? 'Payroll' : null,
+            type: 'group',
+        },
+        {
+            type: 'divider',
+        },
+        {
+            key: 'accountingTitle',
+            label: !collapsed ? 'Accounting' : null,
+            type: 'group',
+        },
+        {
             key: '1',
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/dashboard">Dashboard</Link>,
@@ -64,14 +88,25 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: <Link href="/voucher">Voucher</Link>,
         },
         {
-            key: '4',
-            icon: <FontAwesomeIcon icon={faGear} />,
-            label: <Link href="/settings">Settings</Link>,
+            type: 'divider',
+        },
+        {
+            key: 'hrTitle',
+            label: !collapsed ? 'HR' : null,
+            type: 'group',
         },
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faFolder} />,
-            label: <Link href="/leaveRequest">Leave</Link>,
+            label: <Link href="/leaveRequest">Leaves</Link>,
+        },
+        {
+            type: 'divider',
+        },
+        {
+            key: '4',
+            icon: <FontAwesomeIcon icon={faGear} />,
+            label: <Link href="/settings">Settings</Link>,
         },
     ];
 
@@ -87,7 +122,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                         mode="inline"
                         selectedKeys={[selectedKey()]}
                         items={menuItems}
-                        className="bg-main"
+                        className="text-white-50 bg-main"
                     />
                 </StyledSider>
 
@@ -101,6 +136,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                             className="h-16 w-16 text-lg"
                         />
                         <div>Search</div>
+
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
                             <div className="relative ms-3">
                                 <Dropdown>
