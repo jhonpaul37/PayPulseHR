@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faGear, faFolder } from '@fortawesome/free-solid-svg-icons';
+import {
+    faHouse,
+    faGear,
+    faFolder,
+    faUsers,
+    faHeartPulse,
+} from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
 import styled from 'styled-components';
@@ -59,6 +65,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/voucher')) return '3';
         if (url.startsWith('/settings')) return '4';
         if (url.startsWith('/leaveRequest')) return '5';
+        if (url.startsWith('/employees')) return '6';
         return '1'; // Default to Home
     };
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -97,8 +104,13 @@ const AuthenticatedLayout = ({ user, children }) => {
         },
         {
             key: '5',
-            icon: <FontAwesomeIcon icon={faFolder} />,
+            icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequest">Leaves</Link>,
+        },
+        {
+            key: '6',
+            icon: <FontAwesomeIcon icon={faUsers} />,
+            label: <Link href="/employees">Employees</Link>,
         },
         {
             type: 'divider',
