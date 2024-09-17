@@ -6,6 +6,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PayrollController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,33 +27,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
 
     //HR
-
-    //Leave
+    //Leave Management
     Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
     Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
 
     Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
-    Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
+    Route::get('/leaveRequest/show/{leave}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
     //Application Leave Form
-    Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+    Route::get('/appLeaveForm/{leave}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
 
-    //Route::get('/appLeaveForm', [LeaveController::class, 'AppLeaveForm'])->name('Appleave'); seperate from with leave request
-
-
-    //Employee
+    //Employee Records
     Route::get('/employees', [EmployeeController::class, 'EmployeeList'])->name('employees.index');
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-    Route::get('/employees/{employee}', [EmployeeController::class, 'EmployeeInfo'])->name('employees.show');
+    Route::get('/employees/{employee}', [EmployeeController::class, 'EmployeeInfo'])->name('employees.info');
+    Route::post('/employees/{id}/terminate', [EmployeeController::class, 'terminate'])->name('employees.terminate');
+
     Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 
-
-    // Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
-
-
     //Payroll
+    Route::get('/payroll', [PayrollController::class, 'GeneralPayroll']);
+    // Route::post('/payroll', [PayrollController::class, 'store']);
+
 });
 
 // for the User Profit

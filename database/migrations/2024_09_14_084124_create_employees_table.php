@@ -13,6 +13,7 @@ public function up()
 {
     Schema::create('employees', function (Blueprint $table) {
         $table->id();
+        $table->string('company_id');
         $table->string('first_name');
         $table->string('last_name');
         $table->string('middle_name')->nullable();
@@ -23,39 +24,22 @@ public function up()
         $table->string('address');
         $table->string('phone');
         $table->string('email')->unique();
-        $table->string('emergency_contact_name');
-        $table->string('emergency_contact_phone');
 
-        // Employment details
         $table->string('position');
         $table->string('department');
         $table->date('start_date');
         $table->enum('employment_type', ['full-time', 'part-time', 'contract']);
-
-        // Salary & Compensation
         $table->decimal('salary', 8, 2);
-        $table->string('pay_frequency')->default('monthly');
-        $table->decimal('overtime_rate', 8, 2)->nullable();
-
-        // Bank information
-        $table->string('bank_name');
-        $table->string('bank_account_number');
 
         // Benefits & Perks
-        $table->string('insurance_plan')->nullable();
-        $table->string('retirement_plan')->nullable();
         $table->integer('vacation_days')->default(0);
         $table->integer('sick_days')->default(0);
 
-        // Legal & Compliance
-        $table->string('tax_id');
-        $table->string('work_authorization')->nullable();
-
-        // Performance & Development
-        $table->text('performance_review')->nullable();
-
         // Attendance & Leave
         $table->integer('leave_balance')->default(0);
+
+        // Profile Picture
+        $table->string('photo_url')->nullable(); // New column for profile picture
 
         // Resignation/Termination
         $table->date('termination_date')->nullable();
@@ -63,6 +47,7 @@ public function up()
 
         $table->timestamps();
     });
+
 }
 
 

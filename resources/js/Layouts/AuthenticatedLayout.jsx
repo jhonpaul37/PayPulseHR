@@ -65,7 +65,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/voucher')) return '3';
         if (url.startsWith('/settings')) return '4';
         if (url.startsWith('/leaveRequest')) return '5';
-        if (url.startsWith('/employees')) return '6';
+        if (url.startsWith('/payroll')) return '7';
         return '1'; // Default to Home
     };
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -75,6 +75,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: 'payrollTitle',
             label: !collapsed ? 'Payroll' : null,
             type: 'group',
+        },
+        {
+            key: '7',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/payroll">Payroll</Link>,
         },
         {
             type: 'divider',

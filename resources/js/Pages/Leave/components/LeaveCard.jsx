@@ -4,6 +4,7 @@ import { useRoute } from '@ziggy';
 
 export default function LeaveCard({ leaveRequests }) {
     const route = useRoute();
+
     return (
         <Row gutter={16}>
             {leaveRequests.length > 0 ? (

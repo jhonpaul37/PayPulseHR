@@ -1,32 +1,53 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
+import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function EmployeeList({ employees, auth }) {
+    const route = useRoute();
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+        }).format(date);
+    };
+
+    const activeEmployees = employees.filter((employee) => !employee.termination_date);
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
                 <header className="flex justify-center text-xl font-bold">Employees List</header>
             </div>
-            <div className="m-4 my-10">
+            <div>
                 <Link
                     href={route('employees.create')}
-                    className="rounded-md bg-high px-4 py-2 font-bold"
+                    className="rounded-md bg-high px-4 py-2 font-bold shadow-md"
                 >
-                    Create New Employee
+                    Add New Employee
                 </Link>
+            </div>
+
+            <div className="m-4 my-10">
                 <div className="flex flex-wrap justify-center">
-                    {employees.map((employee) => (
+                    {activeEmployees.map((employee) => (
                         <div
                             key={employee.id}
-                            className="m-4 flex w-80 flex-col items-center rounded-lg bg-white p-6 shadow-md"
+                            className="m-4 flex w-80 flex-col items-center rounded-lg border bg-white p-6 shadow-md"
                         >
                             {/* Photo Section */}
                             <div className="mb-4">
                                 <img
-                                    src={employee.photoUrl || 'default-photo-url.jpg'} // Replace with the actual photo URL
+                                    src={
+                                        employee.photo_url
+                                            ? `/storage/${employee.photo_url}`
+                                            : 'default-photo-url.jpg'
+                                    }
                                     alt={`${employee.first_name}'s photo`}
-                                    className="h-24 w-24 rounded-full object-cover"
+                                    className="h-24 w-24 rounded-full border object-cover shadow-md"
                                 />
                             </div>
 
@@ -48,7 +69,7 @@ export default function EmployeeList({ employees, auth }) {
                                     </div>
                                     <div className="flex flex-1 flex-col text-center">
                                         <span className="text-gray-400">Date Hired</span>
-                                        <span>{employee.start_date}</span>
+                                        <span>{formatDate(employee.start_date)}</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col">
@@ -60,7 +81,7 @@ export default function EmployeeList({ employees, auth }) {
                             {/* Link (Optional) */}
                             <div className="mt-4">
                                 <Link
-                                    href={route('employees.show', employee.id)}
+                                    href={route('employees.info', employee)}
                                     className="btn btn-info rounded bg-high px-4 py-2"
                                 >
                                     View
@@ -69,40 +90,6 @@ export default function EmployeeList({ employees, auth }) {
                         </div>
                     ))}
                 </div>
-
-                {/* <table>
-                    <thead>
-                        <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Position</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {employees.map((employee) => (
-                            <tr key={employee.id}>
-                                <td>{employee.first_name}</td>
-                                <td>{employee.last_name}</td>
-                                <td>{employee.position}</td>
-                                <td>
-                                    <Link
-                                        href={route('employees.edit', employee.id)}
-                                        className="btn btn-warning"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <Link
-                                        href={route('employees.show', employee.id)}
-                                        className="btn btn-info"
-                                    >
-                                        View
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table> */}
             </div>
         </AuthenticatedLayout>
     );
