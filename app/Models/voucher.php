@@ -32,7 +32,7 @@ class voucher extends Model
         'debit' => 'array',
         'credit' => 'array',
     ];
-        public function accounting_entry()
+    public function accounting_entry()
     {
         return $this->hasMany(accounting_entry::class);
     }
