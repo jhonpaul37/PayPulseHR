@@ -69,7 +69,6 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/payroll/general')) return '7';
         return '1'; // Default to Home
     };
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     const menuItems = [
         {
