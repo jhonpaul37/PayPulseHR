@@ -6,18 +6,21 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
 
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Faker\Factory as Faker;
+
 class EmployeesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $faker = Faker::create();
 
         // Insert a specific employee
         DB::table('employees')->insert([
-            'company_id' => 'COMP123',
+            'employee_id' => 'EMP001',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'middle_name' => 'Michael',
@@ -45,7 +48,7 @@ class EmployeesTableSeeder extends Seeder
         // Insert 5 random employees
         foreach (range(1, 5) as $index) {
             DB::table('employees')->insert([
-                'company_id' => $faker->bothify('COMP###'),
+                'employee_id' => $faker->unique()->bothify('EMP###'),
                 'first_name' => $faker->firstName,
                 'last_name' => $faker->lastName,
                 'middle_name' => $faker->optional()->firstName,
@@ -72,3 +75,4 @@ class EmployeesTableSeeder extends Seeder
         }
     }
 }
+

@@ -48,7 +48,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 
     //Payroll
-    Route::get('/payroll', [PayrollController::class, 'GeneralPayroll']);
+    Route::get('/payroll/general', [PayrollController::class, 'generalPayroll']);
+    Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
+    Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
     // Route::post('/payroll', [PayrollController::class, 'store']);
 
 });

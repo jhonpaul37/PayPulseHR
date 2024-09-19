@@ -9,11 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-public function up()
-{
+
+public function up(){
+
     Schema::create('employees', function (Blueprint $table) {
         $table->id();
-        $table->string('company_id');
+        $table->string('employee_id');
         $table->string('first_name');
         $table->string('last_name');
         $table->string('middle_name')->nullable();
@@ -39,7 +40,7 @@ public function up()
         $table->integer('leave_balance')->default(0);
 
         // Profile Picture
-        $table->string('photo_url')->nullable(); // New column for profile picture
+        $table->string('photo_url')->nullable();
 
         // Resignation/Termination
         $table->date('termination_date')->nullable();

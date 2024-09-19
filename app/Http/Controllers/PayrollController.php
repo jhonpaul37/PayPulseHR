@@ -9,10 +9,33 @@ use Inertia\Inertia;
 class PayrollController extends Controller
 {
 
-    public function GeneralPayroll()
+    public function generalPayroll()
     {
-        return Inertia::render('Payroll/GeneralPayroll');
+        $payrolls = Payroll::with('employee')->get();
+        $employee = Employee::get();
+
+        return Inertia::render('Payroll/GeneralPayroll', [
+            'payrolls' => $payrolls, 'employee' => $employee
+        ]);
     }
+    public function computation()
+    {
+        $employee = Employee::get();
+
+        return Inertia::render('Payroll/Computation', [
+            'employee' => $employee
+        ]);
+    }
+    public function payroll()
+    {
+        $payrolls = Payroll::with('employee')->get();
+        $employee = Employee::get();
+
+        return Inertia::render('Payroll/Payroll', [
+            'payrolls' => $payrolls, 'employee' => $employee
+        ]);
+    }
+
 
 //     public function calculateDeductions($employee)
 //     {
