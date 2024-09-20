@@ -56,7 +56,6 @@ class LeaveController extends Controller
     public function AppLeaveForm($id)
     {
         $LeaveRequest = Leave::find($id);
-        // dd($LeaveRequest->leave_type);
         return Inertia::render('Leave/AppLeaveForm', ['LeaveRequest'=>$LeaveRequest]);
     }
 

@@ -67,7 +67,7 @@ export default function EmployeeInfoEdit({ employee, auth }) {
 
     const handleSubmitTermination = (e) => {
         e.preventDefault();
-        setShowConfirmation(true); // Show confirmation dialog before submitting
+        setShowConfirmation(true);
     };
 
     const handleConfirmTermination = () => {

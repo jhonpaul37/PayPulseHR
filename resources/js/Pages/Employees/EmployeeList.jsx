@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
-import { Inertia, Link } from '@inertiajs/inertia';
 import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import EmployeeInfo from './EmployeeInfo';
-import { Button, FloatButton } from 'antd';
+import { Button, FloatButton as Btn } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
+
+const FloatButton = styled(Btn)`
+    background-color: #f0c519 !important;
+    color: #fff !important;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    position: fixed;
+    bottom: 100px;
+    right: 100px;
+`;
 
 export default function EmployeeList({ employees, auth }) {
     const route = useRoute();
@@ -23,17 +34,6 @@ export default function EmployeeList({ employees, auth }) {
 
     const activeEmployees = employees.filter((employee) => !employee.termination_date);
 
-    const btnAdd = {
-        backgroundColor: '#F0C519',
-        color: '#fff',
-        width: '60px',
-        height: '60px',
-        fontSize: '24px',
-        position: 'fixed',
-        bottom: '100px',
-        right: '100px',
-    };
-
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
@@ -44,12 +44,12 @@ export default function EmployeeList({ employees, auth }) {
             <FloatButton
                 onClick={() => (window.location.href = route('employees.create'))}
                 tooltip="Add New Employee"
-                style={btnAdd}
                 icon={<PlusOutlined />}
+                className="border-high bg-high font-bold"
             />
 
             <div className="m-4 my-10">
-                <div className="flex">
+                <div className="flex flex-col gap-5">
                     {activeEmployees.map((employee) => (
                         <div
                             key={employee.id}
@@ -59,17 +59,12 @@ export default function EmployeeList({ employees, auth }) {
                                 {/* Photo Section */}
                                 {/* <div>
                                     <img
-                                        src={
-                                            employee.photo_url
-                                                ? `/storage/${employee.photo_url}`
-                                                : 'default-photo-url.jpg'
-                                        }
+                                        src={employee.photo_url ? `/storage/${employee.photo_url}` : 'default-photo-url.jpg'}
                                         alt={`${employee.first_name}'s photo`}
                                         className="h-16 w-16 rounded-full border object-cover shadow-md"
                                     />
                                 </div> */}
                                 {/* Name and Position */}
-
                                 <div className="flex flex-col">
                                     <span className="text-lg font-bold text-main">
                                         {employee.first_name} {employee.middle_name}{' '}

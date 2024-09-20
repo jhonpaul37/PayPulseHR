@@ -19,6 +19,8 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
         'Compensatory Time-Off',
         'Others (please specify)',
     ];
+    console.log(route('Appleave', LeaveRequest.id));
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>

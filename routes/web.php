@@ -32,9 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
 
     Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
-    Route::get('/leaveRequest/show/{leave}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
+    Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
     //Application Leave Form
-    Route::get('/appLeaveForm/{leave}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+    Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
 
     //Employee Records
