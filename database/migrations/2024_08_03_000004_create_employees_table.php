@@ -14,6 +14,7 @@ public function up(){
 
     Schema::create('employees', function (Blueprint $table) {
         $table->id();
+        // $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->string('employee_id');
         $table->string('first_name');
         $table->string('last_name');
