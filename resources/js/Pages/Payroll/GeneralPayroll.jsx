@@ -1,13 +1,15 @@
 import React from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { AgGridReact } from 'ag-grid-react';
-import { Link } from '@inertiajs/react';
-import { useRoute } from '@ziggy';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import Payroll from './Payroll';
 
 const GeneralPayroll = ({ auth, employee }) => {
-    const route = useRoute();
+    // Ensure the auth object is available and has the user data
+    if (!auth || !auth.user) {
+        return <div>Error: User not authenticated</div>;
+    }
+
     // Dummy data for the grid
     const rowData = [
         { id: 1, name: 'John Doe', salary: 50000 },
@@ -40,21 +42,13 @@ const GeneralPayroll = ({ auth, employee }) => {
         { headerName: 'EMRGNCY', field: 'salary' },
         { headerName: 'GSIS POLICY', field: 'salary' },
         { headerName: 'SG', field: 'salary' },
-        { headerName: 'SG', field: 'salary' },
         { headerName: 'seq.', field: 'salary' },
         { headerName: 'SIGNATURE', field: 'salary' },
         { headerName: 'REMARKS', field: 'salary' },
     ];
 
     return (
-        <AuthenticatedLayout user={auth.user}>
-            {/* computation */}
-            <Link
-                href={route('computation')}
-                className="rounded-md bg-high px-4 py-2 font-bold shadow-md"
-            >
-                Computation
-            </Link>
+        <Payroll auth={auth}>
             <div className="p-4">
                 <header className="mb-4 text-center text-xl font-bold">
                     GENERAL PAYROLL {employee.employee_id}
@@ -67,7 +61,7 @@ const GeneralPayroll = ({ auth, employee }) => {
                     />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </Payroll>
     );
 };
 

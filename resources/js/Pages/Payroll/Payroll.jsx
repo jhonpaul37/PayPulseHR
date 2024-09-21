@@ -1,81 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, usePage, router } from '@inertiajs/react';
+import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
+import { Menu } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Anchor } from 'antd';
 
-const payroll = ({ auth }) => (
-    <>
+const Payroll = ({ auth, children }) => {
+    const [current, setCurrent] = useState('mail');
+    const { url } = usePage();
+
+    // Set default redirect to /payroll/general if no specific route is set
+    useEffect(() => {
+        if (url === '/payroll' || url === '/payroll/') {
+            router.visit('/payroll/general'); // Redirect to /payroll/general
+        } else if (url.includes('/payroll/general')) {
+            setCurrent('mail');
+        } else if (url.includes('/payroll/computation')) {
+            setCurrent('app');
+        }
+    }, [url]);
+
+    const onClick = (e) => {
+        setCurrent(e.key);
+    };
+
+    const items = [
+        {
+            label: <Link href="/payroll/general">General Payroll</Link>,
+            key: 'mail',
+            icon: <MailOutlined />,
+        },
+        {
+            label: <Link href="/payroll/computation">Computation</Link>,
+            key: 'app',
+            icon: <AppstoreOutlined />,
+        },
+    ];
+
+    return (
         <AuthenticatedLayout user={auth.user}>
-            <div
-                style={{
-                    padding: '20px',
-                }}
-            >
-                <Anchor
-                    direction="horizontal"
-                    affix={false} // To prevent the anchor from sticking while scrolling
-                    items={[
-                        {
-                            key: 'part-1',
-                            href: '#part-1',
-                            title: 'Part 1',
-                        },
-                        {
-                            key: 'part-2',
-                            href: '#part-2',
-                            title: 'Part 2',
-                        },
-                        {
-                            key: 'part-3',
-                            href: '#part-3',
-                            title: 'Part 3',
-                        },
-                    ]}
-                />
-            </div>
-            <div>
-                <div
-                    id="part-1"
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        textAlign: 'center',
-                        background: 'rgba(0,255,0,0.02)',
-                    }}
-                >
-                    Part 1 Content
-                </div>
-                <div
-                    id="part-2"
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        textAlign: 'center',
-                        background: 'rgba(0,0,255,0.02)',
-                    }}
-                >
-                    Part 2 Content
-                </div>
-                <div
-                    id="part-3"
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        textAlign: 'center',
-                        background: '#FFFBE9',
-                    }}
-                >
-                    Part 3 Content
-                </div>
-            </div>
+            <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+            <div className="content">{children}</div>
         </AuthenticatedLayout>
+    );
+};
 
-        {/* Adding smooth scrolling to the entire page */}
-        <style jsx>{`
-            html {
-                scroll-behavior: smooth;
-            }
-        `}</style>
-    </>
-);
-
-export default payroll;
+export default Payroll;

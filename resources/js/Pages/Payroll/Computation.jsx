@@ -1,13 +1,13 @@
 import React from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import Payroll from './Payroll';
 
 const Computation = ({ auth }) => {
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <Payroll auth={auth}>
             <div>
-                <header className="text-center text-xl font-bold">Computation</header>
+                <header className="text-center">Testing</header>
             </div>
-        </AuthenticatedLayout>
+        </Payroll>
     );
 };
 
