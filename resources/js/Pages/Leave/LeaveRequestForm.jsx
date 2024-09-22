@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import FormHeader from './components/FormHeader';
+import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const leaveRequestForm = ({ auth }) => {
@@ -156,7 +157,7 @@ const leaveRequestForm = ({ auth }) => {
                             <div className="flex flex-col">
                                 <div className="mb-2">
                                     <label className="mr-2 font-bold">Name of Requestor:</label>
-                                    <input
+                                    <TextInput
                                         type="text"
                                         autoComplete="off"
                                         name="requestor_name"
@@ -172,7 +173,7 @@ const leaveRequestForm = ({ auth }) => {
                                 </div>
                                 <div>
                                     <label className="mr-2 font-bold">Office/Unit:</label>
-                                    <input
+                                    <TextInput
                                         type="text"
                                         autoComplete="off"
                                         name="office_unit"
@@ -190,7 +191,7 @@ const leaveRequestForm = ({ auth }) => {
                             <div className="flex flex-col">
                                 <div className="mb-2">
                                     <label className="mr-2 font-bold">Date of Request:</label>
-                                    <input
+                                    <TextInput
                                         type="date"
                                         autoComplete="off"
                                         name="request_date"
@@ -218,7 +219,7 @@ const leaveRequestForm = ({ auth }) => {
                                                     : ''
                                             }`}
                                         >
-                                            <input
+                                            <TextInput
                                                 type="checkbox"
                                                 name={type}
                                                 checked={data.leave_type.includes(type)}
@@ -235,7 +236,7 @@ const leaveRequestForm = ({ auth }) => {
                                         <label className="mr-2 font-bold">
                                             Specify Leave Type:
                                         </label>
-                                        <input
+                                        <TextInput
                                             type="text"
                                             name="other_leave_type"
                                             value={data.other_leave_type}
@@ -256,7 +257,7 @@ const leaveRequestForm = ({ auth }) => {
                                 <div className="flex justify-evenly">
                                     <div className="mb-2">
                                         <label className="mr-2 font-bold">From Date:</label>
-                                        <input
+                                        <TextInput
                                             type="date"
                                             autoComplete="off"
                                             name="from_date"
@@ -276,7 +277,7 @@ const leaveRequestForm = ({ auth }) => {
 
                                     <div>
                                         <label className="mr-2 font-bold">To Date:</label>
-                                        <input
+                                        <TextInput
                                             type="date"
                                             autoComplete="off"
                                             name="to_date"

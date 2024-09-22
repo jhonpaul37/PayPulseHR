@@ -1,405 +1,337 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from '@inertiajs/react';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { Upload, message } from 'antd';
+import React, { useState } from 'react';
+import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import TextInput from '@/Components/TextInput';
 
-const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-};
-
-const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must be smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-};
-
-export default function NewEmployee({ auth }) {
-    const { data, setData, post, errors } = useForm({
-        company_id: '',
-        first_name: '',
-        last_name: '',
-        middle_name: '',
-        birthdate: '',
-        sex: '',
-        civil_status: '',
-        nationality: '',
-        address: '',
-        phone: '',
-        email: '',
-        password: '',
-        confirm_password: '',
-        position: '',
-        department: '',
-        start_date: '',
-        employment_type: '',
-        salary: '',
-        vacation_days: 0,
-        sick_days: 0,
-        leave_balance: 0,
-        photo: null,
+export default function EmployeeInfoEdit({ employee, auth }) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [showTerminationForm, setShowTerminationForm] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [employeeData, setEmployeeData] = useState({
+        first_name: employee.first_name,
+        middle_name: employee.middle_name,
+        last_name: employee.last_name,
+        birthdate: employee.birthdate,
+        sex: employee.sex,
+        civil_status: employee.civil_status,
+        nationality: employee.nationality,
+        address: employee.address,
+        email: employee.email,
+        phone: employee.phone,
+        position: employee.position,
+        department: employee.department,
+        employment_type: employee.employment_type,
+        start_date: employee.start_date,
+        salary: employee.salary,
+    });
+    const [terminationData, setTerminationData] = useState({
+        termination_date: '',
+        termination_reason: '',
     });
 
-    const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState();
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+        }).format(date);
+    };
 
-    useEffect(() => {
-        setData({
-            company_id: '',
-            first_name: '',
-            last_name: '',
-            middle_name: '',
-            birthdate: '',
-            sex: '',
-            civil_status: '',
-            nationality: '',
-            address: '',
-            phone: '',
-            email: '',
-            password: '',
-            confirm_password: '',
-            position: '',
-            department: '',
-            start_date: '',
-            employment_type: '',
-            salary: '',
-            vacation_days: 0,
-            sick_days: 0,
-            leave_balance: 0,
-            photo: null,
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+        }).format(amount);
+    };
+
+    const handleChange = (e) => {
+        setEmployeeData({
+            ...employeeData,
+            [e.target.name]: e.target.value,
         });
-    }, []);
-
-    const handleChange = (info) => {
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            getBase64(info.file.originFileObj, (url) => {
-                setLoading(false);
-                setImageUrl(url);
-                setData('photo', info.file.originFileObj);
-            });
-        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('employees.store'));
+        Inertia.put(`/employees/${employee.id}`, employeeData, {
+            onFinish: () => setIsEditing(false),
+        });
     };
 
-    const uploadButton = (
-        <div>
-            {loading ? <LoadingOutlined /> : <PlusOutlined />}
-            <div style={{ marginTop: 8 }}>Upload</div>
-        </div>
-    );
+    const handleTerminationChange = (e) => {
+        setTerminationData({
+            ...terminationData,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmitTermination = (e) => {
+        e.preventDefault();
+        setShowConfirmation(true);
+    };
+
+    const handleConfirmTermination = () => {
+        Inertia.post(`/employees/${employee.id}/terminate`, terminationData, {
+            onFinish: () => {
+                setShowConfirmation(false);
+                setShowTerminationForm(false);
+            },
+        });
+    };
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div>
-                <h1 className="text-center text-xl font-bold">Create New Employee</h1>
-                <form onSubmit={handleSubmit} className="flex gap-5">
-                    {/* Profile Picture */}
-                    <div className="flex flex-col items-center justify-center">
-                        <Upload
-                            name="photo"
-                            listType="picture-card"
-                            className="avatar-uploader"
-                            showUploadList={false}
-                            beforeUpload={beforeUpload}
-                            onChange={handleChange}
-                        >
-                            {imageUrl ? (
-                                <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+            <div key={employee.id}>
+                <div className="pb-6">
+                    <header className="flex justify-center text-xl font-bold">
+                        Employee Details
+                    </header>
+                </div>
+                {/* Photo Section */}
+                <div className="flex items-center justify-evenly border-b border-t py-5">
+                    <img
+                        src={
+                            employee.photo_url
+                                ? `/storage/${employee.photo_url}`
+                                : 'default-photo-url.jpg'
+                        }
+                        alt={`${employee.first_name}'s photo`}
+                        className="h-24 w-24 rounded-full border object-cover shadow-md"
+                    />
+                    <div>
+                        {/* Name and Position */}
+                        {isEditing ? (
+                            <>
+                                <TextInput
+                                    type="text"
+                                    name="first_name"
+                                    value={employeeData.first_name}
+                                    onChange={handleChange}
+                                    className="mb-2 block w-full rounded border px-2 py-1"
+                                />
+                                <TextInput
+                                    type="text"
+                                    name="middle_name"
+                                    value={employeeData.middle_name}
+                                    onChange={handleChange}
+                                    className="mb-2 block w-full rounded border px-2 py-1"
+                                />
+                                <TextInput
+                                    type="text"
+                                    name="last_name"
+                                    value={employeeData.last_name}
+                                    onChange={handleChange}
+                                    className="mb-2 block w-full rounded border px-2 py-1"
+                                />
+                            </>
+                        ) : (
+                            <div className="mb-2">
+                                <span className="text-lg font-bold text-main">
+                                    {employee.first_name} {employee.middle_name}{' '}
+                                    {employee.last_name}
+                                </span>
+                                <div className="text-sm text-gray-600">{employee.position}</div>
+                                <div className="text-sm text-gray-600">{employee.department}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="m-4 my-10 grid grid-cols-2">
+                    {/* Personal Background */}
+                    <div>
+                        <label className="font-bold">Personal Background</label>
+                        <div>
+                            {isEditing ? (
+                                <>
+                                    <label className="text-gray-400">Date of Birth: </label>
+                                    <TextInput
+                                        type="date"
+                                        name="birthdate"
+                                        value={employeeData.birthdate}
+                                        onChange={handleChange}
+                                        className="mb-2 block w-full rounded border px-2 py-1"
+                                    />
+                                    <TextInput
+                                        type="text"
+                                        name="sex"
+                                        value={employeeData.sex}
+                                        onChange={handleChange}
+                                        className="mb-2 block w-full rounded border px-2 py-1"
+                                    />
+                                    {/* Additional personal fields */}
+                                </>
                             ) : (
-                                uploadButton
+                                <>
+                                    <div>
+                                        <label className="text-gray-400">Full name: </label>
+                                        <span>
+                                            {employee.first_name} {employee.middle_name}{' '}
+                                            {employee.last_name}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <label className="text-gray-400">Date of Birth: </label>
+                                        <span>{formatDate(employee.birthdate)}</span>
+                                    </div>
+                                    <div>
+                                        <label className="text-gray-400">Sex: </label>
+                                        <span>{employee.sex}</span>
+                                    </div>
+                                </>
                             )}
-                        </Upload>
-                        {errors.photo && <div>{errors.photo}</div>}
-                        <label>Profile Picture</label>
+                        </div>
                     </div>
 
+                    {/* Company info/ Status */}
                     <div>
-                        <div>
-                            <label className="font-bold">Personal Details</label>
-
-                            {/* Company ID */}
-                            <div>
-                                <label>Employee ID</label>
-                                <input
+                        <label className="font-bold">Status</label>
+                        {isEditing ? (
+                            <>
+                                <TextInput
                                     type="text"
-                                    value={data.company_id}
-                                    onChange={(e) => setData('company_id', e.target.value)}
-                                    autoComplete="off"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    name="position"
+                                    value={employeeData.position}
+                                    onChange={handleChange}
+                                    className="mb-2 block w-full rounded border px-2 py-1"
                                 />
-                                {errors.company_id && <div>{errors.company_id}</div>}
-                            </div>
-
-                            <div className="flex">
-                                {/* First Name */}
-                                <div>
-                                    <label>First Name</label>
-                                    <input
-                                        type="text"
-                                        value={data.first_name}
-                                        onChange={(e) => setData('first_name', e.target.value)}
-                                        autoComplete="off"
-                                        required
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    />
-                                    {errors.first_name && <div>{errors.first_name}</div>}
-                                </div>
-
-                                {/* Last Name */}
-                                <div>
-                                    <label>Last Name</label>
-                                    <input
-                                        type="text"
-                                        value={data.last_name}
-                                        onChange={(e) => setData('last_name', e.target.value)}
-                                        autoComplete="off"
-                                        required
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    />
-                                    {errors.last_name && <div>{errors.last_name}</div>}
-                                </div>
-
-                                {/* Middle Name */}
-                                <div>
-                                    <label>Middle Name</label>
-                                    <input
-                                        type="text"
-                                        value={data.middle_name}
-                                        onChange={(e) => setData('middle_name', e.target.value)}
-                                        autoComplete="off"
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    />
-                                    {errors.middle_name && <div>{errors.middle_name}</div>}
-                                </div>
-                            </div>
-
-                            {/* Birthdate */}
-                            <div>
-                                <label>Birthdate</label>
-                                <input
-                                    type="date"
-                                    value={data.birthdate}
-                                    onChange={(e) => setData('birthdate', e.target.value)}
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                />
-                                {errors.birthdate && <div>{errors.birthdate}</div>}
-                            </div>
-
-                            <div className="flex">
-                                {/* Sex */}
-                                <div>
-                                    <label>Sex</label>
-                                    <select
-                                        value={data.sex}
-                                        onChange={(e) => setData('sex', e.target.value)}
-                                        required
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                    {errors.sex && <div>{errors.sex}</div>}
-                                </div>
-
-                                {/* Civil Status */}
-                                <div>
-                                    <label>Civil Status</label>
-                                    <select
-                                        value={data.civil_status}
-                                        onChange={(e) => setData('civil_status', e.target.value)}
-                                        required
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="single">Single</option>
-                                        <option value="married">Married</option>
-                                        <option value="divorced">Divorced</option>
-                                    </select>
-                                    {errors.civil_status && <div>{errors.civil_status}</div>}
-                                </div>
-
-                                {/* Nationality */}
-                                <div>
-                                    <label>Nationality</label>
-                                    <input
-                                        type="text"
-                                        value={data.nationality}
-                                        onChange={(e) => setData('nationality', e.target.value)}
-                                        autoComplete="off"
-                                        required
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    />
-                                    {errors.nationality && <div>{errors.nationality}</div>}
-                                </div>
-                            </div>
-
-                            {/* Address */}
-                            <div>
-                                <label>Address</label>
-                                <input
+                                <TextInput
                                     type="text"
-                                    value={data.address}
-                                    onChange={(e) => setData('address', e.target.value)}
-                                    autoComplete="off"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    name="department"
+                                    value={employeeData.department}
+                                    onChange={handleChange}
+                                    className="mb-2 block w-full rounded border px-2 py-1"
                                 />
-                                {errors.address && <div>{errors.address}</div>}
-                            </div>
-
-                            <div className="flex">
-                                {/* Phone */}
-                                <div>
-                                    <label>Phone</label>
-                                    <input
-                                        type="text"
-                                        value={data.phone}
-                                        onChange={(e) => setData('phone', e.target.value)}
-                                        autoComplete="off"
-                                        required
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    />
-                                    {errors.phone && <div>{errors.phone}</div>}
-                                </div>
-
-                                {/* Email */}
-                                <div>
-                                    <label>Email</label>
-                                    <input
-                                        type="email"
-                                        value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        autoComplete="off"
-                                        required
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    />
-                                    {errors.email && <div>{errors.email}</div>}
-                                </div>
-                            </div>
-
-                            {/* Employment Type */}
-                            <div>
-                                <label>Employment Type</label>
-                                <select
-                                    value={data.employment_type}
-                                    onChange={(e) => setData('employment_type', e.target.value)}
-                                    required
-                                >
-                                    <option value="">Select</option>
-                                    <option value="full_time">Full-Time</option>
-                                    <option value="part_time">Part-Time</option>
-                                    <option value="contract">Contract</option>
-                                </select>
-                                {errors.employment_type && <div>{errors.employment_type}</div>}
-                            </div>
-
-                            {/* Position */}
-                            <div>
-                                <label>Position</label>
-                                <input
-                                    type="text"
-                                    value={data.position}
-                                    onChange={(e) => setData('position', e.target.value)}
-                                    autoComplete="off"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                />
-                                {errors.position && <div>{errors.position}</div>}
-                            </div>
-
-                            {/* Department */}
-                            <div>
-                                <label>Department</label>
-                                <input
-                                    type="text"
-                                    value={data.department}
-                                    onChange={(e) => setData('department', e.target.value)}
-                                    autoComplete="off"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                />
-                                {errors.department && <div>{errors.department}</div>}
-                            </div>
-
-                            {/* Start Date */}
-                            <div>
-                                <label>Start Date</label>
-                                <input
-                                    type="date"
-                                    value={data.start_date}
-                                    onChange={(e) => setData('start_date', e.target.value)}
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                />
-                                {errors.start_date && <div>{errors.start_date}</div>}
-                            </div>
-
-                            {/* Salary */}
-                            <div>
-                                <label>Salary</label>
-                                <input
+                                <TextInput
                                     type="number"
-                                    value={data.salary}
-                                    onChange={(e) => setData('salary', e.target.value)}
-                                    autoComplete="off"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    name="salary"
+                                    value={employeeData.salary}
+                                    onChange={handleChange}
+                                    className="mb-2 block w-full rounded border px-2 py-1"
                                 />
-                                {errors.salary && <div>{errors.salary}</div>}
-                            </div>
+                                {/* Additional company fields */}
+                            </>
+                        ) : (
+                            <>
+                                <div>
+                                    <span className="text-gray-400">Position: </span>
+                                    <span>{employee.position}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-400">Salary: </span>
+                                    <span>{formatCurrency(employee.salary)}</span>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
 
-                            {/* Password */}
-                            <div>
-                                <label>Password</label>
-                                <input
-                                    type="password"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    autoComplete="new-password"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                />
-                                {errors.password && <div>{errors.password}</div>}
-                            </div>
+                <div className="my-4 flex justify-center">
+                    {isEditing ? (
+                        <button
+                            onClick={handleSubmit}
+                            className="rounded bg-blue-500 px-4 py-2 text-white"
+                        >
+                            Save
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="rounded bg-green-500 px-4 py-2 text-white"
+                        >
+                            Edit Employee
+                        </button>
+                    )}
+                </div>
 
-                            {/* Confirm Password */}
-                            <div>
-                                <label>Confirm Password</label>
-                                <input
-                                    type="password"
-                                    value={data.confirm_password}
-                                    onChange={(e) => setData('confirm_password', e.target.value)}
-                                    autoComplete="new-password"
-                                    required
-                                    className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                />
-                                {errors.confirm_password && <div>{errors.confirm_password}</div>}
-                            </div>
-                        </div>
-
-                        <button type="submit" className="mt-4 rounded bg-main px-4 py-2 text-white">
-                            Create Employee
+                {/* Termination Button */}
+                {!isEditing && (
+                    <div className="my-4 flex justify-center">
+                        <button
+                            onClick={() => setShowTerminationForm(true)}
+                            className="rounded bg-red-500 px-4 py-2 text-white"
+                        >
+                            Terminate Employee
                         </button>
                     </div>
-                </form>
+                )}
+
+                {/* Termination Form */}
+                {showTerminationForm && !showConfirmation && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                        <div className="rounded bg-white p-6 shadow-lg">
+                            <h2 className="mb-4 text-xl font-bold">Terminate Employee</h2>
+                            <form onSubmit={handleSubmitTermination}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700">Termination Date</label>
+                                    <TextInput
+                                        type="date"
+                                        name="termination_date"
+                                        value={terminationData.termination_date}
+                                        onChange={handleTerminationChange}
+                                        className="w-full rounded border px-3 py-2"
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700">Reason</label>
+                                    <textarea
+                                        name="termination_reason"
+                                        value={terminationData.termination_reason}
+                                        onChange={handleTerminationChange}
+                                        className="w-full rounded border px-3 py-2"
+                                        rows="4"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowTerminationForm(false)}
+                                        className="mr-2 rounded bg-gray-500 px-4 py-2 text-white"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="rounded bg-red-500 px-4 py-2 text-white"
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Confirmation Dialog */}
+                {showConfirmation && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                        <div className="rounded bg-white p-6 shadow-lg">
+                            <h2 className="mb-4 text-xl font-bold">Confirm Termination</h2>
+                            <p className="mb-4">
+                                Are you sure you want to terminate this employee? 😢
+                            </p>
+                            <div className="flex justify-end">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmation(false)}
+                                    className="mr-2 rounded bg-gray-500 px-4 py-2 text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleConfirmTermination}
+                                    className="rounded bg-red-500 px-4 py-2 text-white"
+                                >
+                                    Confirm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );

@@ -1,336 +1,376 @@
 import React, { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
+import { useForm } from '@inertiajs/react';
+import { Upload, message } from 'antd';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+
+// Components
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import TextInput from '@/Components/TextInput';
 
-export default function EmployeeInfoEdit({ employee, auth }) {
-    const [isEditing, setIsEditing] = useState(false);
-    const [showTerminationForm, setShowTerminationForm] = useState(false);
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [employeeData, setEmployeeData] = useState({
-        first_name: employee.first_name,
-        middle_name: employee.middle_name,
-        last_name: employee.last_name,
-        birthdate: employee.birthdate,
-        sex: employee.sex,
-        civil_status: employee.civil_status,
-        nationality: employee.nationality,
-        address: employee.address,
-        email: employee.email,
-        phone: employee.phone,
-        position: employee.position,
-        department: employee.department,
-        employment_type: employee.employment_type,
-        start_date: employee.start_date,
-        salary: employee.salary,
+const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+};
+
+const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+        message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+        message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+};
+
+export default function EmployeeInfoEdit({ auth, employee }) {
+    const { data, setData, put, errors } = useForm({
+        employee_id: employee.employee_id || '',
+        first_name: employee.first_name || '',
+        last_name: employee.last_name || '',
+        middle_name: employee.middle_name || '',
+        birthdate: employee.birthdate || '',
+        birthPlace: employee.birthPlace || '',
+        sex: employee.sex || '',
+        civil_status: employee.civil_status || '',
+        nationality: employee.nationality || '',
+        address: employee.address || '',
+        phone: employee.phone || '',
+        email: employee.email || '',
+        position: employee.position || '',
+        department: employee.department || '',
+        start_date: employee.start_date || '',
+        employment_type: employee.employment_type || '',
+        salary: employee.salary || '',
+        vacation_days: employee.vacation_days || 0,
+        sick_days: employee.sick_days || 0,
+        leave_balance: employee.leave_balance || 0,
+        photo: employee.photo || null,
     });
-    const [terminationData, setTerminationData] = useState({
-        termination_date: '',
-        termination_reason: '',
-    });
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-        }).format(date);
-    };
+    const [loading, setLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState(employee.photo);
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-PH', {
-            style: 'currency',
-            currency: 'PHP',
-        }).format(amount);
-    };
-
-    const handleChange = (e) => {
-        setEmployeeData({
-            ...employeeData,
-            [e.target.name]: e.target.value,
-        });
+    const handleChange = (info) => {
+        if (info.file.status === 'uploading') {
+            setLoading(true);
+            return;
+        }
+        if (info.file.status === 'done') {
+            getBase64(info.file.originFileObj, (url) => {
+                setLoading(false);
+                setImageUrl(url);
+                setData('photo', info.file.originFileObj);
+            });
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        Inertia.put(`/employees/${employee.id}`, employeeData, {
-            onFinish: () => setIsEditing(false),
-        });
+        put(route('employees.update', employee.id)); // Adjust the route to your needs
     };
 
-    const handleTerminationChange = (e) => {
-        setTerminationData({
-            ...terminationData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmitTermination = (e) => {
-        e.preventDefault();
-        setShowConfirmation(true);
-    };
-
-    const handleConfirmTermination = () => {
-        Inertia.post(`/employees/${employee.id}/terminate`, terminationData, {
-            onFinish: () => {
-                setShowConfirmation(false);
-                setShowTerminationForm(false);
-            },
-        });
-    };
+    const uploadButton = (
+        <div>
+            {loading ? <LoadingOutlined /> : <PlusOutlined />}
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </div>
+    );
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div key={employee.id}>
-                <div className="pb-6">
-                    <header className="flex justify-center text-xl font-bold">
-                        Employee Details
-                    </header>
-                </div>
-                {/* Photo Section */}
-                <div className="flex items-center justify-evenly border-b border-t py-5">
-                    <img
-                        src={
-                            employee.photo_url
-                                ? `/storage/${employee.photo_url}`
-                                : 'default-photo-url.jpg'
-                        }
-                        alt={`${employee.first_name}'s photo`}
-                        className="h-24 w-24 rounded-full border object-cover shadow-md"
-                    />
-                    <div>
-                        {/* Name and Position */}
-                        {isEditing ? (
-                            <>
-                                <input
-                                    type="text"
-                                    name="first_name"
-                                    value={employeeData.first_name}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <input
-                                    type="text"
-                                    name="middle_name"
-                                    value={employeeData.middle_name}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <input
-                                    type="text"
-                                    name="last_name"
-                                    value={employeeData.last_name}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                            </>
-                        ) : (
-                            <div className="mb-2">
-                                <span className="text-lg font-bold text-main">
-                                    {employee.first_name} {employee.middle_name}{' '}
-                                    {employee.last_name}
-                                </span>
-                                <div className="text-sm text-gray-600">{employee.position}</div>
-                                <div className="text-sm text-gray-600">{employee.department}</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="m-4 my-10 grid grid-cols-2">
-                    {/* Personal Background */}
-                    <div>
-                        <label className="font-bold">Personal Background</label>
-                        <div>
-                            {isEditing ? (
-                                <>
-                                    <label className="text-gray-400">Date of Birth: </label>
-                                    <input
-                                        type="date"
-                                        name="birthdate"
-                                        value={employeeData.birthdate}
-                                        onChange={handleChange}
-                                        className="mb-2 block w-full rounded border px-2 py-1"
-                                    />
-                                    <input
-                                        type="text"
-                                        name="sex"
-                                        value={employeeData.sex}
-                                        onChange={handleChange}
-                                        className="mb-2 block w-full rounded border px-2 py-1"
-                                    />
-                                    {/* Additional personal fields */}
-                                </>
+            <div className="container mx-auto">
+                <h1 className="pb-10 text-center text-xl font-bold">Edit Employee</h1>
+                <form onSubmit={handleSubmit} className="flex justify-center gap-20">
+                    {/* Profile Picture */}
+                    <div className="flex flex-col items-center justify-center">
+                        <Upload
+                            name="photo"
+                            listType="picture-card"
+                            className="avatar-uploader"
+                            showUploadList={false}
+                            beforeUpload={beforeUpload}
+                            onChange={handleChange}
+                        >
+                            {imageUrl ? (
+                                <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
                             ) : (
-                                <>
-                                    <div>
-                                        <label className="text-gray-400">Full name: </label>
-                                        <span>
-                                            {employee.first_name} {employee.middle_name}{' '}
-                                            {employee.last_name}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <label className="text-gray-400">Date of Birth: </label>
-                                        <span>{formatDate(employee.birthdate)}</span>
-                                    </div>
-                                    <div>
-                                        <label className="text-gray-400">Sex: </label>
-                                        <span>{employee.sex}</span>
-                                    </div>
-                                </>
+                                uploadButton
                             )}
-                        </div>
+                        </Upload>
+                        {errors.photo && <div>{errors.photo}</div>}
+                        <label className="">Profile Picture</label>
                     </div>
 
-                    {/* Company info/ Status */}
                     <div>
-                        <label className="font-bold">Status</label>
-                        {isEditing ? (
-                            <>
-                                <input
-                                    type="text"
-                                    name="position"
-                                    value={employeeData.position}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <input
-                                    type="text"
-                                    name="department"
-                                    value={employeeData.department}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <input
-                                    type="number"
-                                    name="salary"
-                                    value={employeeData.salary}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                {/* Additional company fields */}
-                            </>
-                        ) : (
-                            <>
-                                <div>
-                                    <span className="text-gray-400">Position: </span>
-                                    <span>{employee.position}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-400">Salary: </span>
-                                    <span>{formatCurrency(employee.salary)}</span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="my-4 flex justify-center">
-                    {isEditing ? (
-                        <button
-                            onClick={handleSubmit}
-                            className="rounded bg-blue-500 px-4 py-2 text-white"
-                        >
-                            Save
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="rounded bg-green-500 px-4 py-2 text-white"
-                        >
-                            Edit Employee
-                        </button>
-                    )}
-                </div>
-
-                {/* Termination Button */}
-                {!isEditing && (
-                    <div className="my-4 flex justify-center">
-                        <button
-                            onClick={() => setShowTerminationForm(true)}
-                            className="rounded bg-red-500 px-4 py-2 text-white"
-                        >
-                            Terminate Employee
-                        </button>
-                    </div>
-                )}
-
-                {/* Termination Form */}
-                {showTerminationForm && !showConfirmation && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-                        <div className="rounded bg-white p-6 shadow-lg">
-                            <h2 className="mb-4 text-xl font-bold">Terminate Employee</h2>
-                            <form onSubmit={handleSubmitTermination}>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700">Termination Date</label>
-                                    <input
-                                        type="date"
-                                        name="termination_date"
-                                        value={terminationData.termination_date}
-                                        onChange={handleTerminationChange}
-                                        className="w-full rounded border px-3 py-2"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700">Reason</label>
-                                    <textarea
-                                        name="termination_reason"
-                                        value={terminationData.termination_reason}
-                                        onChange={handleTerminationChange}
-                                        className="w-full rounded border px-3 py-2"
-                                        rows="4"
-                                        required
-                                    />
-                                </div>
-                                <div className="flex justify-end">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowTerminationForm(false)}
-                                        className="mr-2 rounded bg-gray-500 px-4 py-2 text-white"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="rounded bg-red-500 px-4 py-2 text-white"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
+                        <div className="pb-2">
+                            <label className="text-lg font-bold">Personal Information</label>
                         </div>
-                    </div>
-                )}
 
-                {/* Confirmation Dialog */}
-                {showConfirmation && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-                        <div className="rounded bg-white p-6 shadow-lg">
-                            <h2 className="mb-4 text-xl font-bold">Confirm Termination</h2>
-                            <p className="mb-4">
-                                Are you sure you want to terminate this employee? 😢
-                            </p>
-                            <div className="flex justify-end">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmation(false)}
-                                    className="mr-2 rounded bg-gray-500 px-4 py-2 text-white"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleConfirmTermination}
-                                    className="rounded bg-red-500 px-4 py-2 text-white"
-                                >
-                                    Confirm
-                                </button>
+                        <div className="flex gap-5 p-2">
+                            {/* First Name */}
+                            <div className="flex flex-col">
+                                <label>First Name</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.first_name}
+                                    onChange={(e) => setData('first_name', e.target.value)}
+                                />
+                                {errors.first_name && <div>{errors.first_name}</div>}
+                            </div>
+
+                            {/* Last Name */}
+                            <div className="flex flex-col">
+                                <label>Last Name</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.last_name}
+                                    onChange={(e) => setData('last_name', e.target.value)}
+                                />
+                                {errors.last_name && <div>{errors.last_name}</div>}
+                            </div>
+
+                            {/* Middle Name */}
+                            <div className="flex flex-col">
+                                <label>Middle Name</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.middle_name}
+                                    onChange={(e) => setData('middle_name', e.target.value)}
+                                />
+                                {errors.middle_name && <div>{errors.middle_name}</div>}
                             </div>
                         </div>
+
+                        <div className="flex gap-5 p-2">
+                            {/* Birthdate */}
+                            <div className="flex flex-col">
+                                <label>Birthdate</label>
+                                <TextInput
+                                    type="date"
+                                    value={data.birthdate}
+                                    onChange={(e) => setData('birthdate', e.target.value)}
+                                />
+                                {errors.birthdate && <div>{errors.birthdate}</div>}
+                            </div>
+
+                            {/* Birth Place */}
+                            <div className="flex flex-col">
+                                <label>Birth Place</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.birthPlace}
+                                    onChange={(e) => setData('birthPlace', e.target.value)}
+                                />
+                                {errors.birthPlace && <div>{errors.birthPlace}</div>}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-5 p-2">
+                            {/* Sex */}
+                            <div className="flex flex-col">
+                                <label>Sex</label>
+                                <div className="flex space-x-4">
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="male"
+                                            checked={data.sex === 'male'}
+                                            onChange={(e) => setData('sex', e.target.value)}
+                                        />
+                                        Male
+                                    </label>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="female"
+                                            checked={data.sex === 'female'}
+                                            onChange={(e) => setData('sex', e.target.value)}
+                                        />
+                                        Female
+                                    </label>
+                                </div>
+                                {errors.sex && <div>{errors.sex}</div>}
+                            </div>
+
+                            {/* Civil Status */}
+                            <div className="flex flex-col">
+                                <label>Civil Status</label>
+                                <select
+                                    value={data.civil_status}
+                                    onChange={(e) => setData('civil_status', e.target.value)}
+                                >
+                                    <option value="">Select</option>
+                                    <option value="single">Single</option>
+                                    <option value="married">Married</option>
+                                </select>
+                                {errors.civil_status && <div>{errors.civil_status}</div>}
+                            </div>
+
+                            {/* Nationality */}
+                            <div className="flex flex-col">
+                                <label>Nationality</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.nationality}
+                                    onChange={(e) => setData('nationality', e.target.value)}
+                                />
+                                {errors.nationality && <div>{errors.nationality}</div>}
+                            </div>
+                        </div>
+
+                        {/* Address */}
+                        <div className="flex flex-col p-2">
+                            <label>Address</label>
+                            <TextInput
+                                type="text"
+                                value={data.address}
+                                onChange={(e) => setData('address', e.target.value)}
+                            />
+                            {errors.address && <div>{errors.address}</div>}
+                        </div>
+
+                        {/* Phone */}
+                        <div className="flex flex-col p-2">
+                            <label>Phone</label>
+                            <TextInput
+                                type="text"
+                                value={data.phone}
+                                onChange={(e) => setData('phone', e.target.value)}
+                            />
+                            {errors.phone && <div>{errors.phone}</div>}
+                        </div>
                     </div>
-                )}
+
+                    <div>
+                        <div className="pb-2">
+                            <label className="text-lg font-bold">Company Details</label>
+                        </div>
+
+                        <div className="flex gap-5 p-2">
+                            {/* Employee ID */}
+                            <div className="flex flex-col">
+                                <label>Employee ID</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.employee_id}
+                                    onChange={(e) => setData('employee_id', e.target.value)}
+                                />
+                                {errors.employee_id && <div>{errors.employee_id}</div>}
+                            </div>
+
+                            {/* Start Date */}
+                            <div className="flex flex-col">
+                                <label>Start Date</label>
+                                <TextInput
+                                    type="date"
+                                    value={data.start_date}
+                                    onChange={(e) => setData('start_date', e.target.value)}
+                                />
+                                {errors.start_date && <div>{errors.start_date}</div>}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-5 p-2">
+                            {/* Position */}
+                            <div className="flex flex-col">
+                                <label>Position</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.position}
+                                    onChange={(e) => setData('position', e.target.value)}
+                                />
+                                {errors.position && <div>{errors.position}</div>}
+                            </div>
+
+                            {/* Department */}
+                            <div className="flex flex-col">
+                                <label>Department</label>
+                                <TextInput
+                                    type="text"
+                                    value={data.department}
+                                    onChange={(e) => setData('department', e.target.value)}
+                                />
+                                {errors.department && <div>{errors.department}</div>}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-5 p-2">
+                            {/* Employment Type */}
+                            <div className="flex flex-col">
+                                <label>Employment Type</label>
+                                <select
+                                    value={data.employment_type}
+                                    onChange={(e) => setData('employment_type', e.target.value)}
+                                >
+                                    <option value="">Select</option>
+                                    <option value="full-time">Full-Time</option>
+                                    <option value="part-time">Part-Time</option>
+                                    <option value="contract">Contract</option>
+                                </select>
+                                {errors.employment_type && <div>{errors.employment_type}</div>}
+                            </div>
+
+                            {/* Salary */}
+                            <div className="flex flex-col">
+                                <label>Salary</label>
+                                <TextInput
+                                    type="number"
+                                    value={data.salary}
+                                    onChange={(e) => setData('salary', e.target.value)}
+                                />
+                                {errors.salary && <div>{errors.salary}</div>}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-5 p-2">
+                            {/* Vacation Days */}
+                            <div className="flex flex-col">
+                                <label>Vacation Days</label>
+                                <TextInput
+                                    type="number"
+                                    value={data.vacation_days}
+                                    onChange={(e) => setData('vacation_days', e.target.value)}
+                                />
+                                {errors.vacation_days && <div>{errors.vacation_days}</div>}
+                            </div>
+
+                            {/* Sick Days */}
+                            <div className="flex flex-col">
+                                <label>Sick Days</label>
+                                <TextInput
+                                    type="number"
+                                    value={data.sick_days}
+                                    onChange={(e) => setData('sick_days', e.target.value)}
+                                />
+                                {errors.sick_days && <div>{errors.sick_days}</div>}
+                            </div>
+
+                            {/* Leave Balance */}
+                            <div className="flex flex-col">
+                                <label>Leave Balance</label>
+                                <TextInput
+                                    type="number"
+                                    value={data.leave_balance}
+                                    onChange={(e) => setData('leave_balance', e.target.value)}
+                                />
+                                {errors.leave_balance && <div>{errors.leave_balance}</div>}
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end p-2">
+                            <button
+                                type="submit"
+                                className="w-full rounded-md bg-high p-2 font-bold"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </AuthenticatedLayout>
     );
