@@ -164,14 +164,12 @@ const EmployeeInfo = ({ visible, onClose, employee }) => {
                 >
                     Edit
                 </Button>
-                {!isEditing && (
-                    <Button
-                        onClick={() => setShowTerminationForm(true)}
-                        className="rounded bg-red-500 text-white"
-                    >
-                        Terminate Employee
-                    </Button>
-                )}
+                <Button
+                    onClick={() => setShowTerminationForm(true)}
+                    className="rounded bg-red-500 text-white"
+                >
+                    Terminate
+                </Button>
             </Space>
 
             {/* Termination Form */}

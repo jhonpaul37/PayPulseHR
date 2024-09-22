@@ -51,17 +51,18 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $validated = $request->validate([
-            'company_id' => 'required|string',
+            'employee_id' => 'required|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'birthdate' => 'required|date',
+            'birthPlace' => 'nullable|string',
             'sex' => 'required|string',
             'civil_status' => 'required|string',
             'nationality' => 'required|string',
             'address' => 'required|string',
             'phone' => 'required|string',
-            'email' => 'required|email|unique:employees,email',
+            'email' => 'required|email|unique:employees,email,' . $employee->id,
             'position' => 'required|string',
             'department' => 'required|string',
             'start_date' => 'required|date',
@@ -75,14 +76,20 @@ class EmployeeController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Check if a new photo was uploaded
         if ($request->hasFile('photo')) {
+            // Store the new photo and save its path
             $path = $request->file('photo')->store('employee_photos', 'public');
             $validated['photo_url'] = $path;
         }
 
+        // Update the employee with validated data
         $employee->update($validated);
-        return redirect()->route('employees.index');
+
+        // Redirect to the employee list or another route
+        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
+
 
     public function create()
     {
@@ -118,80 +125,23 @@ class EmployeeController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('employee_photos', 'public');
-            $validated['photo_url'] = $path;
+            $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
         }
 
+        // Create the user
         $user = User::create([
             'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']), // Ensure 'password' is in $validated
+            'password' => Hash::make($validated['password']),
         ]);
 
+
+        $validated['user_id'] = $user->id;
+
+        // Create the employee
         Employee::create($validated);
 
-        return redirect()->route('employees.index');
+        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
-
-
-
-// public function store(Request $request)
-// {
-//     $validated = $request->validate([
-//         'first_name' => 'required|string|max:255',
-//         'last_name' => 'required|string|max:255',
-//         'email' => 'required|email|unique:users,email',
-//         'password' => 'required|string|min:8',
-//         'middle_name' => 'nullable|string',
-//         'birthdate' => 'required|date',
-//         'sex' => 'required|string',
-//         'civil_status' => 'required|string',
-//         'nationality' => 'required|string',
-//         'address' => 'required|string',
-//         'phone' => 'required|string',
-//         'position' => 'required|string|max:255',
-//         'department' => 'required|string',
-//         'start_date' => 'required|date',
-//         'employment_type' => 'required|string',
-//         'salary' => 'required|numeric',
-//         'vacation_days' => 'nullable|integer',
-//         'sick_days' => 'nullable|integer',
-//         'leave_balance' => 'nullable|integer',
-//         'termination_date' => 'nullable|date',
-//         'termination_reason' => 'nullable|string',
-//         'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-//     ]);
-
-//     $employee = Employee::create([
-//         'employee_id' => Str::uuid(),
-//         'first_name' => $validated['first_name'],
-//         'last_name' => $validated['last_name'],
-//         'middle_name' => $request->middle_name,
-//         'birthdate' => $request->birthdate,
-//         'sex' => $request->sex,
-//         'civil_status' => $request->civil_status,
-//         'nationality' => $request->nationality,
-//         'address' => $request->address,
-//         'phone' => $request->phone,
-//         'email' => $validated['email'],
-//         'position' => $validated['position'],
-//         'department' => $request->department,
-//         'start_date' => $request->start_date,
-//         'employment_type' => $request->employment_type,
-//         'salary' => $request->salary,
-//         'photo_url' => $request->photo,
-//     ]);
-
-//     $user = User::create([
-//         'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-//         'email' => $validated['email'],
-//         'password' => Hash::make($validated['password']),
-//     ]);
-
-//     return redirect()->route('employees.index')->with('success', 'Employee and User account created successfully.');
-
-// }
-
-
 
 }

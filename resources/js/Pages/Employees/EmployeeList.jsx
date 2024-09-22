@@ -57,13 +57,17 @@ export default function EmployeeList({ employees, auth }) {
                         >
                             <div className="flex items-center justify-center">
                                 {/* Photo Section */}
-                                {/* <div>
+                                <div className="pr-5">
                                     <img
-                                        src={employee.photo_url ? `/storage/${employee.photo_url}` : 'default-photo-url.jpg'}
+                                        src={
+                                            employee.photo_url
+                                                ? `/storage/${employee.photo_url}`
+                                                : 'default-photo-url.jpg'
+                                        }
                                         alt={`${employee.first_name}'s photo`}
                                         className="h-16 w-16 rounded-full border object-cover shadow-md"
                                     />
-                                </div> */}
+                                </div>
                                 {/* Name and Position */}
                                 <div className="flex flex-col">
                                     <span className="text-lg font-bold text-main">

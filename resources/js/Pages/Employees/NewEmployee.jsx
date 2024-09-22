@@ -60,18 +60,29 @@ export default function NewEmployee({ auth }) {
             return;
         }
         if (info.file.status === 'done') {
-            // Convert to base64 for preview
             getBase64(info.file.originFileObj, (url) => {
                 setLoading(false);
                 setImageUrl(url);
-                setData('photo', info.file.originFileObj); // Set the file for form data
+                setData('photo', info.file.originFileObj);
             });
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('employees.store'));
+
+        const formData = new FormData();
+        Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+        });
+
+        post(route('employees.store'), {
+            data: formData,
+            forceFormData: true,
+            onError: (errors) => {
+                console.log(errors);
+            },
+        });
     };
 
     const uploadButton = (
@@ -85,7 +96,11 @@ export default function NewEmployee({ auth }) {
         <AuthenticatedLayout user={auth.user}>
             <div className="">
                 <h1 className="pb-10 text-center text-xl font-bold">Add New Employee</h1>
-                <form onSubmit={handleSubmit} className="flex justify-center gap-20">
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex justify-center gap-20"
+                    encType="multipart/form-data"
+                >
                     {/* Profile Picture */}
                     <div className="flex flex-col items-center justify-center">
                         <Upload
@@ -93,8 +108,9 @@ export default function NewEmployee({ auth }) {
                             listType="picture-card"
                             className="avatar-uploader"
                             showUploadList={false}
-                            beforeUpload={beforeUpload}
-                            onChange={handleChange}
+                            customRequest={({ file }) => {
+                                setData('photo', file);
+                            }}
                         >
                             {imageUrl ? (
                                 <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
@@ -102,6 +118,7 @@ export default function NewEmployee({ auth }) {
                                 uploadButton
                             )}
                         </Upload>
+
                         {errors.photo && <div>{errors.photo}</div>}
                         <label className="">Profile Picture</label>
                     </div>
@@ -376,7 +393,7 @@ export default function NewEmployee({ auth }) {
                                 type="submit"
                                 className="w-full rounded-md bg-high p-2 font-bold"
                             >
-                                Submit
+                                {loading ? 'Submitting...' : 'Submit'}
                             </button>
                         </div>
                     </div>
