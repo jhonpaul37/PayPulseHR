@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
 
     //Accounting
     Route::resource('/voucher',VoucherController::class);
+    Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
     Route::get('/fClusters', [FundClusterController::class, 'fCluster']);

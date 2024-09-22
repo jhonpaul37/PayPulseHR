@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import EmployeeInfo from './EmployeeInfo';
