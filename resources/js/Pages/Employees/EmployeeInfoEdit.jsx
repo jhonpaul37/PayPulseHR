@@ -67,9 +67,13 @@ export default function EmployeeInfoEdit({ auth, employee }) {
         }
     };
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(route('employees.update', employee.id)); // Adjust the route to your needs
+        put(route('employees.update', employee.id));
     };
 
     const uploadButton = (

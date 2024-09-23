@@ -38,11 +38,6 @@ class EmployeeController extends Controller
         return Inertia::render('Employees/Employee');
     }
 
-    // public function EmployeeInfo(Employee $employee)
-    // {
-    //     return Inertia::render('Employees/EmployeeInfo', ['employee' => $employee]);
-    // }
-
     public function edit(Employee $employee)
     {
         return Inertia::render('Employees/EmployeeInfoEdit', ['employee' => $employee]);

@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AccountingEntry from './components/AccountingEntry';
+import PrimaryButton from '@/Components/PrimaryButton';
 import FundCluster from './components/FundCluster';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
@@ -723,12 +724,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
                     </div>
                     {/* Submit and Print Buttons */}
                     <div className="flex items-center justify-between pt-5">
-                        <button
-                            disabled={processing}
-                            className="rounded-md bg-high px-10 py-3 font-bold"
-                        >
-                            Add
-                        </button>
+                        <PrimaryButton disabled={processing}>Add</PrimaryButton>
                         <button
                             className="focus:shadow-outline rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700 focus:outline-none"
                             type="button"

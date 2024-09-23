@@ -16,6 +16,7 @@ export default {
                 mainD: '#5F1415',
                 main: '#741D20',
                 high: '#F0C519',
+                highHover: '#F5D93C',
             },
             fontFamily: {
                 copperplate: [

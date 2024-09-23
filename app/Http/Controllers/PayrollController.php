@@ -20,7 +20,7 @@ class PayrollController extends Controller
     }
     public function computation()
     {
-        $employee = Employee::get();
+        $employee = Employee::all();
 
         return Inertia::render('Payroll/Computation', [
             'employee' => $employee
