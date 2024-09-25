@@ -61,13 +61,13 @@ const AuthenticatedLayout = ({ user, children }) => {
     const { auth } = props;
 
     const selectedKey = () => {
-        if (url.startsWith('/dashboard')) return '1';
+        // if (url.startsWith('/dashboard')) return '1';
         if (url.startsWith('/voucher')) return '3';
         if (url.startsWith('/settings')) return '4';
         if (url.startsWith('/leaveRequest')) return '5';
         if (url.startsWith('/employees')) return '6';
-        if (url.startsWith('/payroll')) return '7';
-        return '1'; // Default to Home
+        if (url.startsWith('/payroll/general')) return '7';
+        return '6'; // Default to Home
     };
 
     const menuItems = [
@@ -79,7 +79,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '7',
             icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/payroll">Payroll</Link>,
+            label: <Link href="/payroll/general">Payroll</Link>,
         },
         {
             type: 'divider',
@@ -89,11 +89,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: !collapsed ? 'Accounting' : null,
             type: 'group',
         },
-        {
-            key: '1',
-            icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/dashboard">Dashboard</Link>,
-        },
+        // {
+        //     key: '1',
+        //     icon: <FontAwesomeIcon icon={faHouse} />,
+        //     label: <Link href="/dashboard">Dashboard</Link>,
+        // },
         {
             key: '3',
             icon: <FontAwesomeIcon icon={faFolder} />,
@@ -152,7 +152,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                             onClick={() => setCollapsed(!collapsed)}
                             className="h-16 w-16 text-lg"
                         />
-                        <div>Search</div>
+                        {/* <div>Search</div> */}
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
                             <div className="relative ms-3">

@@ -1,18 +1,18 @@
-import { useForm } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AccountingEntry from './components/AccountingEntry';
 import PrimaryButton from '@/Components/PrimaryButton';
 import FundCluster from './components/FundCluster';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function Create({ uacsCodes, fundClusters, auth }) {
+export default function Create({ uacsCodes, fundClusters, auth, users }) {
     const { data, setData, post, errors, processing } = useForm({
         jev_no: '',
         f_cluster: '',
         ors_burs_no: '',
         div_num: '',
         uacs_code: [],
-        user_id: '',
+        user_id: auth.id,
         code: '',
         autoIncrement: '',
         amount: '',
@@ -693,10 +693,7 @@ export default function Create({ uacsCodes, fundClusters, auth }) {
 
                         <div className="grid grid-cols-2">
                             <div className="p-2">
-                                <div className="">
-                                    {/* sino naka sign auto here the complete name */}
-                                    Prepared by:
-                                </div>
+                                <div className="">Prepared by:</div>
                                 <div className="flex flex-col items-center justify-center">
                                     <span className="font-bold">JACITA P. MORA</span>
                                     <input

@@ -1,55 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import Payroll from './Payroll';
 
-const EmployeeList = ({ auth, employee }) => {
-    // Define the columns for the ag-Grid
+const Computation = ({ auth, employee }) => {
+    // Ensure the auth object is available and has the user data
+    if (!auth || !auth.user) {
+        return <div>Error: User not authenticated</div>;
+    }
+
+    // Dummy data for the grid
+    const rowData = [
+        { id: 1, name: 'John Doe', salary: 50000 },
+        { id: 2, name: 'Jane Smith', salary: 55000 },
+        { id: 3, name: 'Mike Johnson', salary: 60000 },
+    ];
+
+    // Define column definitions
     const columnDefs = [
-        { headerName: 'EMPLOYEE NO', field: 'employee_id' },
-        {
-            headerName: 'EMPLOYEE NAME',
-            valueGetter: (params) => {
-                const firstName = params.data.first_name || '';
-                const middleName = params.data.middle_name ? ` ${params.data.middle_name}` : '';
-                const lastName = params.data.last_name || '';
-                return `${firstName}${middleName} ${lastName}`.trim();
-            },
-        },
-        { headerName: 'SG-STEP', field: '' },
-        { headerName: 'POSITION', field: 'position' },
-        { headerName: 'LWOP', field: '' },
+        { headerName: 'EMPLOYEE ID', field: 'id' },
+        { headerName: 'EMPLOYEE NAME', field: 'name' },
+        { headerName: 'SG-STEP', field: 'salary' },
+        { headerName: 'POSITION', field: 'salary' },
+        { headerName: 'LWOP', field: 'salary' },
         { headerName: 'NET-BASIC', field: 'salary' },
-        { headerName: 'PERA', field: '' },
-        { headerName: 'LWOP-PERA', field: '' },
-        { headerName: 'NET-PERA', field: '' },
-        { headerName: 'RATA', field: '' },
-        { headerName: 'TOTAL', field: '' },
-        { headerName: 'TAX', field: '' },
-        { headerName: 'GSIS PREM', field: '' },
-        { headerName: 'HDMF PREM1', field: '' },
-        { headerName: 'HDMF PREM2', field: '' },
-        { headerName: 'PHIC', field: '' },
-        { headerName: 'GFAL', field: '' },
-        { headerName: 'MPL', field: '' },
-        { headerName: 'CONSO LOAN', field: '' },
-        { headerName: 'CPL', field: '' },
-        { headerName: 'EMRGNCY', field: '' },
-        { headerName: 'GSIS POLICY', field: '' },
-        { headerName: 'SG', field: '' },
-        { headerName: 'seq.', field: '' },
-        { headerName: 'SIGNATURE', field: '' },
-        { headerName: 'REMARKS', field: '' },
+        { headerName: 'PERA', field: 'salary' },
+        { headerName: 'LWOP-PERA', field: 'salary' },
+        { headerName: 'NET-PERA', field: 'salary' },
+        { headerName: 'RATA', field: 'salary' },
+        { headerName: 'TOTAL', field: 'salary' },
+        { headerName: 'TAX', field: 'salary' },
+        { headerName: 'GSIS PREM', field: 'salary' },
+        { headerName: 'HDMF PREM1', field: 'salary' },
+        { headerName: 'HDMF PREM2', field: 'salary' },
+        { headerName: 'PHIC', field: 'salary' },
+        { headerName: 'GFAL', field: 'salary' },
+        { headerName: 'MPL', field: 'salary' },
+        { headerName: 'CONSO LOAN', field: 'salary' },
+        { headerName: 'CPL', field: 'salary' },
+        { headerName: 'EMRGNCY', field: 'salary' },
+        { headerName: 'GSIS POLICY', field: 'salary' },
+        { headerName: 'SG', field: 'salary' },
+        { headerName: 'seq.', field: 'salary' },
+        { headerName: 'SIGNATURE', field: 'salary' },
+        { headerName: 'REMARKS', field: 'salary' },
     ];
 
     return (
         <Payroll auth={auth}>
-            <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
-                <AgGridReact rowData={employee} columnDefs={columnDefs} />
+            <div className="p-4">
+                {/* <header className="mb-4 text-center text-xl font-bold">
+                    GENERAL PAYROLL {employee.employee_id}
+                </header> */}
+                <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
+                    <AgGridReact
+                        rowData={rowData}
+                        columnDefs={columnDefs}
+                        // Additional options and events can be added here
+                    />
+                </div>
             </div>
         </Payroll>
     );
 };
 
-export default EmployeeList;
+export default Computation;

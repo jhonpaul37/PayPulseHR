@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\voucher;
 use App\Models\accounting_entry;
 use App\Models\FundCluster;
+use App\Models\User;
 use Inertia\Inertia;
 
 
@@ -28,7 +29,8 @@ class VoucherController extends Controller
     {
         $uacsCodes = accounting_entry::all();
         $fundClusters = FundCluster::all();
-        return inertia('voucher/Create',['uacsCodes'=>$uacsCodes, 'fundClusters' => $fundClusters,]);
+        $user = User::all();
+        return inertia('voucher/Create',['uacsCodes'=>$uacsCodes, 'fundClusters' => $fundClusters,'users' =>$user]);
     }
 
     // Helper method to generate JEV No.

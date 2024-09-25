@@ -32,13 +32,13 @@ const Payroll = ({ auth, children }) => {
         {
             key: '1',
             label: 'General Payroll',
-            icon: <MailOutlined />,
+            // icon: <MailOutlined />,
             children: children,
         },
         {
             key: '2',
             label: 'Computation',
-            icon: <AppstoreOutlined />,
+            // icon: <AppstoreOutlined />,
             children: children,
         },
     ];
