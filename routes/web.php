@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\LoanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -53,6 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
     Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
     // Route::post('/payroll', [PayrollController::class, 'store']);
+
+    Route::get('/loans', [LoanController::class, 'Loans'])->name('loans..view');
 
 });
 

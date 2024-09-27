@@ -61,13 +61,13 @@ const AuthenticatedLayout = ({ user, children }) => {
     const { auth } = props;
 
     const selectedKey = () => {
-        // if (url.startsWith('/dashboard')) return '1';
+        if (url.startsWith('/dashboard')) return '1';
         if (url.startsWith('/voucher')) return '3';
         if (url.startsWith('/settings')) return '4';
         if (url.startsWith('/leaveRequest')) return '5';
         if (url.startsWith('/employees')) return '6';
         if (url.startsWith('/payroll/general')) return '7';
-        return '6'; // Default to Home
+        return '1'; // Default to Home
     };
 
     const menuItems = [
@@ -89,11 +89,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: !collapsed ? 'Accounting' : null,
             type: 'group',
         },
-        // {
-        //     key: '1',
-        //     icon: <FontAwesomeIcon icon={faHouse} />,
-        //     label: <Link href="/dashboard">Dashboard</Link>,
-        // },
+        {
+            key: '1',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/dashboard">Dashboard</Link>,
+        },
         {
             key: '3',
             icon: <FontAwesomeIcon icon={faFolder} />,
