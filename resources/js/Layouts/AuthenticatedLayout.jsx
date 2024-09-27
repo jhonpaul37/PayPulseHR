@@ -8,6 +8,7 @@ import {
     faFolder,
     faUsers,
     faHeartPulse,
+    faHandHoldingDollar,
 } from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
@@ -67,6 +68,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/leaveRequest')) return '5';
         if (url.startsWith('/employees')) return '6';
         if (url.startsWith('/payroll/general')) return '7';
+        if (url.startsWith('/loans')) return '8';
         return '1'; // Default to Home
     };
 
@@ -80,6 +82,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: '7',
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/payroll/general">Payroll</Link>,
+        },
+        {
+            key: '8',
+            icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
+            label: <Link href="/loans">Loans</Link>,
         },
         {
             type: 'divider',

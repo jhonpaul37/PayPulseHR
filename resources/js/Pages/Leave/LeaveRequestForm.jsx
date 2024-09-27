@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const leaveRequestForm = ({ auth }) => {
     const [data, setData] = useState({
-        requestor_name: '',
+        requestor_name: auth.user.name,
         office_unit: '',
         request_date: '',
         leave_type: [],
@@ -162,7 +162,7 @@ const leaveRequestForm = ({ auth }) => {
                                         autoComplete="off"
                                         name="requestor_name"
                                         value={data.requestor_name}
-                                        onChange={handleInputChange}
+                                        readonly
                                         className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.requestor_name ? 'border-red-500' : ''}`}
                                     />
                                     {validationErrors.requestor_name && (

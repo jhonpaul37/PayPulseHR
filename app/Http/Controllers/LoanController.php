@@ -8,7 +8,7 @@ class LoanController extends Controller
 {
 
     public function Loans(){
-        return Inertia::render('Payroll/Loans',);
+        return Inertia::render('Loans/Loans',);
     }
     public function calculateLoanPayment($loan)
     {
