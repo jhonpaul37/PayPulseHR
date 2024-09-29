@@ -73,7 +73,6 @@ class EmployeeController extends Controller
 
         // Check if a new photo was uploaded
         if ($request->hasFile('photo')) {
-            // Store the new photo and save its path
             $path = $request->file('photo')->store('employee_photos', 'public');
             $validated['photo_url'] = $path;
         }
@@ -81,7 +80,6 @@ class EmployeeController extends Controller
         // Update the employee with validated data
         $employee->update($validated);
 
-        // Redirect to the employee list or another route
         return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
 
@@ -111,32 +109,34 @@ class EmployeeController extends Controller
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
             'salary' => 'required|numeric',
-            'vacation_days' => 'nullable|integer',
-            'sick_days' => 'nullable|integer',
-            'leave_balance' => 'nullable|integer',
             'termination_date' => 'nullable|date',
             'termination_reason' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Photo validation
         if ($request->hasFile('photo')) {
             $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
         }
 
-        // Create the user
+        // Users primary key must existing first before insert a new Employee
+
+        // Create the user first
         $user = User::create([
             'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
-
+        // Assign the created user's ID to the Employee record Before save
         $validated['user_id'] = $user->id;
 
-        // Create the employee
+        // Employee with the user_id save into the Employee Table
         Employee::create($validated);
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
+
+
 
 }

@@ -4,7 +4,7 @@ import FormHeader from './components/FormHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const LeaveRequestShow = ({ LeaveRequest, auth }) => {
-    console.log('LeaveRequest:', LeaveRequest);
+    // console.log('LeaveRequest:', LeaveRequest);
     const route = useRoute();
 
     const TypeOfLeave = [
@@ -19,7 +19,7 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
         'Compensatory Time-Off',
         'Others (please specify)',
     ];
-    console.log(route('Appleave', LeaveRequest.id));
+    // console.log(route('Appleave', LeaveRequest.id));
 
     return (
         <AuthenticatedLayout user={auth.user}>

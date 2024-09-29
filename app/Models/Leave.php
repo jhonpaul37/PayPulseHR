@@ -12,6 +12,7 @@ class Leave extends Model
 
     protected $fillable = [
         'requestor_name',
+        'employee_id',
         'office_unit',
         'request_date',
         'from_date',
@@ -22,7 +23,7 @@ class Leave extends Model
         protected $casts = [
         'leave_type' => 'array', // Cast leave_type as an array
     ];
-        public function employee()
+    public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }

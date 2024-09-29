@@ -14,7 +14,9 @@ public function up(){
 
     Schema::create('employees', function (Blueprint $table) {
         $table->id();
-        // $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+        // Personal Info
         $table->string('employee_id');
         $table->string('first_name');
         $table->string('last_name');
@@ -27,25 +29,21 @@ public function up(){
         $table->string('phone');
         $table->string('email')->unique();
 
+        // Employee Info
+        $table->string('photo_url')->nullable();
         $table->string('position');
         $table->string('department');
         $table->date('start_date');
         $table->enum('employment_type', ['full-time', 'part-time', 'contract']);
         $table->decimal('salary', 8, 2);
-
-        // Benefits & Perks
-        $table->integer('vacation_days')->default(0);
-        $table->integer('sick_days')->default(0);
-
-        // Attendance & Leave
-        $table->integer('leave_balance')->default(0);
-
-        // Profile Picture
-        $table->string('photo_url')->nullable();
-
-        // Resignation/Termination
         $table->date('termination_date')->nullable();
         $table->string('termination_reason')->nullable();
+        $table->string('role')->nullable();
+
+        // Benefits & Perks
+        // $table->integer('vacation_days')->default(0);
+        // $table->integer('sick_days')->default(0);
+        // $table->integer('leave_balance')->default(0);
 
         $table->timestamps();
     });

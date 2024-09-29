@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->decimal('principal', 15, 2);
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
+            $table->date('loan_date');
             $table->decimal('interest_rate', 5, 2);
-            $table->enum('interest_type', ['fixed', 'variable']);
-            $table->integer('loan_term');
-            $table->enum('amortization_type', ['equal_payments', 'declining_balance']);
+            $table->date('due_date');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });
-
     }
 
     /**
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('loans');
     }
 };

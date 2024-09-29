@@ -2,24 +2,23 @@ import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AvailLeave from './components/AvailLeave';
 import FormHeader from './components/FormHeader';
+import TextInput from '@/Components/TextInput';
 
-function AppLeaveForm({ LeaveRequest, auth }) {
-    // check if the data is existing
-    // console.log('LeaveRequest:', LeaveRequest);
-
+function AppLeaveForm({ LeaveRequest, auth, Employee }) {
     const [formData, setFormData] = useState({
         office_unit: '',
-        lastName: '',
-        firstName: '',
-        middleName: '',
+        lastName: Employee.last_name,
+        firstName: Employee.first_name,
+        middleName: Employee.middle_name,
         dateOfFiling: '',
-        position: '',
-        salary: '',
+        position: Employee.position,
+        salary: Employee.salary,
         leaveAvail: '',
         leaveDetails: {},
     });
+    // console.log(LeaveRequest);
+    // console.log(Employee.first_name);
 
-    // Handler for leave type change from AvailLeave component
     const handleLeaveTypeChange = (leaveType, leaveDetails) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -28,7 +27,6 @@ function AppLeaveForm({ LeaveRequest, auth }) {
         }));
     };
 
-    // Function to update specific fields in formData
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -56,69 +54,59 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                     <div className="flex justify-between border-t border-black p-2">
                         <span>
                             <label className="mr-2"> 1. OFFICE/DEPARTMENT</label>
-                            <input
+                            <TextInput
                                 type="text"
                                 name="office_unit"
                                 value={LeaveRequest.office_unit}
-                                className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 readOnly
                             />
                         </span>
                         <span className="flex items-center justify-between">
                             <label>2. NAME:</label>
-                            <input
+                            <TextInput
                                 type="text"
                                 name="lastName"
                                 value={formData.lastName}
-                                onChange={handleInputChange}
-                                placeholder="Last Name"
-                                autoComplete="off"
+                                readOnly
                             />
-                            <input
+                            <TextInput
                                 type="text"
                                 name="firstName"
                                 value={formData.firstName}
-                                onChange={handleInputChange}
-                                placeholder="First Name"
-                                autoComplete="off"
+                                readOnly
                             />
 
-                            <input
+                            <TextInput
                                 type="text"
                                 name="middleName"
                                 value={formData.middleName}
-                                onChange={handleInputChange}
-                                placeholder="Middle Name"
-                                autoComplete="off"
+                                readOnly
                             />
                         </span>
                     </div>
                     <div className="flex justify-evenly border-t border-black p-2">
                         <span>
                             <label className="mr-2">3. DATE OF FILING</label>
-                            <input
+                            <TextInput
                                 type="text"
                                 name="office_unit"
                                 value={LeaveRequest.request_date}
-                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 readOnly
                             />
                         </span>
                         <span>
                             <label className="mr-2">4. POSITION</label>
-                            <input
+                            <TextInput
                                 type="text"
                                 name="position"
                                 value={formData.position}
-                                onChange={handleInputChange}
-                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                placeholder="position"
-                                autoComplete="off"
+                                // onChange={handleInputChange}
+                                readOnly
                             />
                         </span>
                         <span>
                             <label className="mr-2">5. SALARY</label>
-                            <input
+                            <TextInput
                                 type="text"
                                 name="salary"
                                 value={formData.salary}
@@ -143,14 +131,14 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                         <div className="border-t border-black p-1">
                             <label>6.C NUMBER OF WORKING DAYS APPLIED FOR</label>
                             <div className="flex flex-col p-4">
-                                <input
+                                <TextInput
                                     type="text"
                                     value={LeaveRequest.total_days}
                                     className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     readOnly
                                 />
                                 <span>INCLUSIVE DATES</span>
-                                <input
+                                <TextInput
                                     type="text"
                                     className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     readOnly
@@ -161,7 +149,7 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                             <label>6.D COMMUTATION</label>
                             <div className="flex flex-col p-4">
                                 <label>
-                                    <input
+                                    <TextInput
                                         type="radio"
                                         name="commutation"
                                         className="form-radio"
@@ -170,7 +158,7 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                                     <span className="mx-2">Not Requested</span>
                                 </label>
                                 <label>
-                                    <input
+                                    <TextInput
                                         type="radio"
                                         name="commutation"
                                         className="form-radio"
@@ -198,7 +186,7 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                                 <div className="flex justify-center">
                                     <label className="flex items-center">
                                         As{' '}
-                                        <input
+                                        <TextInput
                                             type="text"
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                         />
@@ -278,21 +266,21 @@ function AppLeaveForm({ LeaveRequest, auth }) {
                             <label> 7.C APPROVED FOR:</label>
                             <div className="flex flex-col p-2">
                                 <label>
-                                    <input
+                                    <TextInput
                                         type="text"
                                         className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     />{' '}
                                     days with pay
                                 </label>
                                 <label>
-                                    <input
+                                    <TextInput
                                         type="text"
                                         className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     />{' '}
                                     days without pay
                                 </label>
                                 <label>
-                                    <input
+                                    <TextInput
                                         type="text"
                                         className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     />{' '}

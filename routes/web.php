@@ -8,6 +8,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\LoanController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,7 +19,7 @@ Route::get('/', function () {
     ]);
 });
 
-// Routing
+// Routing with Authentication
 Route::middleware('auth')->group(function () {
 
     //Accounting
@@ -35,7 +36,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
     Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
-    //Application Leave Form
     Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
 
@@ -51,11 +51,15 @@ Route::middleware('auth')->group(function () {
 
     //Payroll
     Route::get('/payroll/general', [PayrollController::class, 'generalPayroll'])->name('generalPayroll');
+
+    Route::get('/payroll/data', [PayrollController::class, 'payrollData'])->name('payrollData');
+
     Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
     Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
-    // Route::post('/payroll', [PayrollController::class, 'store']);
 
-    Route::get('/loans', [LoanController::class, 'Loans'])->name('loans..view');
+    Route::get('/loans', [LoanController::class, 'Loans'])->name('loans.view');
+    Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
+    Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
 
 });
 

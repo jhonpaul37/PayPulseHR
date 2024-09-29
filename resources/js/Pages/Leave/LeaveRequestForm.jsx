@@ -4,9 +4,10 @@ import FormHeader from './components/FormHeader';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const leaveRequestForm = ({ auth }) => {
+const leaveRequestForm = ({ auth, employee }) => {
     const [data, setData] = useState({
-        requestor_name: auth.user.name,
+        requestor_name: '',
+        employee_id: '',
         office_unit: '',
         request_date: '',
         leave_type: [],
@@ -18,42 +19,28 @@ const leaveRequestForm = ({ auth }) => {
 
     const [validationErrors, setValidationErrors] = useState({});
 
+    // Auto-fill requestor's details and date
     useEffect(() => {
-        const currentDate = (() => {
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        })();
+        if (employee) {
+            const requestorName = `${employee.first_name} ${employee.middle_name.charAt(0)}. ${employee.last_name}`;
 
-        setData((prevData) => ({
-            ...prevData,
-            request_date: currentDate,
-        }));
-    }, []);
-    //data for the type of leave
-    const TypeOfLeave = [
-        'Vacation Leave',
-        'Sick Leave',
-        'Special Privilege Leave',
-        'Mandatory/Forced Leave',
-        'Maternity Leave',
-        'Paternity Leave',
-        'Terminal Leave',
-        'Rehabilitation Leave',
-        'Compensatory Time-Off',
-        'Others (please specify)',
-    ];
+            setData((prevData) => ({
+                ...prevData,
+                requestor_name: requestorName,
+                employee_id: employee.id, // assuming employee.id is an integer
+                request_date: new Date().toISOString().split('T')[0], // Automatically fill today's date
+            }));
+        }
+    }, [employee]);
 
+    // Other functions remain the same
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
-
-        // Clear validation error if input have value
+        // Clear validation error if input has value
         if (value !== '') {
             setValidationErrors((prevErrors) => ({
                 ...prevErrors,
@@ -77,7 +64,7 @@ const leaveRequestForm = ({ auth }) => {
             }));
         }
     };
-    // auto calculate the total days
+
     const calculateTotalDays = (name, value) => {
         const { from_date, to_date } = data;
 
@@ -98,7 +85,20 @@ const leaveRequestForm = ({ auth }) => {
             }));
         }
     };
-    //error validation code
+    //data for the type of leave
+    const TypeOfLeave = [
+        'Vacation Leave',
+        'Sick Leave',
+        'Special Privilege Leave',
+        'Mandatory/Forced Leave',
+        'Maternity Leave',
+        'Paternity Leave',
+        'Terminal Leave',
+        'Rehabilitation Leave',
+        'Compensatory Time-Off',
+        'Others (please specify)',
+    ];
+
     const validateForm = () => {
         const errors = {};
 
@@ -122,7 +122,7 @@ const leaveRequestForm = ({ auth }) => {
 
         return Object.keys(errors).length === 0;
     };
-    //submit button
+
     const submit = (e) => {
         e.preventDefault();
 
@@ -138,7 +138,6 @@ const leaveRequestForm = ({ auth }) => {
         };
 
         Inertia.post(route('LeaveRequstForm.store'), formattedData);
-        console.log('Submitted Data:', formattedData);
     };
 
     return (
@@ -162,7 +161,7 @@ const leaveRequestForm = ({ auth }) => {
                                         autoComplete="off"
                                         name="requestor_name"
                                         value={data.requestor_name}
-                                        readonly
+                                        onChange={handleInputChange}
                                         className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.requestor_name ? 'border-red-500' : ''}`}
                                     />
                                     {validationErrors.requestor_name && (

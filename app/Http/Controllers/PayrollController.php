@@ -9,6 +9,16 @@ use Inertia\Inertia;
 class PayrollController extends Controller
 {
 
+    public function payrollData()
+    {
+        $payrolls = Payroll::with('employee')->get();
+        $employee = Employee::get();
+
+        return Inertia::render('Payroll/PayrollData', [
+            'payrolls' => $payrolls, 'employee' => $employee
+        ]);
+    }
+
     public function generalPayroll()
     {
         $payrolls = Payroll::with('employee')->get();

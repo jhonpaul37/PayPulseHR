@@ -27,12 +27,11 @@ class Employee extends Model
         'start_date',
         'employment_type',
         'salary',
-        'vacation_days',
-        'sick_days',
-        'leave_balance',
+        'roles',
         'termination_date',
         'termination_reason',
         'photo_url',
+        'user_id',
     ];
     public function payrolls()
     {
@@ -41,7 +40,15 @@ class Employee extends Model
 
     public function leaveRequests()
     {
-        return $this->hasMany(Leave::class, 'employee_id');
+        return $this->hasMany(Leave::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
     }
 
 }

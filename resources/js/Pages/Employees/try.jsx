@@ -1,338 +1,323 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import FormHeader from './components/FormHeader';
 import TextInput from '@/Components/TextInput';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function EmployeeInfoEdit({ employee, auth }) {
-    const [isEditing, setIsEditing] = useState(false);
-    const [showTerminationForm, setShowTerminationForm] = useState(false);
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [employeeData, setEmployeeData] = useState({
-        first_name: employee.first_name,
-        middle_name: employee.middle_name,
-        last_name: employee.last_name,
-        birthdate: employee.birthdate,
-        sex: employee.sex,
-        civil_status: employee.civil_status,
-        nationality: employee.nationality,
-        address: employee.address,
-        email: employee.email,
-        phone: employee.phone,
-        position: employee.position,
-        department: employee.department,
-        employment_type: employee.employment_type,
-        start_date: employee.start_date,
-        salary: employee.salary,
-    });
-    const [terminationData, setTerminationData] = useState({
-        termination_date: '',
-        termination_reason: '',
+const leaveRequestForm = ({ auth, employee }) => {
+    const [data, setData] = useState({
+        requestor_name: auth.user.name,
+        office_unit: '',
+        request_date: '',
+        leave_type: [],
+        other_leave_type: '',
+        from_date: '',
+        to_date: '',
+        total_days: '',
     });
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-        }).format(date);
+    const [validationErrors, setValidationErrors] = useState({});
+
+    useEffect(() => {
+        const currentDate = (() => {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        })();
+
+        setData((prevData) => ({
+            ...prevData,
+            request_date: currentDate,
+        }));
+    }, []);
+    //data for the type of leave
+    const TypeOfLeave = [
+        'Vacation Leave',
+        'Sick Leave',
+        'Special Privilege Leave',
+        'Mandatory/Forced Leave',
+        'Maternity Leave',
+        'Paternity Leave',
+        'Terminal Leave',
+        'Rehabilitation Leave',
+        'Compensatory Time-Off',
+        'Others (please specify)',
+    ];
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+
+        // Clear validation error if input have value
+        if (value !== '') {
+            setValidationErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: '',
+            }));
+        }
     };
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-PH', {
-            style: 'currency',
-            currency: 'PHP',
-        }).format(amount);
-    };
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
 
-    const handleChange = (e) => {
-        setEmployeeData({
-            ...employeeData,
-            [e.target.name]: e.target.value,
-        });
+        if (checked) {
+            setData((prevData) => ({
+                ...prevData,
+                leave_type: [...prevData.leave_type, name],
+            }));
+        } else {
+            setData((prevData) => ({
+                ...prevData,
+                leave_type: prevData.leave_type.filter((type) => type !== name),
+            }));
+        }
     };
+    // auto calculate the total days
+    const calculateTotalDays = (name, value) => {
+        const { from_date, to_date } = data;
 
-    const handleSubmit = (e) => {
+        const startDate = name === 'from_date' ? new Date(value) : new Date(from_date);
+        const endDate = name === 'to_date' ? new Date(value) : new Date(to_date);
+
+        if (startDate && endDate && startDate <= endDate) {
+            const timeDifference = endDate - startDate;
+            const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+            setData((prevData) => ({
+                ...prevData,
+                total_days: daysDifference,
+            }));
+        } else {
+            setData((prevData) => ({
+                ...prevData,
+                total_days: '',
+            }));
+        }
+    };
+    //error validation code
+    const validateForm = () => {
+        const errors = {};
+
+        if (!data.requestor_name) {
+            errors.requestor_name = 'Name of requestor is required.';
+        }
+
+        if (!data.office_unit) {
+            errors.office_unit = 'Office/Unit is required.';
+        }
+
+        if (!data.from_date) {
+            errors.from_date = 'From Date is required.';
+        }
+
+        if (!data.to_date) {
+            errors.to_date = 'To Date is required.';
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
+    };
+    //submit button
+    const submit = (e) => {
         e.preventDefault();
-        Inertia.put(`/employees/${employee.id}`, employeeData, {
-            onFinish: () => setIsEditing(false),
-        });
+
+        if (!validateForm()) {
+            return;
+        }
+
+        const formattedData = {
+            ...data,
+            employee_id: auth.user.id, // Assuming `auth.user.id` is the employee ID
+            other_leave_type: data.leave_type.includes('Others (please specify)')
+                ? data.other_leave_type
+                : '',
+        };
+
+        Inertia.post(route('LeaveRequstForm.store'), formattedData);
     };
 
-    const handleTerminationChange = (e) => {
-        setTerminationData({
-            ...terminationData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmitTermination = (e) => {
-        e.preventDefault();
-        setShowConfirmation(true);
-    };
-
-    const handleConfirmTermination = () => {
-        Inertia.post(`/employees/${employee.id}/terminate`, terminationData, {
-            onFinish: () => {
-                setShowConfirmation(false);
-                setShowTerminationForm(false);
-            },
-        });
-    };
+    console.log(employee);
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div key={employee.id}>
-                <div className="pb-6">
-                    <header className="flex justify-center text-xl font-bold">
-                        Employee Details
-                    </header>
-                </div>
-                {/* Photo Section */}
-                <div className="flex items-center justify-evenly border-b border-t py-5">
-                    <img
-                        src={
-                            employee.photo_url
-                                ? `/storage/${employee.photo_url}`
-                                : 'default-photo-url.jpg'
-                        }
-                        alt={`${employee.first_name}'s photo`}
-                        className="h-24 w-24 rounded-full border object-cover shadow-md"
-                    />
-                    <div>
-                        {/* Name and Position */}
-                        {isEditing ? (
-                            <>
-                                <TextInput
-                                    type="text"
-                                    name="first_name"
-                                    value={employeeData.first_name}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <TextInput
-                                    type="text"
-                                    name="middle_name"
-                                    value={employeeData.middle_name}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <TextInput
-                                    type="text"
-                                    name="last_name"
-                                    value={employeeData.last_name}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                            </>
-                        ) : (
-                            <div className="mb-2">
-                                <span className="text-lg font-bold text-main">
-                                    {employee.first_name} {employee.middle_name}{' '}
-                                    {employee.last_name}
-                                </span>
-                                <div className="text-sm text-gray-600">{employee.position}</div>
-                                <div className="text-sm text-gray-600">{employee.department}</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+            <div>
+                <form onSubmit={submit}>
+                    <div className="border-2 border-black p-4">
+                        <FormHeader />
 
-                <div className="m-4 my-10 grid grid-cols-2">
-                    {/* Personal Background */}
-                    <div>
-                        <label className="font-bold">Personal Background</label>
-                        <div>
-                            {isEditing ? (
-                                <>
-                                    <label className="text-gray-400">Date of Birth: </label>
-                                    <TextInput
-                                        type="date"
-                                        name="birthdate"
-                                        value={employeeData.birthdate}
-                                        onChange={handleChange}
-                                        className="mb-2 block w-full rounded border px-2 py-1"
-                                    />
+                        <div className="mb-5">
+                            <label className="flex justify-center border-b-2 border-t-2 border-black p-1 font-bold">
+                                LEAVE REQUEST FORM
+                            </label>
+                        </div>
+                        <div className="flex justify-between">
+                            <div className="flex flex-col">
+                                <div className="mb-2">
+                                    <label className="mr-2 font-bold">Name of Requestor:</label>
                                     <TextInput
                                         type="text"
-                                        name="sex"
-                                        value={employeeData.sex}
-                                        onChange={handleChange}
-                                        className="mb-2 block w-full rounded border px-2 py-1"
+                                        autoComplete="off"
+                                        name="requestor_name"
+                                        value={data.requestor_name}
+                                        readOnly
+                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.requestor_name ? 'border-red-500' : ''}`}
                                     />
-                                    {/* Additional personal fields */}
-                                </>
-                            ) : (
-                                <>
-                                    <div>
-                                        <label className="text-gray-400">Full name: </label>
-                                        <span>
-                                            {employee.first_name} {employee.middle_name}{' '}
-                                            {employee.last_name}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <label className="text-gray-400">Date of Birth: </label>
-                                        <span>{formatDate(employee.birthdate)}</span>
-                                    </div>
-                                    <div>
-                                        <label className="text-gray-400">Sex: </label>
-                                        <span>{employee.sex}</span>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Company info/ Status */}
-                    <div>
-                        <label className="font-bold">Status</label>
-                        {isEditing ? (
-                            <>
-                                <TextInput
-                                    type="text"
-                                    name="position"
-                                    value={employeeData.position}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <TextInput
-                                    type="text"
-                                    name="department"
-                                    value={employeeData.department}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                <TextInput
-                                    type="number"
-                                    name="salary"
-                                    value={employeeData.salary}
-                                    onChange={handleChange}
-                                    className="mb-2 block w-full rounded border px-2 py-1"
-                                />
-                                {/* Additional company fields */}
-                            </>
-                        ) : (
-                            <>
-                                <div>
-                                    <span className="text-gray-400">Position: </span>
-                                    <span>{employee.position}</span>
+                                    {validationErrors.requestor_name && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {validationErrors.requestor_name}
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
-                                    <span className="text-gray-400">Salary: </span>
-                                    <span>{formatCurrency(employee.salary)}</span>
+                                    <label className="mr-2 font-bold">Office/Unit:</label>
+                                    <TextInput
+                                        type="text"
+                                        autoComplete="off"
+                                        name="office_unit"
+                                        value={data.office_unit}
+                                        onChange={handleInputChange}
+                                        className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.office_unit ? 'border-red-500' : ''}`}
+                                    />
+                                    {validationErrors.office_unit && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {validationErrors.office_unit}
+                                        </p>
+                                    )}
                                 </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="my-4 flex justify-center">
-                    {isEditing ? (
-                        <button
-                            onClick={handleSubmit}
-                            className="rounded bg-blue-500 px-4 py-2 text-white"
-                        >
-                            Save
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="rounded bg-green-500 px-4 py-2 text-white"
-                        >
-                            Edit Employee
-                        </button>
-                    )}
-                </div>
-
-                {/* Termination Button */}
-                {!isEditing && (
-                    <div className="my-4 flex justify-center">
-                        <button
-                            onClick={() => setShowTerminationForm(true)}
-                            className="rounded bg-red-500 px-4 py-2 text-white"
-                        >
-                            Terminate Employee
-                        </button>
-                    </div>
-                )}
-
-                {/* Termination Form */}
-                {showTerminationForm && !showConfirmation && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-                        <div className="rounded bg-white p-6 shadow-lg">
-                            <h2 className="mb-4 text-xl font-bold">Terminate Employee</h2>
-                            <form onSubmit={handleSubmitTermination}>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700">Termination Date</label>
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="mb-2">
+                                    <label className="mr-2 font-bold">Date of Request:</label>
                                     <TextInput
                                         type="date"
-                                        name="termination_date"
-                                        value={terminationData.termination_date}
-                                        onChange={handleTerminationChange}
-                                        className="w-full rounded border px-3 py-2"
-                                        required
+                                        autoComplete="off"
+                                        name="request_date"
+                                        value={data.request_date}
+                                        onChange={handleInputChange}
+                                        className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
                                     />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block text-gray-700">Reason</label>
-                                    <textarea
-                                        name="termination_reason"
-                                        value={terminationData.termination_reason}
-                                        onChange={handleTerminationChange}
-                                        className="w-full rounded border px-3 py-2"
-                                        rows="4"
-                                        required
-                                    />
-                                </div>
-                                <div className="flex justify-end">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowTerminationForm(false)}
-                                        className="mr-2 rounded bg-gray-500 px-4 py-2 text-white"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="rounded bg-red-500 px-4 py-2 text-white"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
+                            <div></div>
                         </div>
-                    </div>
-                )}
 
-                {/* Confirmation Dialog */}
-                {showConfirmation && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-                        <div className="rounded bg-white p-6 shadow-lg">
-                            <h2 className="mb-4 text-xl font-bold">Confirm Termination</h2>
-                            <p className="mb-4">
-                                Are you sure you want to terminate this employee? 😢
-                            </p>
-                            <div className="flex justify-end">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmation(false)}
-                                    className="mr-2 rounded bg-gray-500 px-4 py-2 text-white"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleConfirmTermination}
-                                    className="rounded bg-red-500 px-4 py-2 text-white"
-                                >
-                                    Confirm
-                                </button>
+                        <div className="mt-5 border-2 border-black">
+                            <div className="border-black bg-blue-100 p-2">
+                                <label className="font-bold">TYPE OF LEAVE:</label>
+                            </div>
+                            <div className="flex flex-col border-t-2 border-black p-2">
+                                <div className="grid grid-cols-3">
+                                    {TypeOfLeave.map((type, index) => (
+                                        <label
+                                            key={index}
+                                            className={`inline-flex items-center ${
+                                                type === 'Others (please specify)'
+                                                    ? 'col-span-3'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <TextInput
+                                                type="checkbox"
+                                                name={type}
+                                                checked={data.leave_type.includes(type)}
+                                                onChange={handleCheckboxChange}
+                                                className="form-checkbox"
+                                                autoComplete="off"
+                                            />
+                                            <span className="ml-2">{type}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                {data.leave_type.includes('Others (please specify)') && (
+                                    <div className="mt-2">
+                                        <label className="mr-2 font-bold">
+                                            Specify Leave Type:
+                                        </label>
+                                        <TextInput
+                                            type="text"
+                                            name="other_leave_type"
+                                            value={data.other_leave_type}
+                                            onChange={handleInputChange}
+                                            autoComplete="off"
+                                            className="focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        <div className="mt-5 border-2 border-black">
+                            <div className="border-black bg-blue-100 p-2">
+                                <label className="font-bold">INCLUSIVE DATES:</label>
+                            </div>
+                            <div className="flex flex-col border-t-2 border-black p-5">
+                                <div className="flex justify-evenly">
+                                    <div className="mb-2">
+                                        <label className="mr-2 font-bold">From Date:</label>
+                                        <TextInput
+                                            type="date"
+                                            autoComplete="off"
+                                            name="from_date"
+                                            value={data.from_date}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                                calculateTotalDays(e.target.name, e.target.value);
+                                            }}
+                                            className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.from_date ? 'border-red-500' : ''}`}
+                                        />
+                                        {validationErrors.from_date && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {validationErrors.from_date}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="mr-2 font-bold">To Date:</label>
+                                        <TextInput
+                                            type="date"
+                                            autoComplete="off"
+                                            name="to_date"
+                                            value={data.to_date}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                                calculateTotalDays(e.target.name, e.target.value);
+                                            }}
+                                            className={`focus:shadow-outline appearance-none rounded px-3 py-2 leading-tight shadow focus:outline-none ${validationErrors.to_date ? 'border-red-500' : ''}`}
+                                        />
+                                        {validationErrors.to_date && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {validationErrors.to_date}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-center">
+                                    <label className="mr-2 font-bold">Total Days:</label>
+                                    <span>{data.total_days}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex justify-center pt-10">
+                            <span className="border-t border-black px-16 font-bold">
+                                Signature of Requestor
+                            </span>
+                        </div>
                     </div>
-                )}
+                    <div className="mt-5 flex justify-end">
+                        <button type="submit" className="rounded-md bg-high px-4 py-2 font-bold">
+                            Submit
+                        </button>
+                    </div>
+                </form>
             </div>
         </AuthenticatedLayout>
     );
-}
+};
+
+export default leaveRequestForm;
