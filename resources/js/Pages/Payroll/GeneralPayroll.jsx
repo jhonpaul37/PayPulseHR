@@ -28,7 +28,7 @@ const GeneralPayroll = ({ auth, employee }) => {
             },
             filter: 'colFilter',
         },
-        { headerName: 'SG-STEP', field: '', editable: true },
+        { headerName: 'SG-STEP', field: '', editable: false },
         { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
         { headerName: 'BASIC PAY', field: 'salary', editable: true, valueFormatter: PhpFormat },
         { headerName: 'LWOP', field: '', editable: true },

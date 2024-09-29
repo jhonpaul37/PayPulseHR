@@ -28,44 +28,74 @@ const PayrollData = ({ auth, employee }) => {
             },
             filter: 'colFilter',
         },
-        { headerName: 'SG', field: '', editable: true },
-        { headerName: 'STEP', field: '', editable: true },
-        { headerName: 'SG-STEP', field: '', editable: true },
+        { headerName: 'SG', field: 'sg', editable: true },
+        { headerName: 'STEP', field: 'step', editable: true },
+        {
+            headerName: 'SG-STEP',
+            valueGetter: (params) => {
+                const sg = params.data.sg || '';
+                const step = params.data.step || '';
+                return `${sg} - ${step}`; // Compute SG-STEP value
+            },
+            editable: false, // SG-STEP is computed, not editable
+        },
+        { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
+        {
+            headerName: 'BASIC PAY',
+            field: 'salary',
+            editable: true,
+            valueFormatter: PhpFormat,
+        },
+        {
+            headerName: 'LWOP-BASIC',
+            field: 'lwopBasic',
+            editable: true,
+            valueFormatter: PhpFormat,
+        },
+        {
+            headerName: 'NET-BASIC',
+            field: 'netBasic',
+            editable: false, // Calculated field
+            valueGetter: (params) => {
+                const basicPay = parseFloat(params.data.salary) || 0;
+                const lwopBasic = parseFloat(params.data.lwopBasic) || 0;
+                return basicPay - lwopBasic;
+            },
+            valueFormatter: PhpFormat,
+        },
 
-        // { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
-        // { headerName: 'BASIC PAY', field: 'salary', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'LWOP', field: '', editable: true },
-        // { headerName: 'NET-BASIC', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'PERA', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'LWOP-PERA', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'NET-PERA', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'RATA', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'TOTAL', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'TAX', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'GSIS PREM', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'HDMF PREM1', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'HDMF PREM2', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'PHIC', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'GFAL', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'MPL', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'CONSO LOAN', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'CPL', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'EMRGNCY', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'GSIS POLICY', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'SG', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'seq.', field: '', editable: true, valueFormatter: PhpFormat },
-        // { headerName: 'SIGNATURE', field: '', editable: false },
-        // { headerName: 'REMARKS', field: '', editable: true },
+        {
+            headerName: 'PERA',
+            field: 'pera',
+            editable: true,
+            valueFormatter: PhpFormat,
+        },
+        {
+            headerName: 'LWOP-PERA',
+            field: 'lwopPera',
+            editable: true,
+            valueFormatter: PhpFormat,
+        },
+        {
+            headerName: 'NET PERA',
+            field: 'netPera',
+            editable: false, // Calculated field
+            valueGetter: (params) => {
+                const pera = parseFloat(params.data.pera) || 0;
+                const lwopPera = parseFloat(params.data.lwopPera) || 0;
+                return pera + lwopPera;
+            },
+            valueFormatter: PhpFormat,
+        },
     ];
 
     // Function to handle cell value changes
     const onCellValueChanged = (params) => {
-        const updatedData = [...rowData];
         const updatedRow = params.data;
-        const index = updatedData.findIndex((row) => row.employee_id === updatedRow.employee_id);
-        updatedData[index] = updatedRow;
-        setRowData(updatedData);
-        console.log('Updated row:', updatedRow);
+        const updatedData = rowData.map((row) =>
+            row.employee_id === updatedRow.employee_id ? updatedRow : row
+        );
+        setRowData(updatedData); // Update state with the new data
     };
 
     return (
