@@ -27,8 +27,8 @@ const leaveRequestForm = ({ auth, employee }) => {
             setData((prevData) => ({
                 ...prevData,
                 requestor_name: requestorName,
-                employee_id: employee.id, // assuming employee.id is an integer
-                request_date: new Date().toISOString().split('T')[0], // Automatically fill today's date
+                employee_id: employee.id,
+                request_date: new Date().toISOString().split('T')[0], // Automatically fill today date
             }));
         }
     }, [employee]);

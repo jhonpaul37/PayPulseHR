@@ -6,6 +6,7 @@ import { Upload, message } from 'antd';
 //Components
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import TextInput from '@/Components/TextInput';
+import DateInput from '@/Components/DateInput';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();

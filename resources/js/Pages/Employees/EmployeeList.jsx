@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import EmployeeInfo from './EmployeeInfo';
-import { Button, FloatButton as Btn } from 'antd';
+import { Button, FloatButton as Btn, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
@@ -50,43 +50,51 @@ export default function EmployeeList({ employees, auth }) {
 
             <div className="m-4 my-10">
                 <div className="flex flex-col gap-5">
-                    {activeEmployees.map((employee) => (
-                        <div
-                            key={employee.id}
-                            className="flex w-full items-center justify-between rounded-lg border p-4 px-10 shadow-md"
-                        >
-                            <div className="flex items-center justify-center">
-                                {/* Photo Section */}
-                                <div className="pr-5">
-                                    <img
-                                        src={
-                                            employee.photo_url
-                                                ? `/storage/${employee.photo_url}`
-                                                : 'default-photo-url.jpg'
-                                        }
-                                        alt={`${employee.first_name}'s photo`}
-                                        className="h-16 w-16 rounded-full border object-cover shadow-md"
-                                    />
+                    {/* Conditional rendering for active employees */}
+                    {activeEmployees.length > 0 ? (
+                        activeEmployees.map((employee) => (
+                            <div
+                                key={employee.id}
+                                className="flex w-full items-center justify-between rounded-lg border p-4 px-10 shadow-md"
+                            >
+                                <div className="flex items-center justify-center">
+                                    {/* Photo Section */}
+                                    <div className="pr-5">
+                                        <img
+                                            src={
+                                                employee.photo_url
+                                                    ? `/storage/${employee.photo_url}`
+                                                    : 'default-photo-url.jpg'
+                                            }
+                                            alt={`${employee.first_name}'s photo`}
+                                            className="h-16 w-16 rounded-full border object-cover shadow-md"
+                                        />
+                                    </div>
+                                    {/* Name and Position */}
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-bold text-main">
+                                            {employee.first_name} {employee.middle_name}{' '}
+                                            {employee.last_name}
+                                        </span>
+                                        <span className="text-sm text-gray-600">
+                                            {employee.position}
+                                        </span>
+                                    </div>
                                 </div>
-                                {/* Name and Position */}
-                                <div className="flex flex-col">
-                                    <span className="text-lg font-bold text-main">
-                                        {employee.first_name} {employee.middle_name}{' '}
-                                        {employee.last_name}
-                                    </span>
-                                    <span className="text-sm text-gray-600">
-                                        {employee.position}
-                                    </span>
-                                </div>
-                            </div>
 
-                            <div className="">
-                                <Button onClick={() => showDrawer(employee)} type="primary">
-                                    View Profile
-                                </Button>
+                                <div className="">
+                                    <Button onClick={() => showDrawer(employee)} type="primary">
+                                        View Profile
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <Empty
+                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                            description="No active employees available"
+                        />
+                    )}
                 </div>
             </div>
             <EmployeeInfo visible={open} onClose={onClose} employee={selectedEmployee} />

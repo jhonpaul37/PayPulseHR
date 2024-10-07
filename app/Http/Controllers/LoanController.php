@@ -14,7 +14,6 @@ class LoanController extends Controller
     }
     public function create()
     {
-        // Fetch all employees for selection
         $employees = Employee::all();
         return Inertia::render('Loans/CreateLoan', ['employees' => $employees]);
     }
