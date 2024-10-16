@@ -1,59 +1,41 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import React, { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
+import PrimaryButton from '@/Components/PrimaryButton';
+import { Divider } from 'antd';
+import LoanPrograms from './LoanPrograms';
+import LoanTypes from './LoanTypes';
+import LoanPlans from './LoanPlans'; // Import the LoanPlans component
 
-const Loans = ({ auth }) => {
-    const [name, setName] = useState('');
-    const [interestRate, setInterestRate] = useState('');
-    const [errors, setErrors] = useState({});
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        Inertia.post(
-            '/loan-programs',
-            {
-                name,
-                interest_rate: interestRate,
-            },
-            {
-                onError: (err) => setErrors(err),
-                onSuccess: () => {
-                    setName('');
-                    setInterestRate('');
-                    setErrors({});
-                },
-            }
-        );
-    };
+const Loans = ({ auth, loanPrograms, loanTypes, loanPlans }) => {
     return (
         <AuthenticatedLayout user={auth.user}>
-            <h1>Create Loan Program</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="name">Loan Program Name</label>
-                    <input
-                        id="name"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    {errors.name && <span>{errors.name}</span>}
-                </div>
+            <Divider
+                style={{
+                    borderColor: '#F0C519',
+                }}
+            >
+                <span className="text-xl font-bold">Loan Programs</span>
+            </Divider>
+            <LoanPrograms programs={loanPrograms} />
 
-                <div>
-                    <label htmlFor="interestRate">Interest Rate (%)</label>
-                    <input
-                        id="interestRate"
-                        type="number"
-                        value={interestRate}
-                        onChange={(e) => setInterestRate(e.target.value)}
-                    />
-                    {errors.interest_rate && <span>{errors.interest_rate}</span>}
-                </div>
+            <Divider
+                style={{
+                    borderColor: '#F0C519',
+                }}
+            >
+                <span className="text-xl font-bold">Loan Types</span>
+            </Divider>
+            <LoanTypes loanPrograms={loanPrograms} loanTypes={loanTypes} />
 
-                <button type="submit">Add Loan Program</button>
-            </form>
+            <Divider
+                style={{
+                    borderColor: '#F0C519',
+                }}
+            >
+                <span className="text-xl font-bold">Loan Plans</span>
+            </Divider>
+
+            {/* Render the LoanPlans component */}
+            <LoanPlans auth={auth} loanPlans={loanPlans} loanTypes={loanTypes} />
         </AuthenticatedLayout>
     );
 };

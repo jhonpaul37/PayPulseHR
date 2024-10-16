@@ -4,32 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Loan;
 use App\Models\Employee;
+use App\Models\LoanType;
+use App\Models\ProgramLoan;
+use App\Models\LoanPlan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 class LoanController extends Controller
 {
 
-    public function Loans(){
-        return Inertia::render('Loans/Loans',);
-    }
-    public function create()
+    public function Loans()
     {
-        $employees = Employee::all();
-        return Inertia::render('Loans/CreateLoan', ['employees' => $employees]);
+        $loanTypes = LoanType::all();
+        $loanPrograms = ProgramLoan::all();
+        $loanPlans = LoanPlan::with('loanType')->get();
+        return Inertia::render('Loans/Loans',['loanPrograms' => $loanPrograms, 'loanTypes' =>$loanTypes, 'loanPlans' => $loanPlans,]);
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'amount' => 'required|numeric',
-            'loan_date' => 'required|date',
-            'interest_rate' => 'required|numeric',
-            'due_date' => 'required|date',
-        ]);
-
-        Loan::create($validated);
-
-        return redirect()->route('loans.create')->with('success', 'Loan added successfully');
-    }
 }

@@ -9,6 +9,11 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\LoanController;
 
+use App\Http\Controllers\LoanProgramController;
+use App\Http\Controllers\LoanTypeController;
+use App\Http\Controllers\LoanPlanController;
+use App\Http\Controllers\EmployeeLoanController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -57,10 +62,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
     Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
 
-    Route::get('/loans', [LoanController::class, 'Loans'])->name('loans.view');
-    Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
-    Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
+        //Loans
+        //Dashboard for loans
+        Route::get('/loans', [LoanController::class, 'Loans'])->name('loans.view');
 
+        //Loan Programs
+        // Route::get('/loanPrograms', [LoanProgramController::class, 'index'])->name('loan-programs.index'); //For Troubleshoot
+        Route::post('/loanPrograms', [LoanProgramController::class, 'store'])->name('loan-programs.store');
+        Route::put('/loanPrograms/{id}', [LoanProgramController::class, 'update'])->name('loan-programs.update');
+
+        //Loan Types
+        // Route::get('loanTypes', [LoanTypeController::class, 'index'])->name('loanTypes.index'); //For Troubleshoot
+        Route::post('loanTypes', [LoanTypeController::class, 'store'])->name('loanTypes.store');
+        Route::put('loanTypes/{loanType}', [LoanTypeController::class, 'update'])->name('loanTypes.update');
+
+        //Loan Plans
+        // Route::get('/loanPlans', [LoanPlanController::class, 'index'])->name('loanPlans.index'); //For Troubleshoot
+        Route::post('/loanPlans', [LoanPlanController::class, 'store'])->name('loanPlans.store');
+        Route::patch('/loanPlans/{id}', [LoanPlanController::class, 'update'])->name('loanPlans.update');
+
+        //Employee Loans
+        Route::get('/employeeLoans/create', [EmployeeLoanController::class, 'create'])->name('employee_loans.create');
+        Route::post('/employeeLoans', [EmployeeLoanController::class, 'store'])->name('employee_loans.store');
+        Route::get('/employeeLoans/{employeeLoan}/edit', [EmployeeLoanController::class, 'edit'])->name('employee_loans.edit');
+        Route::put('/employeeLoans/{employeeLoan}', [EmployeeLoanController::class, 'update'])->name('employee_loans.update');
 });
 
 // for the User Profit
