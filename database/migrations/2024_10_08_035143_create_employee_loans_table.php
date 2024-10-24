@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('employee_loans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->foreignId('loan_plan_id')->constrained('loans_plans')->onDelete('cascade');
-            $table->decimal('amount', 10, 2); // Loan amount
+            $table->foreignId('loan_type_id')->constrained('loans_types')->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
             $table->date('loan_date');
-            $table->decimal('monthly_amortization', 10, 2); // Monthly payment
+            $table->decimal('interest_rate', 5, 2);
+            $table->integer('months');
+            $table->decimal('monthly_amortization', 10, 2);
             $table->timestamps();
         });
     }

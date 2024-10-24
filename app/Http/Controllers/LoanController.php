@@ -14,10 +14,14 @@ class LoanController extends Controller
 
     public function Loans()
     {
-        $loanTypes = LoanType::all();
+        $loanTypes = LoanType::with('loanProgram')->get();
         $loanPrograms = ProgramLoan::all();
-        $loanPlans = LoanPlan::with('loanType')->get();
-        return Inertia::render('Loans/Loans',['loanPrograms' => $loanPrograms, 'loanTypes' =>$loanTypes, 'loanPlans' => $loanPlans,]);
+        $employees = Employee::all();
+        return Inertia::render('Loans/Loans', [
+            'loanPrograms' => $loanPrograms,
+            'loanTypes' => $loanTypes,
+            'employees' => $employees,
+        ]);
     }
 
 }

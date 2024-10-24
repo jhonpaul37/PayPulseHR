@@ -11,5 +11,13 @@ class EmployeeLoan extends Model
 
     protected $table = 'employee_loans';
 
-    protected $fillable = ['employee_id', 'loan_plan_id', 'amount', 'loan_date', 'monthly_amortization'];
+        protected $fillable = [
+        'employee_id',
+        'loan_type_id',
+        'amount',
+        'loan_date',
+        'interest_rate',
+        'months',
+        'monthly_amortization',
+    ];
 }

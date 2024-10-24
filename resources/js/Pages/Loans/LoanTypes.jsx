@@ -61,44 +61,48 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
 
     return (
         <div>
+            <div className="flex justify-end pb-5">
+                <PrimaryButton type="primary" onClick={showCreateModal}>
+                    Add Loan Type
+                </PrimaryButton>
+            </div>
+
             {loanTypesByProgram.length > 0 ? (
-                loanTypesByProgram.map((program) => (
-                    <div key={program.id} className="mb-8">
-                        {/* <h2 className="text-lg font-bold">{program.name}</h2> */}
-                        {program.loanTypes.length > 0 ? (
-                            <Card title={program.name} className="mt-4">
-                                {program.loanTypes.map((loanType) => (
-                                    <Card.Grid
-                                        key={loanType.id}
-                                        style={getGridStyle(program.loanTypes.length)}
-                                        onClick={() => showEditModal(loanType)}
-                                        className="flex flex-col justify-center"
-                                    >
-                                        <div className="text-lg font-bold">{loanType.type}</div>
-                                        <div className="text-gray-400">{loanType.description}</div>
-                                    </Card.Grid>
-                                ))}
-                            </Card>
-                        ) : (
-                            <Empty
-                                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                description="No loan types available"
-                            />
-                        )}
-                    </div>
-                ))
+                loanTypesByProgram.some((program) => program.loanTypes.length > 0) ? (
+                    loanTypesByProgram.map((program) => (
+                        <div key={program.id} className="mb-4">
+                            {program.loanTypes.length > 0 ? (
+                                <Card title={program.name} className="">
+                                    {program.loanTypes.map((loanType) => (
+                                        <Card.Grid
+                                            key={loanType.id}
+                                            style={getGridStyle(program.loanTypes.length)}
+                                            onClick={() => showEditModal(loanType)}
+                                            className="flex flex-col justify-center"
+                                        >
+                                            <div className="text-lg font-bold">{loanType.type}</div>
+                                            <div className="text-gray-400">
+                                                {loanType.description}
+                                            </div>
+                                        </Card.Grid>
+                                    ))}
+                                </Card>
+                            ) : null}{' '}
+                            {/* not render anything if no loan types */}
+                        </div>
+                    ))
+                ) : (
+                    <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description="No loan types available"
+                    />
+                )
             ) : (
                 <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                     description="No loan programs available"
                 />
             )}
-
-            <div className="pt-4">
-                <PrimaryButton type="primary" onClick={showCreateModal}>
-                    Add Loan Type
-                </PrimaryButton>
-            </div>
 
             {/* Create Loan Type Modal */}
             <Modal

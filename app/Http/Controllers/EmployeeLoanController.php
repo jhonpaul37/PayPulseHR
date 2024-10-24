@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmployeeLoan;
 use App\Models\Employee;
-use App\Models\LoanPlan;
+use App\Models\LoanType;
 use Illuminate\Http\Request;
 
 class EmployeeLoanController extends Controller
@@ -13,34 +13,40 @@ class EmployeeLoanController extends Controller
     public function create()
     {
         $employees = Employee::all();
-        $loanPlans = LoanPlan::with('loanType')->get();
+        $loanTypes = LoanType::with('loanProgram')->get();
+
         return inertia('Loans/EmployeeLoanForm', [
             'employees' => $employees,
-            'loanPlans' => $loanPlans,
+            'loanTypes' => $loanTypes ?? [],
         ]);
     }
 
     public function store(Request $request)
     {
+
         $request->validate([
             'employee_id' => 'required|exists:employees,id',
-            'loan_plan_id' => 'required|exists:loan_plans,id',
+            'loan_type_id' => 'required|exists:loans_types,id',
             'amount' => 'required|numeric|min:0',
             'loan_date' => 'required|date',
+            'interest_rate' => 'required|numeric|min:0',
+            'months' => 'required|integer|min:1',
+            'monthly_amortization' => 'required|numeric|min:0',
         ]);
 
-        $loanPlan = LoanPlan::find($request->loan_plan_id);
-        $monthlyAmortization = $this->calculateAmortization($request->amount, $loanPlan->interest_rate, $loanPlan->months);
+        $monthlyAmortization = $this->calculateAmortization($request->amount, $request->interest_rate, $request->months);
 
         EmployeeLoan::create([
             'employee_id' => $request->employee_id,
-            'loan_plan_id' => $request->loan_plan_id,
+            'loan_type_id' => 1,
             'amount' => $request->amount,
             'loan_date' => $request->loan_date,
+            'interest_rate' => $request->interest_rate,
+            'months' => $request->months,
             'monthly_amortization' => $monthlyAmortization,
         ]);
 
-        return redirect()->route('employee-loans.index');
+        return redirect()->route('loans.view');
     }
 
     public function calculateAmortization($amount, $interestRate, $months)

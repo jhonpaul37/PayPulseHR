@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('loans_types', function (Blueprint $table) {
             $table->id();
             $table->foreignId('loan_program_id')->constrained('programs_loans')->onDelete('cascade');
-            $table->string('type'); // e.g., Salary Loan, Housing Loan
+            $table->string('type');
             $table->string('description')->nullable();
             $table->timestamps();
         });

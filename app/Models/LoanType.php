@@ -22,4 +22,9 @@ class LoanType extends Model
     {
         return $this->hasMany(LoanPlan::class);
     }
+
+    public function loanProgram()
+    {
+        return $this->belongsTo(ProgramLoan::class, 'loan_program_id');
+    }
 }

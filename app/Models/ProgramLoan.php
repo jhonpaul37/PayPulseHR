@@ -12,4 +12,9 @@ class ProgramLoan extends Model
     protected $table = 'programs_loans';
 
     protected $fillable = ['name'];
+
+    public function loanTypes()
+    {
+        return $this->hasMany(LoanType::class);
+    }
 }

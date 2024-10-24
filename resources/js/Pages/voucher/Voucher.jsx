@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { useRoute } from '@ziggy';
-import { Button, FloatButton as Btn, Empty } from 'antd';
+import { FloatButton as Btn, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';

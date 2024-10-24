@@ -57,7 +57,11 @@ export default function LoanPrograms({ programs }) {
 
     return (
         <div>
-            {/* Loan Programs List */}
+            <div className="flex justify-end pb-5">
+                <PrimaryButton type="primary" onClick={handleAddNew}>
+                    Add Program
+                </PrimaryButton>
+            </div>
             {programs && programs.length > 0 ? (
                 <Card title="Loan Programs">
                     {programs.map((program) => (
@@ -76,16 +80,11 @@ export default function LoanPrograms({ programs }) {
                     description="No loan programs available"
                 />
             )}
-            <div className="pt-5">
-                <PrimaryButton type="primary" onClick={handleAddNew}>
-                    Add Program
-                </PrimaryButton>
-            </div>
 
             {/* Modal for Adding/Editing Programs */}
             <Modal
                 title={editingProgram ? 'Edit Loan Program' : 'Add Loan Program'}
-                open={isModalOpen} // Change from 'visible' to 'open'
+                open={isModalOpen}
                 onCancel={handleCancel}
                 footer={null}
             >
