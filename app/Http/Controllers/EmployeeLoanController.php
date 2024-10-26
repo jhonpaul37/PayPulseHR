@@ -60,4 +60,33 @@ class EmployeeLoanController extends Controller
         $employeeLoan->delete();
         return redirect()->route('employee-loans.index');
     }
+
+    public function addPayment(Request $request, EmployeeLoan $employeeLoan)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'payment_date' => 'required|date',
+        ]);
+
+        $employeeLoan->payments()->create([
+            'amount' => $request->amount,
+            'payment_date' => $request->payment_date,
+        ]);
+
+        return redirect()->route('employee-loans.view', $employeeLoan->id)
+            ->with('success', 'Payment added successfully.');
+    }
+
+    public function show(EmployeeLoan $employeeLoan)
+    {
+        //load all relationship
+        $employeeLoan->load(['employee', 'loanType', 'payments']);
+
+        return inertia('Loans/EmployeeLoanDetail', [
+            'employeeLoan' => $employeeLoan,
+            'payments' => $employeeLoan->payments,
+        ]);
+    }
+
+
 }

@@ -23,7 +23,6 @@ Route::get('/', function () {
     ]);
 });
 
-// Routing with Authentication
 Route::middleware('auth')->group(function () {
 
     //Accounting
@@ -59,7 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/payroll/data', [PayrollController::class, 'payrollData'])->name('payrollData');
 
     Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
-    Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
+    // Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
 
         //Loans
         //Dashboard for loans
@@ -77,11 +76,28 @@ Route::middleware('auth')->group(function () {
 
         //Employee Loans
         // Route::get('/employeeLoans/create', [EmployeeLoanController::class, 'create'])->name('employee_loans.create'); //For Troubleshoot
+        Route::post('/employee-loans/{employeeLoan}/add-payment', [EmployeeLoanController::class, 'addPayment'])->name('employee-loans.add-payment');
         Route::post('/employee_loans', [EmployeeLoanController::class, 'store'])->name('employee_loans.store');
         Route::get('/employee_loans/{employeeLoan}/edit', [EmployeeLoanController::class, 'edit'])->name('employee_loans.edit');
         Route::put('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'update'])->name('employee_loans.update');
 
+        //Loan Details
+        Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');
+
 });
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+
+});
+
+Route::middleware(['auth', 'role:manager'])->group(function () {
+
+});
+
+Route::middleware(['auth', 'role:employee'])->group(function () {
+
+});
+
 
 // for the User Profit
     Route::middleware('auth')->group(function () {

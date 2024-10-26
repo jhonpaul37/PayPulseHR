@@ -11,7 +11,7 @@ class EmployeeLoan extends Model
 
     protected $table = 'employee_loans';
 
-        protected $fillable = [
+    protected $fillable = [
         'employee_id',
         'loan_type_id',
         'amount',
@@ -20,4 +20,20 @@ class EmployeeLoan extends Model
         'months',
         'monthly_amortization',
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function loanType()
+    {
+        return $this->belongsTo(LoanType::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(EmployeeLoanPayment::class);
+    }
+
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import PrimaryButton from '@/Components/PrimaryButton';
-import CancelButton from '@/Components/CancelButton'; // Import the CancelButton
+import CancelButton from '@/Components/CancelButton';
 import TextInput from '@/Components/TextInput';
 import { Card, Empty, Modal } from 'antd';
 

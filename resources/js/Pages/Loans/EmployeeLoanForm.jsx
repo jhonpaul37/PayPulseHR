@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
 
 function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanPrograms }) {
     const [formData, setFormData] = useState({
@@ -105,7 +106,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 <label htmlFor="employee_name" className="block text-sm font-medium text-gray-700">
                     Employee
                 </label>
-                <input
+                <TextInput
                     type="text"
                     name="employee_name"
                     value={formData.employee_name}
@@ -128,37 +129,33 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 )}
             </div>
 
-            <div>
-                <label htmlFor="loan_type_id" className="block text-sm font-medium text-gray-700">
-                    Loan Type
-                </label>
-                <select
-                    name="loan_type_id"
-                    value={formData.loan_type_id}
-                    onChange={handleChange}
-                    className="mt-1 block w-full"
-                >
-                    <option value="">Select a loan type</option>
-                    {loanTypes.map((loanType) => (
-                        <option key={loanType.id} value={loanType.id}>
-                            {loanType.type}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {/* {console.log(loanPrograms)} */}
+            <select
+                name="loan_type_id"
+                value={formData.loan_type_id}
+                onChange={handleChange}
+                className="mt-1 block w-full"
+                autoComplete="off"
+            >
+                <option value="">Select a loan type</option>
+                {loanTypes.map((loanType) => (
+                    <option key={loanType.id} value={loanType.id}>
+                        {loanType.type} -{' '}
+                        {loanType.loan_program ? loanType.loan_program.name : 'No Program'}
+                    </option>
+                ))}
+            </select>
 
             <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
                     Loan Amount
                 </label>
-                <input
+                <TextInput
                     type="number"
                     name="amount"
                     value={formData.amount}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -166,12 +163,13 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 <label htmlFor="loan_date" className="block text-sm font-medium text-gray-700">
                     Loan Date
                 </label>
-                <input
+                <TextInput
                     type="date"
                     name="loan_date"
                     value={formData.loan_date}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -179,13 +177,14 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 <label htmlFor="interest_rate" className="block text-sm font-medium text-gray-700">
                     Interest Rate (%)
                 </label>
-                <input
+                <TextInput
                     type="number"
                     name="interest_rate"
                     value={formData.interest_rate}
                     onChange={handleChange}
                     className="mt-1 block w-full"
                     step="0.01"
+                    autoComplete="off"
                 />
             </div>
 
@@ -193,12 +192,13 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 <label htmlFor="months" className="block text-sm font-medium text-gray-700">
                     Months to Pay
                 </label>
-                <input
+                <TextInput
                     type="number"
                     name="months"
                     value={formData.months}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -209,12 +209,13 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 >
                     Monthly Amortization
                 </label>
-                <input
+                <TextInput
                     type="text"
                     name="monthly_amortization"
                     value={formattedAmortization}
                     className="mt-1 block w-full"
                     readOnly
+                    autoComplete="off"
                 />
             </div>
 

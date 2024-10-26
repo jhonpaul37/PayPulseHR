@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-//format PHP Peso
+// Format PHP Peso
 const PhpFormat = (params) => {
     const value = parseFloat(params.value);
     if (isNaN(value)) {
@@ -13,55 +13,49 @@ const PhpFormat = (params) => {
     return `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-const GeneralPayroll = ({ auth, employee }) => {
+const GeneralPayroll = ({ auth, employee, loanTypes }) => {
     const [rowData, setRowData] = useState(employee);
+    const [columnDefs, setColumnDefs] = useState([]);
 
-    const columnDefs = [
-        { headerName: 'EMPLOYEE NO', field: 'employee_id', editable: false },
-        {
-            headerName: 'EMPLOYEE NAME',
-            valueGetter: (params) => {
-                const firstName = params.data.first_name || '';
-                const middleName = params.data.middle_name ? ` ${params.data.middle_name}` : '';
-                const lastName = params.data.last_name || '';
-                return `${firstName}${middleName} ${lastName}`.trim();
+    useEffect(() => {
+        const loanTypeColumns = loanTypes.map((loanType) => ({
+            headerName: loanType.type,
+            field: `loan_type_${loanType.id}`,
+            valueFormatter: PhpFormat,
+            cellRenderer: (params) => {
+                const loan = params.data.loans?.find((loan) => loan.loan_type_id === loanType.id);
+                return loan && loan.remainingAmortization
+                    ? PhpFormat({ value: loan.remainingAmortization })
+                    : '';
             },
-            filter: 'colFilter',
-        },
-        { headerName: 'SG-STEP', field: '', editable: false },
-        { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
-        { headerName: 'BASIC PAY', field: 'salary', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'LWOP', field: '', editable: true },
-        { headerName: 'NET-BASIC', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'PERA', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'LWOP-PERA', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'NET-PERA', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'RATA', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'TOTAL', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'TAX', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'GSIS PREM', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'HDMF PREM1', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'HDMF PREM2', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'PHIC', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'GFAL', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'MPL', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'CONSO LOAN', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'CPL', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'EMRGNCY', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'GSIS POLICY', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'SG', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'seq.', field: '', editable: true, valueFormatter: PhpFormat },
-        { headerName: 'SIGNATURE', field: '', editable: false },
-        { headerName: 'REMARKS', field: '', editable: true },
-    ];
+        }));
+
+        const staticColumns = [
+            { headerName: 'EMPLOYEE NO', field: 'employee_id', editable: false },
+            {
+                headerName: 'EMPLOYEE NAME',
+                valueGetter: (params) => {
+                    const { first_name, middle_name, last_name } = params.data;
+                    return `${first_name || ''} ${middle_name || ''} ${last_name || ''}`.trim();
+                },
+                filter: 'colFilter',
+            },
+            { headerName: 'SG-STEP', field: '', editable: false },
+            { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
+            { headerName: 'BASIC PAY', field: 'salary', editable: true, valueFormatter: PhpFormat },
+        ];
+
+        setColumnDefs([...staticColumns, ...loanTypeColumns]);
+    }, [loanTypes]);
 
     // Function to handle cell value changes
     const onCellValueChanged = (params) => {
-        const updatedData = [...rowData];
         const updatedRow = params.data;
-        const index = updatedData.findIndex((row) => row.employee_id === updatedRow.employee_id);
-        updatedData[index] = updatedRow;
-        setRowData(updatedData);
+        setRowData((prevRowData) =>
+            prevRowData.map((row) =>
+                row.employee_id === updatedRow.employee_id ? updatedRow : row
+            )
+        );
         console.log('Updated row:', updatedRow);
     };
 
@@ -78,6 +72,7 @@ const GeneralPayroll = ({ auth, employee }) => {
                     }}
                     pagination={true}
                     paginationPageSize={15}
+                    paginationPageSizeSelector={[15, 20, 50, 100]} // Add 15 here
                     domLayout="normal"
                 />
             </div>

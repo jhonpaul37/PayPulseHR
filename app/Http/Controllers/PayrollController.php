@@ -5,9 +5,50 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Payroll;
 use App\Models\Employee;
+use App\Models\LoanType;
 use Inertia\Inertia;
 class PayrollController extends Controller
 {
+    // public function generalPayroll()
+    // {
+    //     $payrolls = Payroll::with('employee')->get();
+    //     $employees = Employee::all();
+    //     $loanTypes = LoanType::all();
+
+    //     return Inertia::render('Payroll/GeneralPayroll', [
+    //         'payrolls' => $payrolls,
+    //         'employee' => $employees,
+    //         'loanTypes' => $loanTypes,
+    //     ]);
+    // }
+    public function generalPayroll()
+    {
+        $payrolls = Payroll::with('employee')->get();
+        $employees = Employee::with(['loans', 'loans.payments'])->get();
+        $loanTypes = LoanType::all();
+
+        // Calculate remaining amortization for each loan
+        foreach ($employees as $employee) {
+            foreach ($employee->loans as $loan) {
+                // Sum all payments made for this loan
+                $totalPaid = $loan->payments->sum('amount');
+
+                // Check if the loan has been fully paid
+                $remainingAmount = $loan->amount - $totalPaid;
+                if ($remainingAmount > 0) {
+                    $loan->remainingAmortization = $loan->monthly_amortization;
+                } else {
+                    $loan->remainingAmortization = null; // Loan fully paid
+                }
+            }
+        }
+
+        return Inertia::render('Payroll/GeneralPayroll', [
+            'payrolls' => $payrolls,
+            'employee' => $employees,
+            'loanTypes' => $loanTypes,
+        ]);
+    }
 
     public function payrollData()
     {
@@ -19,15 +60,6 @@ class PayrollController extends Controller
         ]);
     }
 
-    public function generalPayroll()
-    {
-        $payrolls = Payroll::with('employee')->get();
-        $employee = Employee::get();
-
-        return Inertia::render('Payroll/GeneralPayroll', [
-            'payrolls' => $payrolls, 'employee' => $employee
-        ]);
-    }
     public function computation()
     {
         $employee = Employee::all();
