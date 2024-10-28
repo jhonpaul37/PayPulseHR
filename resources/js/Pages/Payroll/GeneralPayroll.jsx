@@ -18,7 +18,12 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
     const [columnDefs, setColumnDefs] = useState([]);
 
     useEffect(() => {
-        const loanTypeColumns = loanTypes.map((loanType) => ({
+        // Get a list of all loan types that have at least one existing loan
+        const activeLoanTypes = loanTypes.filter((loanType) =>
+            employee.some((emp) => emp.loans.some((loan) => loan.loan_type_id === loanType.id))
+        );
+
+        const loanTypeColumns = activeLoanTypes.map((loanType) => ({
             headerName: loanType.type,
             field: `loan_type_${loanType.id}`,
             valueFormatter: PhpFormat,
@@ -46,7 +51,7 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
         ];
 
         setColumnDefs([...staticColumns, ...loanTypeColumns]);
-    }, [loanTypes]);
+    }, [loanTypes, employee]);
 
     // Function to handle cell value changes
     const onCellValueChanged = (params) => {

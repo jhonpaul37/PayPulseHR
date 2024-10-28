@@ -38,7 +38,7 @@ class EmployeeLoanController extends Controller
 
         EmployeeLoan::create([
             'employee_id' => $request->employee_id,
-            'loan_type_id' => 1,
+            'loan_type_id' => $request->loan_type_id,
             'amount' => $request->amount,
             'loan_date' => $request->loan_date,
             'interest_rate' => $request->interest_rate,
