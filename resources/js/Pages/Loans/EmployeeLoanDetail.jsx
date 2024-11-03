@@ -28,20 +28,20 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
             dataIndex: 'payment_date',
             render: (text) => new Date(text).toLocaleDateString(),
         },
+        // {
+        //     title: 'Monthly Amount',
+        //     dataIndex: 'amount',
+        //     render: (amount) => `₱${(amount - monthlyInterest).toLocaleString()}`,
+        // },
+        // {
+        //     title: 'Monthly Interest',
+        //     dataIndex: 'amount',
+        //     render: () => `₱${monthlyInterest.toFixed(2)}`,
+        // },
         {
-            title: 'Monthly Amount',
-            dataIndex: 'monthly_amount',
-            render: () => `₱${monthlyAmountWithoutInterest.toLocaleString()}`,
-        },
-        {
-            title: 'Monthly Interest',
-            dataIndex: 'monthly_interest',
-            render: () => `₱${monthlyInterest.toFixed(2)}`,
-        },
-        {
-            title: 'Total',
+            title: 'Amount',
             dataIndex: 'amount',
-            render: () => `₱${employeeLoan.monthly_amortization.toLocaleString()}`,
+            render: (amount) => `₱${parseFloat(amount).toLocaleString()}`,
         },
     ];
 
