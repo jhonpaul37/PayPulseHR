@@ -55,31 +55,30 @@ class EmployeeLoanController extends Controller
         return ($amount * $rate) / (1 - pow(1 + $rate, -$months));
     }
 
-    public function destroy(EmployeeLoan $employeeLoan)
-    {
-        $employeeLoan->delete();
-        return redirect()->route('employee-loans.index');
-    }
 
-    public function addPayment(Request $request, EmployeeLoan $employeeLoan)
-    {
-        $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
-        ]);
+public function addPayment(Request $request, EmployeeLoan $employeeLoan)
+{
+    $remainingBalance = max(0, $employeeLoan->amount - $employeeLoan->payments->sum('amount'));
+    $minPaymentAmount = min($employeeLoan->monthly_amortization, $remainingBalance);
 
-        $employeeLoan->payments()->create([
-            'amount' => $request->amount,
-            'payment_date' => $request->payment_date,
-        ]);
+    $request->validate([
+        'amount' => "required|numeric|min:$minPaymentAmount",
+        'payment_date' => 'required|date',
+    ]);
 
-        return redirect()->route('employee-loans.view', $employeeLoan->id)
-            ->with('success', 'Payment added successfully.');
-    }
+    // Create the payment record
+    $employeeLoan->payments()->create([
+        'amount' => $request->amount,
+        'payment_date' => $request->payment_date,
+    ]);
+
+    return redirect()->route('loan.details', $employeeLoan->id)
+        ->with('success', 'Payment added successfully.');
+}
+
 
     public function show(EmployeeLoan $employeeLoan)
     {
-        //load all relationship
         $employeeLoan->load(['employee', 'loanType', 'payments']);
 
         return inertia('Loans/EmployeeLoanDetail', [

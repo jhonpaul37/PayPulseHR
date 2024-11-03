@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
+import { message } from 'antd'; // Import message
 import PrimaryButton from '@/Components/PrimaryButton';
 import CancelButton from '@/Components/CancelButton';
 import TextInput from '@/Components/TextInput';
@@ -10,13 +11,19 @@ export default function LoanPrograms({ programs }) {
     const [editingProgram, setEditingProgram] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (editingProgram) {
-            Inertia.put(`/loanPrograms/${editingProgram.id}`, { name });
-        } else {
-            Inertia.post('/loanPrograms', { name });
+        try {
+            if (editingProgram) {
+                await Inertia.put(`/loanPrograms/${editingProgram.id}`, { name });
+                message.success('Loan Program updated successfully'); // Use message for success
+            } else {
+                await Inertia.post('/loanPrograms', { name });
+                message.success('Loan Program added successfully'); // Use message for success
+            }
+        } catch (error) {
+            message.error('Failed to add or update Loan Program'); // Use message for error
         }
 
         setName('');

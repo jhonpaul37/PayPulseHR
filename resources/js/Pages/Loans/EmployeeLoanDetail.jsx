@@ -1,39 +1,142 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Table, Divider } from 'antd';
-import React from 'react';
+import { Table, Divider, Modal, Input, DatePicker, message } from 'antd';
+import React, { useState } from 'react';
+import PrimaryButton from '@/Components/PrimaryButton';
+import { Inertia } from '@inertiajs/inertia';
 
 function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
-    // Cal total amount paid
-    const totalPaid = payments.reduce((acc, payment) => acc + parseFloat(payment.amount), 0);
-    const percentPaid =
-        employeeLoan.amount > 0 ? ((totalPaid / employeeLoan.amount) * 100).toFixed(0) : 0;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [paymentAmount, setPaymentAmount] = useState(employeeLoan.monthly_amortization || '');
+    const [paymentDate, setPaymentDate] = useState(null);
 
-    // Ant Design Table
+    const totalPaid = payments.reduce((acc, payment) => acc + parseFloat(payment.amount), 0);
+    const remainingBalance = employeeLoan.amount - totalPaid;
+    const isFullyPaid = remainingBalance <= 0;
+    const percentPaid =
+        employeeLoan.amount > 0
+            ? Math.min((totalPaid / employeeLoan.amount) * 100, 100).toFixed(0)
+            : 0;
+
+    // Calculate breakdown components
+    const monthlyInterest =
+        (employeeLoan.amount * (employeeLoan.interest_rate / 100)) / employeeLoan.months;
+    const monthlyAmountWithoutInterest = employeeLoan.monthly_amortization - monthlyInterest;
+
     const columns = [
         {
             title: 'Payment Date',
             dataIndex: 'payment_date',
-            render: (text) => {
-                const paymentDate = new Date(text);
-                return paymentDate.toLocaleDateString('en-PH', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                });
-            },
+            render: (text) => new Date(text).toLocaleDateString(),
         },
         {
-            title: 'Amount',
+            title: 'Monthly Amount',
+            dataIndex: 'monthly_amount',
+            render: () => `₱${monthlyAmountWithoutInterest.toLocaleString()}`,
+        },
+        {
+            title: 'Monthly Interest',
+            dataIndex: 'monthly_interest',
+            render: () => `₱${monthlyInterest.toFixed(2)}`,
+        },
+        {
+            title: 'Total',
             dataIndex: 'amount',
-            render: (text) => `₱${parseFloat(text).toLocaleString()}`,
+            render: () => `₱${employeeLoan.monthly_amortization.toLocaleString()}`,
         },
     ];
 
+    const handleCancel = () => {
+        setIsModalVisible(false);
+        setPaymentAmount(employeeLoan.monthly_amortization);
+    };
+
+    const showPaymentModal = () => {
+        setIsModalVisible(true);
+        setPaymentAmount(
+            remainingBalance > 0
+                ? Math.min(employeeLoan.monthly_amortization, remainingBalance)
+                : ''
+        );
+    };
+
+    const handlePaymentSubmit = () => {
+        if (!paymentAmount || !paymentDate) {
+            message.error('Please enter both payment amount and date.');
+            return;
+        }
+
+        if (parseFloat(paymentAmount) > remainingBalance) {
+            message.error(
+                `Payment amount cannot exceed the remaining balance of ₱${remainingBalance.toLocaleString()}`
+            );
+            return;
+        }
+
+        const minimumPayment = Math.min(employeeLoan.monthly_amortization, remainingBalance);
+
+        if (parseFloat(paymentAmount) < minimumPayment) {
+            message.error(`Payment amount cannot be less than ₱${minimumPayment.toLocaleString()}`);
+            return;
+        }
+
+        Inertia.post(
+            `/employee-loans/${employeeLoan.id}/add-payment`,
+            {
+                amount: paymentAmount,
+                payment_date: paymentDate.format('YYYY-MM-DD'),
+            },
+            {
+                onSuccess: () => {
+                    message.success('Payment recorded successfully!');
+                    setIsModalVisible(false);
+                    setPaymentAmount(employeeLoan.monthly_amortization);
+                    setPaymentDate(null);
+                },
+                onError: () => {
+                    message.error('Failed to record payment. Please try again.');
+                },
+            }
+        );
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
-            <h2 className="mb-4 text-xl font-semibold text-gray-700">Loan Details</h2>
+            <div className="mb-4 flex items-center justify-between">
+                <div>
+                    <h2 className="text-xl font-semibold text-gray-700">Loan Details</h2>
+                </div>
+                <div>
+                    {!isFullyPaid && (
+                        <PrimaryButton onClick={showPaymentModal}>Make Payment</PrimaryButton>
+                    )}
+                    <Modal
+                        title="Make a Payment"
+                        visible={isModalVisible}
+                        onOk={handlePaymentSubmit}
+                        onCancel={handleCancel}
+                        okText="Submit Payment"
+                    >
+                        <div className="mb-4">
+                            <label>Payment Amount:</label>
+                            <Input
+                                type="number"
+                                value={paymentAmount}
+                                onChange={(e) => setPaymentAmount(e.target.value)}
+                                min={employeeLoan.monthly_amortization}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label>Payment Date:</label>
+                            <DatePicker
+                                value={paymentDate}
+                                onChange={setPaymentDate}
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+                    </Modal>
+                </div>
+            </div>
 
-            {/* Loan Details Section */}
             <div className="grid grid-cols-2 gap-y-2 text-gray-600">
                 <div className="grid grid-cols-2">
                     <p className="font-semibold">Employee:</p>
@@ -63,7 +166,6 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
                 </div>
             </div>
 
-            {/* Payment Progress Section */}
             <div className="mt-4">
                 <div className="h-2 w-full rounded bg-gray-200">
                     <div
@@ -72,14 +174,13 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
                     ></div>
                 </div>
                 <p className="mt-1 text-sm text-gray-500">
-                    {percentPaid}% of the loan is paid (₱{totalPaid.toLocaleString()} out of ₱
-                    {employeeLoan.amount.toLocaleString()})
+                    {isFullyPaid ? 'Loan is fully paid' : `${percentPaid}% of the loan is paid `}
+                    (₱{totalPaid.toLocaleString()} out of ₱{employeeLoan.amount.toLocaleString()})
                 </p>
             </div>
 
             <Divider style={{ borderColor: '#F0C519' }} />
 
-            {/* Payment History Section */}
             <div className="mt-6">
                 <h2 className="mb-4 text-xl font-semibold text-gray-700">Payment History</h2>
                 <Table dataSource={payments} columns={columns} rowKey="id" pagination={false} />

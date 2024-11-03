@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Input, Select, Form, Card, Empty } from 'antd';
+import { Modal, Input, Select, Form, Card, Empty, message } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
 import CancelButton from '@/Components/CancelButton';
 import { useForm } from '@inertiajs/react';
@@ -38,16 +38,36 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
         setIsEditModalVisible(true);
     };
 
-    const handleCreateSubmit = () => {
-        post(route('loanTypes.store'), {
-            onSuccess: () => setIsCreateModalVisible(false),
-        });
+    const handleCreateSubmit = async () => {
+        try {
+            await post(route('loanTypes.store'), {
+                onSuccess: () => {
+                    setIsCreateModalVisible(false);
+                    message.success('Loan Type added successfully!'); // Success message
+                },
+                onError: () => {
+                    message.error('Failed to add Loan Type.'); // Error message
+                },
+            });
+        } catch (error) {
+            message.error('An error occurred while adding Loan Type.'); // General error message
+        }
     };
 
-    const handleEditSubmit = () => {
-        put(route('loanTypes.update', selectedLoanType.id), {
-            onSuccess: () => setIsEditModalVisible(false),
-        });
+    const handleEditSubmit = async () => {
+        try {
+            await put(route('loanTypes.update', selectedLoanType.id), {
+                onSuccess: () => {
+                    setIsEditModalVisible(false);
+                    message.success('Loan Type updated successfully!'); // Success message
+                },
+                onError: () => {
+                    message.error('Failed to update Loan Type.'); // Error message
+                },
+            });
+        } catch (error) {
+            message.error('An error occurred while updating Loan Type.'); // General error message
+        }
     };
 
     const handleCancel = () => {
@@ -87,8 +107,7 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
                                         </Card.Grid>
                                     ))}
                                 </Card>
-                            ) : null}{' '}
-                            {/* not render anything if no loan types */}
+                            ) : null}
                         </div>
                     ))
                 ) : (
