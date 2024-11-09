@@ -6,6 +6,7 @@ use App\Models\EmployeeLoan;
 use App\Models\Employee;
 use App\Models\LoanType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeLoanController extends Controller
 {
@@ -56,25 +57,24 @@ class EmployeeLoanController extends Controller
     }
 
 
-public function addPayment(Request $request, EmployeeLoan $employeeLoan)
-{
-    $remainingBalance = max(0, $employeeLoan->amount - $employeeLoan->payments->sum('amount'));
-    $minPaymentAmount = min($employeeLoan->monthly_amortization, $remainingBalance);
+    public function addPayment(Request $request, EmployeeLoan $employeeLoan)
+    {
+        $remainingBalance = max(0, $employeeLoan->amount - $employeeLoan->payments->sum('amount'));
+        $minPaymentAmount = min($employeeLoan->monthly_amortization, $remainingBalance);
 
-    $request->validate([
-        'amount' => "required|numeric|min:$minPaymentAmount",
-        'payment_date' => 'required|date',
-    ]);
+        $request->validate([
+            'amount' => "required|numeric|min:$minPaymentAmount",
+            'payment_date' => 'required|date',
+        ]);
 
-    // Create the payment record
-    $employeeLoan->payments()->create([
-        'amount' => $request->amount,
-        'payment_date' => $request->payment_date,
-    ]);
+        $employeeLoan->payments()->create([
+            'amount' => $request->amount,
+            'payment_date' => $request->payment_date,
+        ]);
 
-    return redirect()->route('loan.details', $employeeLoan->id)
-        ->with('success', 'Payment added successfully.');
-}
+        return redirect()->route('loan.details', $employeeLoan->id)
+            ->with('success', 'Payment added successfully.');
+    }
 
 
     public function show(EmployeeLoan $employeeLoan)
@@ -87,5 +87,21 @@ public function addPayment(Request $request, EmployeeLoan $employeeLoan)
         ]);
     }
 
+    public function myLoans()
+    {
+        $user = Auth::user();
+
+        // employee related to this user (employee_id == 'id' in employee table)
+        $employeeId = $user->employee->id;
+
+        $loans = EmployeeLoan::with(['loanType', 'payments'])
+                            ->where('employee_id', $employeeId)
+                            ->get();
+
+        return inertia('Loans/MyLoans', [
+            'auth' => ['user' => $user],
+            'loans' => $loans,
+        ]);
+    }
 
 }

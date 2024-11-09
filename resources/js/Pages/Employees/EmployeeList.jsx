@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import EmployeeInfo from './EmployeeInfo';
-import { Button, FloatButton as Btn, Empty } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { FloatButton as Btn, Empty, Input, Pagination, Table, Tag } from 'antd';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 const FloatButton = styled(Btn)`
@@ -17,10 +17,14 @@ const FloatButton = styled(Btn)`
     right: 100px;
 `;
 
+const ITEMS_PER_PAGE = 5;
+
 export default function EmployeeList({ employees, auth }) {
     const route = useRoute();
     const [open, setOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
 
     const showDrawer = (employee) => {
         setSelectedEmployee(employee);
@@ -34,69 +38,130 @@ export default function EmployeeList({ employees, auth }) {
 
     const activeEmployees = employees.filter((employee) => !employee.termination_date);
 
+    // Filter employees based on search term
+    const filteredEmployees = activeEmployees.filter((employee) => {
+        const fullName =
+            `${employee.first_name} ${employee.middle_name} ${employee.last_name}`.toLowerCase();
+        const position = employee.position.toLowerCase();
+        const searchQuery = searchTerm.toLowerCase();
+
+        // Apply search filtering
+        return fullName.includes(searchQuery) || position.includes(searchQuery);
+    });
+
+    // Calculate paginated employees
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedEmployees = filteredEmployees.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    // Table columns
+    const columns = [
+        {
+            title: 'Employee ID',
+            dataIndex: 'employee_id',
+            key: 'employee_id',
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (_, employee) => (
+                <span>
+                    {employee.first_name} {employee.middle_name} {employee.last_name}
+                </span>
+            ),
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Phone',
+            dataIndex: 'phone',
+            key: 'phone',
+        },
+        {
+            title: 'Position',
+            dataIndex: 'position',
+            key: 'position',
+        },
+        {
+            title: 'Department',
+            dataIndex: 'department',
+            key: 'department',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: (_, employee) => {
+                const status = employee.termination_date ? 'Inactive' : 'Active';
+
+                return (
+                    <Tag
+                        color={status === 'Active' ? 'green' : 'volcano'}
+                        style={{
+                            fontWeight: 'bold',
+                            fontSize: '14px',
+                        }}
+                    >
+                        {status}
+                    </Tag>
+                );
+            },
+        },
+    ];
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
                 <header className="flex justify-center text-xl font-bold">Employees List</header>
             </div>
 
-            {/* Add BTN */}
+            {/* Add Button */}
             <FloatButton
                 onClick={() => (window.location.href = route('employees.create'))}
-                tooltip="Add New Employee"
+                tooltip="Add Employee"
                 icon={<PlusOutlined />}
-                className="border-high bg-high font-bold"
             />
 
             <div className="m-4 my-10">
-                <div className="flex flex-col gap-5">
-                    {/* Conditional rendering for active employees */}
-                    {activeEmployees.length > 0 ? (
-                        activeEmployees.map((employee) => (
-                            <div
-                                key={employee.id}
-                                className="flex w-full items-center justify-between rounded-lg border p-4 px-10 shadow-md"
-                            >
-                                <div className="flex items-center justify-center">
-                                    {/* Photo Section */}
-                                    <div className="pr-5">
-                                        <img
-                                            src={
-                                                employee.photo_url
-                                                    ? `/storage/${employee.photo_url}`
-                                                    : 'default-photo-url.jpg'
-                                            }
-                                            alt={`${employee.first_name}'s photo`}
-                                            className="h-16 w-16 rounded-full border object-cover shadow-md"
-                                        />
-                                    </div>
-                                    {/* Name and Position */}
-                                    <div className="flex flex-col">
-                                        <span className="text-lg font-bold text-main">
-                                            {employee.first_name} {employee.middle_name}{' '}
-                                            {employee.last_name}
-                                        </span>
-                                        <span className="text-sm text-gray-600">
-                                            {employee.position}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="">
-                                    <Button onClick={() => showDrawer(employee)} type="primary">
-                                        View Profile
-                                    </Button>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <Empty
-                            image={Empty.PRESENTED_IMAGE_SIMPLE}
-                            description="No active employees available"
-                        />
-                    )}
+                <div className="mb-5 flex justify-between">
+                    {/* Pagination */}
+                    <Pagination
+                        current={currentPage}
+                        pageSize={ITEMS_PER_PAGE}
+                        total={filteredEmployees.length}
+                        onChange={(page) => setCurrentPage(page)}
+                        showSizeChanger={false}
+                    />
+                    {/* Search Bar */}
+                    <Input
+                        placeholder="Search employees"
+                        prefix={<SearchOutlined />}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ maxWidth: 300 }}
+                    />
                 </div>
+
+                {/* Table for employees */}
+                <Table
+                    columns={columns}
+                    dataSource={paginatedEmployees.map((employee) => ({
+                        ...employee,
+                        key: employee.id,
+                        name: `${employee.first_name} ${employee.middle_name} ${employee.last_name}`,
+                    }))}
+                    pagination={false}
+                    locale={{ emptyText: <Empty description="No active employees available" /> }}
+                    onRow={(employee) => ({
+                        onClick: () => showDrawer(employee),
+                    })}
+                />
             </div>
+
+            {/* Sidebar for Employee Info */}
             <EmployeeInfo visible={open} onClose={onClose} employee={selectedEmployee} />
         </AuthenticatedLayout>
     );

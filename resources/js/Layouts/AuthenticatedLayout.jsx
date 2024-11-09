@@ -41,17 +41,22 @@ const StyledMenu = styled(Menu)`
         padding-left: 24px;
     }
     .ant-menu-item-divider {
-        background-color: white !important; /* Set divider color to white */
-        height: 1px; /* Adjust thickness of the divider */
-        margin: 8px 0; /* Optional: Adjust the margin between items */
+        background-color: white !important;
+        height: 1px;
+        margin: 8px 0;
+    }
+
+    /* Ensure the "Leaves" text stays white */
+    .ant-menu-submenu-title {
+        color: white !important;
     }
 `;
 
 const ScrollableContent = styled(Content)`
-    margin: 2rem; /* Equivalent to m-8 in Tailwind */
-    padding: 2.5rem; /* Equivalent to p-10 in Tailwind */
+    margin: 2rem;
+    padding: 2.5rem;
     background-color: white;
-    border-radius: 0.5rem; /* Equivalent to rounded-md in Tailwind */
+    border-radius: 0.5rem;
     overflow-y: auto;
     flex-grow: 1;
 `;
@@ -69,7 +74,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/employees')) return '6';
         if (url.startsWith('/payroll/general')) return '7';
         if (url.startsWith('/loans')) return '8';
-        return '1'; // Default to Home
+        return '1';
     };
 
     const menuItems = [
@@ -83,10 +88,29 @@ const AuthenticatedLayout = ({ user, children }) => {
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/payroll/general">Payroll</Link>,
         },
+        // {
+        //     key: '8',
+        //     icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
+        //     label: <Link href="/loans">Loans</Link>,
+        // },
         {
             key: '8',
             icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
-            label: <Link href="/loans">Loans</Link>,
+            label: 'Leaves',
+            children: [
+                {
+                    key: '8-1',
+                    label: <Link href="/my_loans">My Loans (Employee)</Link>,
+                },
+                {
+                    key: '8-2',
+                    label: <Link href="/loans">Loans</Link>,
+                },
+                {
+                    key: '8-3',
+                    label: <Link href="/salary_grades">Salary Grade</Link>,
+                },
+            ],
         },
         {
             type: 'divider',
@@ -117,7 +141,17 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
-            label: <Link href="/leaveRequest">Leaves</Link>,
+            label: 'Leaves',
+            children: [
+                {
+                    key: '5-1',
+                    label: <Link href="/leaveRequestForm">Add Leave (Employee)</Link>,
+                },
+                {
+                    key: '5-2',
+                    label: <Link href="/leaveRequest">Leaves Request</Link>,
+                },
+            ],
         },
         {
             key: '6',
@@ -159,8 +193,6 @@ const AuthenticatedLayout = ({ user, children }) => {
                             onClick={() => setCollapsed(!collapsed)}
                             className="h-16 w-16 text-lg"
                         />
-                        {/* <div>Search</div> */}
-
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
                             <div className="relative ms-3">
                                 <Dropdown>
@@ -171,7 +203,6 @@ const AuthenticatedLayout = ({ user, children }) => {
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
-
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -180,7 +211,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                                                 >
                                                     <path
                                                         fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a 1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                                         clipRule="evenodd"
                                                     />
                                                 </svg>

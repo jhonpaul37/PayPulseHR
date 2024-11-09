@@ -25,8 +25,10 @@ const beforeUpload = (file) => {
     }
     return isJpgOrPng && isLt2M;
 };
-export default function NewEmployee({ auth }) {
+export default function NewEmployee({ auth, salaryGrades }) {
     const { data, setData, post, errors } = useForm({
+        name: '',
+        salary_grade_id: '',
         employee_id: '',
         first_name: '',
         last_name: '',
@@ -311,13 +313,23 @@ export default function NewEmployee({ auth }) {
 
                             {/* Salary */}
                             <div className="flex flex-col">
-                                <label>Salary</label>
-                                <TextInput
-                                    type="number"
-                                    value={data.salary}
-                                    onChange={(e) => setData('salary', e.target.value)}
-                                />
-                                {errors.salary && <div>{errors.salary}</div>}
+                                <label>Salary Grade</label>
+                                <select
+                                    value={data.salary_grade_id}
+                                    onChange={(e) =>
+                                        setData({ ...data, salary_grade_id: e.target.value })
+                                    }
+                                >
+                                    <option value="">Select Salary Grade</option>
+                                    {salaryGrades &&
+                                        salaryGrades.map((grade) => (
+                                            <option key={grade.id} value={grade.id}>
+                                                {grade.grade} - Step {grade.step} ($
+                                                {grade.monthly_salary})
+                                            </option>
+                                        ))}
+                                </select>
+                                {errors.salary_grade_id && <div>{errors.salary_grade_id}</div>}
                             </div>
                         </div>
 

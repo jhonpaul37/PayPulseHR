@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\User;
+use App\Models\SalaryGrade;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -40,7 +41,8 @@ class EmployeeController extends Controller
 
     public function edit(Employee $employee)
     {
-        return Inertia::render('Employees/EmployeeInfoEdit', ['employee' => $employee]);
+        $salaryGrades = SalaryGrade::all();
+        return Inertia::render('Employees/EmployeeInfoEdit', ['employee' => $employee, 'salaryGrades' => $salaryGrades]);
     }
 
     public function update(Request $request, Employee $employee)
@@ -86,7 +88,10 @@ class EmployeeController extends Controller
 
     public function create()
     {
-        return Inertia::render('Employees/NewEmployee');
+        $salaryGrades = SalaryGrade::all();
+        return Inertia::render('Employees/NewEmployee', [
+            'salaryGrades' => $salaryGrades,
+        ]);
     }
 
     public function store(Request $request)
@@ -108,7 +113,7 @@ class EmployeeController extends Controller
             'department' => 'required|string',
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
-            'salary' => 'required|numeric',
+            'salary_grade_id' => 'required|exists:salary_grades,id',
             'termination_date' => 'nullable|date',
             'termination_reason' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -119,7 +124,7 @@ class EmployeeController extends Controller
             $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
         }
 
-        // Users primary key must existing first before insert a new Employee
+        // Users primary key must exist first before inserting a new Employee
 
         // Create the user first
         $user = User::create([
@@ -128,15 +133,14 @@ class EmployeeController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Assign the created user's ID to the Employee record Before save
+        // Assign the created user's ID to the Employee record
         $validated['user_id'] = $user->id;
 
-        // Employee with the user_id save into the Employee Table
+        // Save the Employee with the `salary_grade_id` instead of `salary`
         Employee::create($validated);
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
-
 
 
 }

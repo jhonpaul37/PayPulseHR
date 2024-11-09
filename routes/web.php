@@ -8,6 +8,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\SalaryGradeController;
 
 use App\Http\Controllers\LoanProgramController;
 use App\Http\Controllers\LoanTypeController;
@@ -52,6 +53,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 
+    //Employee Loans
+    Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');
+
+    // Salary Grade
+    Route::get('/salary_grades', [SalaryGradeController::class, 'index'])->name('salary_grades.index');
+    Route::get('/salary_grades/create', [SalaryGradeController::class, 'create'])->name('salary_grades.create');
+    Route::post('/salary_grades', [SalaryGradeController::class, 'store'])->name('salary_grades.store');
+    Route::get('/salary_grades/{salaryGrade}/edit', [SalaryGradeController::class, 'edit'])->name('salary_grades.edit');
+    Route::put('/salary_grades/{salaryGrade}', [SalaryGradeController::class, 'update'])->name('salary_grades.update'); // Add this line
+
     //Payroll
     Route::get('/payroll/general', [PayrollController::class, 'generalPayroll'])->name('generalPayroll');
 
@@ -60,12 +71,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
     // Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
 
-        //Loans
-        //Dashboard for loans
-        Route::get('/loans', [LoanController::class, 'Loans'])->name('loans.view');
+    //Loans
+    //Dashboard for loans
+    Route::get('/loans', [LoanController::class, 'Loans'])->name('loans.view');
 
-        //Loan Programs
-        // Route::get('/loanPrograms', [LoanProgramController::class, 'index'])->name('loan-programs.index'); //For Troubleshoot
+    //Loan Programs
+    // Route::get('/loanPrograms', [LoanProgramController::class, 'index'])->name('loan-programs.index'); //For Troubleshoot
         Route::post('/loanPrograms', [LoanProgramController::class, 'store'])->name('loan-programs.store');
         Route::put('/loanPrograms/{id}', [LoanProgramController::class, 'update'])->name('loan-programs.update');
 

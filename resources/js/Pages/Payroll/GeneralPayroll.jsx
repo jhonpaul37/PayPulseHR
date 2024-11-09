@@ -29,9 +29,13 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
             valueFormatter: PhpFormat,
             cellRenderer: (params) => {
                 const loan = params.data.loans?.find((loan) => loan.loan_type_id === loanType.id);
-                return loan && loan.remainingAmortization
-                    ? PhpFormat({ value: loan.remainingAmortization })
-                    : '';
+                if (loan) {
+                    // Check if remaining amortization exists and is greater than 0
+                    return loan.remainingAmortization && loan.remainingAmortization > 0
+                        ? PhpFormat({ value: loan.remainingAmortization })
+                        : ''; // Return empty if no remaining amortization
+                }
+                return ''; // If no loan, return empty
             },
         }));
 

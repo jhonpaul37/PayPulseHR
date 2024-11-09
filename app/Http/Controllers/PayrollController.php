@@ -21,34 +21,40 @@ class PayrollController extends Controller
     //         'loanTypes' => $loanTypes,
     //     ]);
     // }
-    public function generalPayroll()
-    {
-        $payrolls = Payroll::with('employee')->get();
-        $employees = Employee::with(['loans', 'loans.payments'])->get();
-        $loanTypes = LoanType::all();
 
-        // Calculate remaining amortization for each loan
-        foreach ($employees as $employee) {
-            foreach ($employee->loans as $loan) {
-                // Sum all payments made for this loan
-                $totalPaid = $loan->payments->sum('amount');
+public function generalPayroll()
+{
+    $payrolls = Payroll::with('employee')->get();
+    $employees = Employee::with(['loans', 'loans.payments'])->get();
+    $loanTypes = LoanType::all();
 
-                // Check if the loan has been fully paid
-                $remainingAmount = $loan->amount - $totalPaid;
-                if ($remainingAmount > 0) {
-                    $loan->remainingAmortization = $loan->monthly_amortization;
-                } else {
-                    $loan->remainingAmortization = null; // Loan fully paid
-                }
+    // Calculate remaining amortization for each loan
+    foreach ($employees as $employee) {
+        foreach ($employee->loans as $loan) {
+            // Sum all payments made for this loan
+            $totalPaid = $loan->payments->sum('amount');
+            // Calculate remaining amount after payments
+            $remainingAmount = $loan->amount - $totalPaid;
+
+            // If remaining amount is greater than 0, set the remaining amortization
+            if ($remainingAmount > 0) {
+                // Check if remaining amount is less than monthly amortization
+                $loan->remainingAmortization = min($remainingAmount, $loan->monthly_amortization);
+            } else {
+                $loan->remainingAmortization = null; // Loan fully paid
             }
         }
-
-        return Inertia::render('Payroll/GeneralPayroll', [
-            'payrolls' => $payrolls,
-            'employee' => $employees,
-            'loanTypes' => $loanTypes,
-        ]);
     }
+
+    return Inertia::render('Payroll/GeneralPayroll', [
+        'payrolls' => $payrolls,
+        'employee' => $employees,
+        'loanTypes' => $loanTypes,
+    ]);
+}
+
+
+
 
     public function payrollData()
     {
@@ -132,6 +138,5 @@ class PayrollController extends Controller
 
 //         return redirect()->back()->with('message', 'Payroll processed successfully');
 //     }
-
 
 }

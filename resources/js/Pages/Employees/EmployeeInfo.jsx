@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Col, Divider, Drawer, Row, Button, Space } from 'antd';
 import { Inertia } from '@inertiajs/inertia';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 const DescriptionItem = ({ title, content }) => (
     <div className="">
@@ -106,7 +107,7 @@ const EmployeeInfo = ({ visible, onClose, employee }) => {
             </Row>
             <Row>
                 <Col span={12}>
-                    <DescriptionItem title="Salary" content={`$${employee.salary}`} />
+                    <DescriptionItem title="Salary" content={`$${employee.salary_grade_id}`} />
                 </Col>
                 <Col span={12}>
                     <DescriptionItem title="Leave Balance" content={employee.leave_balance} />

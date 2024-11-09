@@ -6,6 +6,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 // Components
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import TextInput from '@/Components/TextInput';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -25,7 +26,7 @@ const beforeUpload = (file) => {
     return isJpgOrPng && isLt2M;
 };
 
-export default function EmployeeInfoEdit({ auth, employee }) {
+export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
     const { data, setData, put, errors } = useForm({
         employee_id: employee.employee_id || '',
         first_name: employee.first_name || '',
@@ -43,7 +44,7 @@ export default function EmployeeInfoEdit({ auth, employee }) {
         department: employee.department || '',
         start_date: employee.start_date || '',
         employment_type: employee.employment_type || '',
-        salary: employee.salary || '',
+        salary_grade_id: employee.salary_grade_id || '',
         vacation_days: employee.vacation_days || 0,
         sick_days: employee.sick_days || 0,
         leave_balance: employee.leave_balance || 0,
@@ -319,13 +320,23 @@ export default function EmployeeInfoEdit({ auth, employee }) {
 
                             {/* Salary */}
                             <div className="flex flex-col">
-                                <label>Salary</label>
-                                <TextInput
-                                    type="number"
-                                    value={data.salary}
-                                    onChange={(e) => setData('salary', e.target.value)}
-                                />
-                                {errors.salary && <div>{errors.salary}</div>}
+                                <label>Salary Grade</label>
+                                <select
+                                    value={data.salary_grade_id}
+                                    onChange={(e) =>
+                                        setData({ ...data, salary_grade_id: e.target.value })
+                                    }
+                                >
+                                    <option value="">Select Salary Grade</option>
+                                    {salaryGrades &&
+                                        salaryGrades.map((grade) => (
+                                            <option key={grade.id} value={grade.id}>
+                                                {grade.grade} - Step {grade.step} ($
+                                                {grade.monthly_salary})
+                                            </option>
+                                        ))}
+                                </select>
+                                {errors.salary_grade_id && <div>{errors.salary_grade_id}</div>}
                             </div>
                         </div>
 
@@ -364,14 +375,14 @@ export default function EmployeeInfoEdit({ auth, employee }) {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
+                        {/* Submit PrimaryButton */}
                         <div className="flex justify-end p-2">
-                            <button
+                            <PrimaryButton
                                 type="submit"
                                 className="w-full rounded-md bg-high p-2 font-bold"
                             >
                                 Save Changes
-                            </button>
+                            </PrimaryButton>
                         </div>
                     </div>
                 </form>

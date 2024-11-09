@@ -35,7 +35,6 @@ public function up(){
         $table->string('department');
         $table->date('start_date');
         $table->enum('employment_type', ['full-time', 'part-time', 'contract']);
-        $table->decimal('salary', 8, 2);
         $table->date('termination_date')->nullable();
         $table->string('termination_reason')->nullable();
         $table->string('role')->nullable();
