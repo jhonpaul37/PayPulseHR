@@ -124,16 +124,16 @@ class EmployeeController extends Controller
             $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
         }
 
-        // Users primary key must exist first before inserting a new Employee
+        // Users primary key must exist first, before inserting a new Employee
 
-        // Create the user first
+        // Create user first
         $user = User::create([
             'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Assign the created user's ID to the Employee record
+        // Assign created users ID to the Employee record
         $validated['user_id'] = $user->id;
 
         // Save the Employee with the `salary_grade_id` instead of `salary`

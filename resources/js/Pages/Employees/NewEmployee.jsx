@@ -324,7 +324,7 @@ export default function NewEmployee({ auth, salaryGrades }) {
                                     {salaryGrades &&
                                         salaryGrades.map((grade) => (
                                             <option key={grade.id} value={grade.id}>
-                                                {grade.grade} - Step {grade.step} ($
+                                                {grade.grade} - Step {grade.step} (₱
                                                 {grade.monthly_salary})
                                             </option>
                                         ))}

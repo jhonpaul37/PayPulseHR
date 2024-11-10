@@ -25,7 +25,7 @@ class PayrollController extends Controller
 public function generalPayroll()
 {
     $payrolls = Payroll::with('employee')->get();
-    $employees = Employee::with(['loans', 'loans.payments'])->get();
+    $employees = Employee::with(['loans', 'loans.payments', 'salaryGrade'])->get(); // Add salaryGrade relationship
     $loanTypes = LoanType::all();
 
     // Calculate remaining amortization for each loan
@@ -52,6 +52,7 @@ public function generalPayroll()
         'loanTypes' => $loanTypes,
     ]);
 }
+
 
 
 

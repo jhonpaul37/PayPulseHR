@@ -38,6 +38,7 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
                 return ''; // If no loan, return empty
             },
         }));
+        console.log(employee);
 
         const staticColumns = [
             { headerName: 'EMPLOYEE NO', field: 'employee_id', editable: false },
@@ -49,9 +50,21 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
                 },
                 filter: 'colFilter',
             },
-            { headerName: 'SG-STEP', field: '', editable: false },
+            {
+                headerName: 'SG-STEP',
+                valueGetter: (params) => {
+                    const { salary_grade } = params.data;
+                    return salary_grade ? `${salary_grade.grade}-${salary_grade.step}` : '';
+                },
+                editable: false,
+            },
             { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
-            { headerName: 'BASIC PAY', field: 'salary', editable: true, valueFormatter: PhpFormat },
+            {
+                headerName: 'BASIC PAY',
+                field: 'salary_grade.monthly_salary',
+                valueFormatter: PhpFormat,
+                editable: false,
+            },
         ];
 
         setColumnDefs([...staticColumns, ...loanTypeColumns]);

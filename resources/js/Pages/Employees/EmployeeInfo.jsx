@@ -107,7 +107,10 @@ const EmployeeInfo = ({ visible, onClose, employee }) => {
             </Row>
             <Row>
                 <Col span={12}>
-                    <DescriptionItem title="Salary" content={`$${employee.salary_grade_id}`} />
+                    <DescriptionItem
+                        title="Salary"
+                        content={`$${employee.salary_grade?.monthly_salary || 'N/A'}`}
+                    />
                 </Col>
                 <Col span={12}>
                     <DescriptionItem title="Leave Balance" content={employee.leave_balance} />
