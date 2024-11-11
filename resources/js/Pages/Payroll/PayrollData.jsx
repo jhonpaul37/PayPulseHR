@@ -1,119 +1,103 @@
-import React, { useState } from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import React, { useState, useEffect } from 'react';
+import { Table } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-//format PHP Peso
-const PhpFormat = (params) => {
-    const value = parseFloat(params.value);
-    if (isNaN(value)) {
-        return '';
-    }
-    return `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+// Format PHP Peso
+const PhpFormat = (value) => {
+    const num = parseFloat(value);
+    return isNaN(num)
+        ? ''
+        : `₱${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-const PayrollData = ({ auth, employee }) => {
-    const [rowData, setRowData] = useState(employee);
+const PayrollData = ({ auth, employee, loanTypes }) => {
+    const [dataSource, setDataSource] = useState(employee);
+    const [columns, setColumns] = useState([]);
 
-    const columnDefs = [
-        { headerName: 'EMPLOYEE NO', field: 'employee_id', editable: false },
-        {
-            headerName: 'EMPLOYEE NAME',
-            valueGetter: (params) => {
-                const firstName = params.data.first_name || '';
-                const middleName = params.data.middle_name ? ` ${params.data.middle_name}` : '';
-                const lastName = params.data.last_name || '';
-                return `${firstName}${middleName} ${lastName}`.trim();
-            },
-            filter: 'colFilter',
-        },
-        { headerName: 'SG', field: 'sg', editable: true },
-        { headerName: 'STEP', field: 'step', editable: true },
-        {
-            headerName: 'SG-STEP',
-            valueGetter: (params) => {
-                const sg = params.data.sg || '';
-                const step = params.data.step || '';
-                return `${sg} - ${step}`; // Compute SG-STEP value
-            },
-            editable: false, // SG-STEP is computed, not editable
-        },
-        { headerName: 'POSITION', field: 'position', editable: false, filter: 'colFilter' },
-        {
-            headerName: 'BASIC PAY',
-            field: 'salary',
-            editable: true,
-            valueFormatter: PhpFormat,
-        },
-        {
-            headerName: 'LWOP-BASIC',
-            field: 'lwopBasic',
-            editable: true,
-            valueFormatter: PhpFormat,
-        },
-        {
-            headerName: 'NET-BASIC',
-            field: 'netBasic',
-            editable: false, // Calculated field
-            valueGetter: (params) => {
-                const basicPay = parseFloat(params.data.salary) || 0;
-                const lwopBasic = parseFloat(params.data.lwopBasic) || 0;
-                return basicPay - lwopBasic;
-            },
-            valueFormatter: PhpFormat,
-        },
-
-        {
-            headerName: 'PERA',
-            field: 'pera',
-            editable: true,
-            valueFormatter: PhpFormat,
-        },
-        {
-            headerName: 'LWOP-PERA',
-            field: 'lwopPera',
-            editable: true,
-            valueFormatter: PhpFormat,
-        },
-        {
-            headerName: 'NET PERA',
-            field: 'netPera',
-            editable: false, // Calculated field
-            valueGetter: (params) => {
-                const pera = parseFloat(params.data.pera) || 0;
-                const lwopPera = parseFloat(params.data.lwopPera) || 0;
-                return pera + lwopPera;
-            },
-            valueFormatter: PhpFormat,
-        },
-    ];
-
-    // Function to handle cell value changes
-    const onCellValueChanged = (params) => {
-        const updatedRow = params.data;
-        const updatedData = rowData.map((row) =>
-            row.employee_id === updatedRow.employee_id ? updatedRow : row
+    useEffect(() => {
+        // Get a list of all loan types that have at least one existing loan
+        const activeLoanTypes = loanTypes.filter((loanType) =>
+            employee.some((emp) => emp.loans.some((loan) => loan.loan_type_id === loanType.id))
         );
-        setRowData(updatedData); // Update state with the new data
+
+        const loanTypeColumns = activeLoanTypes.map((loanType) => ({
+            title: loanType.type,
+            dataIndex: `loan_type_${loanType.id}`,
+            render: (_, record) => {
+                const loan = record.loans?.find((loan) => loan.loan_type_id === loanType.id);
+                return loan && loan.remainingAmortization > 0
+                    ? PhpFormat(loan.remainingAmortization)
+                    : ''; // Show empty if no remaining amortization
+            },
+        }));
+
+        const staticColumns = [
+            {
+                title: 'EMPLOYEE NO',
+                dataIndex: 'employee_id',
+            },
+            {
+                title: 'EMPLOYEE NAME',
+                render: (_, record) => {
+                    const { first_name, middle_name, last_name } = record;
+                    return `${first_name || ''} ${middle_name || ''} ${last_name || ''}`.trim();
+                },
+            },
+            {
+                title: 'SG',
+                render: (_, record) => {
+                    const { salary_grade } = record;
+                    return salary_grade ? `${salary_grade.grade}` : '';
+                },
+            },
+            {
+                title: 'STEP',
+                render: (_, record) => {
+                    const { salary_grade } = record;
+                    return salary_grade ? `${salary_grade.step}` : '';
+                },
+            },
+            {
+                title: 'SG-STEP',
+                render: (_, record) => {
+                    const { salary_grade } = record;
+                    return salary_grade ? `${salary_grade.grade}-${salary_grade.step}` : '';
+                },
+            },
+            {
+                title: 'POSITION',
+                dataIndex: 'position',
+            },
+            {
+                title: 'BASIC PAY',
+                dataIndex: ['salary_grade', 'monthly_salary'],
+                render: PhpFormat,
+            },
+        ];
+
+        setColumns([...staticColumns, ...loanTypeColumns]);
+    }, [loanTypes, employee]);
+
+    // Handle table cell edits
+    const handleTableChange = (pagination, filters, sorter) => {
+        // Add any required sorting, filtering, or pagination actions here
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div className="ag-theme-alpine" style={{ height: 485, width: '100%' }}>
-                <AgGridReact
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    onCellValueChanged={onCellValueChanged}
-                    rowHeight={24}
-                    defaultColDef={{
-                        resizable: true,
-                    }}
-                    pagination={true}
-                    paginationPageSize={15}
-                    domLayout="normal"
-                />
-            </div>
+            <h2>Payroll Data</h2>
+            <Table
+                dataSource={dataSource}
+                columns={columns}
+                rowKey="employee_id"
+                pagination={{
+                    pageSize: 15,
+                    pageSizeOptions: [15, 20, 50, 100],
+                    showSizeChanger: true,
+                }}
+                onChange={handleTableChange}
+                scroll={{ y: 485 }}
+            />
         </AuthenticatedLayout>
     );
 };

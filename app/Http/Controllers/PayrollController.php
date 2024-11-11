@@ -60,10 +60,31 @@ public function generalPayroll()
     public function payrollData()
     {
         $payrolls = Payroll::with('employee')->get();
-        $employee = Employee::get();
+        $employees = Employee::with(['loans', 'loans.payments', 'salaryGrade'])->get(); // Add salaryGrade relationship
+        $loanTypes = LoanType::all();
+
+        // Calculate remaining amortization for each loan
+        foreach ($employees as $employee) {
+            foreach ($employee->loans as $loan) {
+                // Sum all payments made for this loan
+                $totalPaid = $loan->payments->sum('amount');
+                // Calculate remaining amount after payments
+                $remainingAmount = $loan->amount - $totalPaid;
+
+                // If remaining amount is greater than 0, set the remaining amortization
+                if ($remainingAmount > 0) {
+                    // Check if remaining amount is less than monthly amortization
+                    $loan->remainingAmortization = min($remainingAmount, $loan->monthly_amortization);
+                } else {
+                    $loan->remainingAmortization = null; // Loan fully paid
+                }
+            }
+        }
 
         return Inertia::render('Payroll/PayrollData', [
-            'payrolls' => $payrolls, 'employee' => $employee
+            'payrolls' => $payrolls,
+            'employee' => $employees,
+            'loanTypes' => $loanTypes,
         ]);
     }
 

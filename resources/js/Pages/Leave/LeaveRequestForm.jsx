@@ -22,13 +22,14 @@ const leaveRequestForm = ({ auth, employee }) => {
     // Auto-fill requestor's details and date
     useEffect(() => {
         if (employee) {
-            const requestorName = `${employee.first_name} ${employee.middle_name.charAt(0)}. ${employee.last_name}`;
+            const middleInitial = employee.middle_name ? `${employee.middle_name.charAt(0)}.` : '';
+            const requestorName = `${employee.first_name} ${middleInitial} ${employee.last_name}`;
 
             setData((prevData) => ({
                 ...prevData,
                 requestor_name: requestorName,
                 employee_id: employee.id,
-                request_date: new Date().toISOString().split('T')[0], // Automatically fill today date
+                request_date: new Date().toISOString().split('T')[0], // Automatically fill today's date
             }));
         }
     }, [employee]);
