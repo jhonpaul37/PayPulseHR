@@ -45,7 +45,57 @@ class EmployeeController extends Controller
         return Inertia::render('Employees/EmployeeInfoEdit', ['employee' => $employee, 'salaryGrades' => $salaryGrades]);
     }
 
-    public function update(Request $request, Employee $employee)
+public function update(Request $request, Employee $employee)
+{
+    $validated = $request->validate([
+        'employee_id' => 'required|string',
+        'first_name' => 'required|string',
+        'last_name' => 'required|string',
+        'middle_name' => 'nullable|string',
+        'birthdate' => 'required|date',
+        'birthPlace' => 'nullable|string',
+        'sex' => 'required|string',
+        'civil_status' => 'required|string',
+        'nationality' => 'required|string',
+        'address' => 'required|string',
+        'phone' => 'required|string',
+        'email' => 'required|email|unique:employees,email,' . $employee->id,
+        'position' => 'required|string',
+        'department' => 'required|string',
+        'start_date' => 'required|date',
+        'employment_type' => 'required|string',
+        'salary_grade_id' => 'required|exists:salary_grades,id',
+        'vacation_days' => 'nullable|integer',
+        'sick_days' => 'nullable|integer',
+        'leave_balance' => 'nullable|integer',
+        'termination_date' => 'nullable|date',
+        'termination_reason' => 'nullable|string',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // Check new photo was uploaded
+    if ($request->hasFile('photo')) {
+        $path = $request->file('photo')->store('employee_photos', 'public');
+        $validated['photo_url'] = $path;
+    }
+
+    $employee->update($validated);
+
+    return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+}
+
+
+    public function register($userId)
+    {
+        $user = User::findOrFail($userId);
+        $salaryGrades = SalaryGrade::all();
+
+        return Inertia::render('Employees/AddUnassignedUser', [
+            'salaryGrades' => $salaryGrades,
+            'user' => $user,
+        ]);
+    }
+    public function storeNew(Request $request)
     {
         $validated = $request->validate([
             'employee_id' => 'required|string',
@@ -53,39 +103,36 @@ class EmployeeController extends Controller
             'last_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'birthdate' => 'required|date',
-            'birthPlace' => 'nullable|string',
             'sex' => 'required|string',
             'civil_status' => 'required|string',
             'nationality' => 'required|string',
             'address' => 'required|string',
             'phone' => 'required|string',
-            'email' => 'required|email|unique:employees,email,' . $employee->id,
             'position' => 'required|string',
             'department' => 'required|string',
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
-            'salary' => 'required|numeric',
-            'vacation_days' => 'nullable|integer',
-            'sick_days' => 'nullable|integer',
-            'leave_balance' => 'nullable|integer',
+            'salary_grade_id' => 'required|exists:salary_grades,id',
             'termination_date' => 'nullable|date',
             'termination_reason' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'user_id' => 'required|exists:users,id',
+            'email' => 'required|email|unique:employees,email',
         ]);
 
-        // Check if a new photo was uploaded
+        // Photo validation
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('employee_photos', 'public');
-            $validated['photo_url'] = $path;
+            $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
         }
+        $validated['user_id'] = $request->user_id;
 
-        // Update the employee with validated data
-        $employee->update($validated);
+        // Create employee with the user_id
+        Employee::create($validated);
 
-        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
 
-
+    // HR will create the employee account
     public function create()
     {
         $salaryGrades = SalaryGrade::all();
@@ -136,7 +183,6 @@ class EmployeeController extends Controller
         // Assign created users ID to the Employee record
         $validated['user_id'] = $user->id;
 
-        // Save the Employee with the `salary_grade_id` instead of `salary`
         Employee::create($validated);
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');

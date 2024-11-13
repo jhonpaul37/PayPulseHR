@@ -30,6 +30,7 @@ const PayrollData = ({ auth, employee, loanTypes }) => {
                     : ''; // Show empty if no remaining amortization
             },
         }));
+        // console.log(employee);
 
         const staticColumns = [
             {
@@ -37,10 +38,17 @@ const PayrollData = ({ auth, employee, loanTypes }) => {
                 dataIndex: 'employee_id',
             },
             {
-                title: 'EMPLOYEE NAME',
+                title: 'DEPARTMENT',
                 render: (_, record) => {
                     const { first_name, middle_name, last_name } = record;
                     return `${first_name || ''} ${middle_name || ''} ${last_name || ''}`.trim();
+                },
+            },
+            {
+                title: 'EMPLOYEE NAME',
+                render: (_, record) => {
+                    const { department } = record;
+                    return `${department}`.trim();
                 },
             },
             {
@@ -90,11 +98,11 @@ const PayrollData = ({ auth, employee, loanTypes }) => {
                 dataSource={dataSource}
                 columns={columns}
                 rowKey="employee_id"
-                pagination={{
-                    pageSize: 15,
-                    pageSizeOptions: [15, 20, 50, 100],
-                    showSizeChanger: true,
-                }}
+                // pagination={{
+                //     pageSize: 15,
+                //     pageSizeOptions: [15, 20, 50, 100],
+                //     showSizeChanger: true,
+                // }}
                 onChange={handleTableChange}
                 scroll={{ y: 485 }}
             />

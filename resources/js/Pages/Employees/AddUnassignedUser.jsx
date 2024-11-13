@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Upload, message } from 'antd';
 
-//Components
+// Components
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import TextInput from '@/Components/TextInput';
 
@@ -24,11 +24,13 @@ const beforeUpload = (file) => {
     }
     return isJpgOrPng && isLt2M;
 };
-export default function NewEmployee({ auth, salaryGrades }) {
+
+export default function NewEmployee({ auth, salaryGrades, user }) {
     const { data, setData, post, errors } = useForm({
-        name: '',
         salary_grade_id: '',
         employee_id: '',
+        user_id: user.id || '',
+        email: user.email, // Set email from user data
         first_name: '',
         last_name: '',
         middle_name: '',
@@ -38,11 +40,8 @@ export default function NewEmployee({ auth, salaryGrades }) {
         civil_status: '',
         nationality: '',
         address: '',
-        phone: '',
-        email: '',
-        password: '',
-        confirm_password: '',
         position: '',
+        phone: '',
         department: '',
         start_date: '',
         employment_type: '',
@@ -78,7 +77,9 @@ export default function NewEmployee({ auth, salaryGrades }) {
             formData.append(key, data[key]);
         });
 
-        post(route('employees.store'), {
+        const url = route('employees.stores', { userId: data.user_id });
+
+        post(url, {
             data: formData,
             forceFormData: true,
             onError: (errors) => {
@@ -97,7 +98,7 @@ export default function NewEmployee({ auth, salaryGrades }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="">
-                <h1 className="pb-10 text-center text-xl font-bold">Add New Employee</h1>
+                <h1 className="pb-10 text-center text-xl font-bold">Register New Employee</h1>
                 <form
                     onSubmit={handleSubmit}
                     className="flex justify-center gap-20"
@@ -355,49 +356,17 @@ export default function NewEmployee({ auth, salaryGrades }) {
                         </div>
                         <div className="pt-10">
                             <div className="pb-2">
-                                <label className="text-lg font-bold"> Account Details</label>
+                                {/* <label className="text-lg font-bold"> Account Details</label> */}
                             </div>
 
                             {/* Email */}
                             <div className="flex flex-col p-2">
-                                <label>Email</label>
+                                <label className="">Email</label>
                                 <TextInput
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    type="text"
+                                    value={user.email} // Set the value to user.email
+                                    disabled
                                 />
-                                {errors.email && <div>{errors.email}</div>}
-                            </div>
-                            <div className="flex gap-5 p-2">
-                                {/* Password */}
-                                <div className="flex flex-col">
-                                    <label>Password</label>
-                                    <TextInput
-                                        type="password"
-                                        value={data.password}
-                                        onChange={(e) => setData('password', e.target.value)}
-                                        autoComplete="new-password"
-                                        required
-                                    />
-                                    {errors.password && <div>{errors.password}</div>}
-                                </div>
-
-                                {/* Confirm Password */}
-                                <div className="flex flex-col">
-                                    <label>Confirm Password</label>
-                                    <TextInput
-                                        type="password"
-                                        value={data.confirm_password}
-                                        onChange={(e) =>
-                                            setData('confirm_password', e.target.value)
-                                        }
-                                        autoComplete="new-password"
-                                        required
-                                    />
-                                    {errors.confirm_password && (
-                                        <div>{errors.confirm_password}</div>
-                                    )}
-                                </div>
                             </div>
                         </div>
                         <div className="flex justify-end p-2">

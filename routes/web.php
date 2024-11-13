@@ -13,6 +13,7 @@ use App\Http\Controllers\SalaryGradeController;
 use App\Http\Controllers\LoanProgramController;
 use App\Http\Controllers\LoanTypeController;
 use App\Http\Controllers\EmployeeLoanController;
+use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,6 +26,10 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
+    Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');
+    Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
 
     //Accounting
     Route::resource('/voucher',VoucherController::class);
@@ -52,6 +57,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+
+    Route::get('/employees/register-list', [EmployeeController::class, 'index'])->name('employees.registerList');
 
     //Employee Loans
     Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');

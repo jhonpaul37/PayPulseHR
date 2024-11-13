@@ -74,7 +74,15 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(route('employees.update', employee.id));
+        // console.log(data);
+        put(route('employees.update', employee.id), {
+            onSuccess: (response) => {
+                console.log('Update successful', response);
+            },
+            onError: (error) => {
+                console.log('Error:', error);
+            },
+        });
     };
 
     const uploadButton = (
@@ -337,41 +345,6 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                                         ))}
                                 </select>
                                 {errors.salary_grade_id && <div>{errors.salary_grade_id}</div>}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-5 p-2">
-                            {/* Vacation Days */}
-                            <div className="flex flex-col">
-                                <label>Vacation Days</label>
-                                <TextInput
-                                    type="number"
-                                    value={data.vacation_days}
-                                    onChange={(e) => setData('vacation_days', e.target.value)}
-                                />
-                                {errors.vacation_days && <div>{errors.vacation_days}</div>}
-                            </div>
-
-                            {/* Sick Days */}
-                            <div className="flex flex-col">
-                                <label>Sick Days</label>
-                                <TextInput
-                                    type="number"
-                                    value={data.sick_days}
-                                    onChange={(e) => setData('sick_days', e.target.value)}
-                                />
-                                {errors.sick_days && <div>{errors.sick_days}</div>}
-                            </div>
-
-                            {/* Leave Balance */}
-                            <div className="flex flex-col">
-                                <label>Leave Balance</label>
-                                <TextInput
-                                    type="number"
-                                    value={data.leave_balance}
-                                    onChange={(e) => setData('leave_balance', e.target.value)}
-                                />
-                                {errors.leave_balance && <div>{errors.leave_balance}</div>}
                             </div>
                         </div>
 
