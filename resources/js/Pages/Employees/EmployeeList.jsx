@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useRoute } from '@ziggy';
+import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import EmployeeInfo from './EmployeeInfo';
-import { FloatButton as Btn, Empty, Input, Pagination, Table, Tag } from 'antd';
+import { FloatButton as Btn, Empty, Input, Pagination, Table, Tag, Button } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
@@ -135,14 +136,22 @@ export default function EmployeeList({ employees, auth }) {
                         onChange={(page) => setCurrentPage(page)}
                         showSizeChanger={false}
                     />
-                    {/* Search Bar */}
-                    <Input
-                        placeholder="Search employees"
-                        prefix={<SearchOutlined />}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{ maxWidth: 300 }}
-                    />
+                    <div className="flex items-center gap-5">
+                        {/* Search Bar */}
+                        <Input
+                            placeholder="Search employees"
+                            prefix={<SearchOutlined />}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ maxWidth: 300 }}
+                        />
+                        <Button
+                            type="primary"
+                            onClick={() => Inertia.visit(route('users.unassigned'))}
+                        >
+                            Request
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Table for employees */}

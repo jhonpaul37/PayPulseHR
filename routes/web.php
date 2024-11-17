@@ -13,7 +13,10 @@ use App\Http\Controllers\SalaryGradeController;
 use App\Http\Controllers\LoanProgramController;
 use App\Http\Controllers\LoanTypeController;
 use App\Http\Controllers\EmployeeLoanController;
+use App\Http\Controllers\EmployeeBenefitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BenefitController;
+use App\Http\Controllers\ContributionController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -58,8 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 
-    Route::get('/employees/register-list', [EmployeeController::class, 'index'])->name('employees.registerList');
-
     //Employee Loans
     Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');
 
@@ -68,7 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/salary_grades/create', [SalaryGradeController::class, 'create'])->name('salary_grades.create');
     Route::post('/salary_grades', [SalaryGradeController::class, 'store'])->name('salary_grades.store');
     Route::get('/salary_grades/{salaryGrade}/edit', [SalaryGradeController::class, 'edit'])->name('salary_grades.edit');
-    Route::put('/salary_grades/{salaryGrade}', [SalaryGradeController::class, 'update'])->name('salary_grades.update'); // Add this line
+    Route::put('/salary_grades/{salaryGrade}', [SalaryGradeController::class, 'update'])->name('salary_grades.update');
 
     //Payroll
     Route::get('/payroll/general', [PayrollController::class, 'generalPayroll'])->name('generalPayroll');
@@ -79,11 +80,12 @@ Route::middleware('auth')->group(function () {
     // Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
 
     //Loans
+
     //Dashboard for loans
     Route::get('/loans', [LoanController::class, 'Loans'])->name('loans.view');
 
     //Loan Programs
-    // Route::get('/loanPrograms', [LoanProgramController::class, 'index'])->name('loan-programs.index'); //For Troubleshoot
+        // Route::get('/loanPrograms', [LoanProgramController::class, 'index'])->name('loan-programs.index'); //For Troubleshoot
         Route::post('/loanPrograms', [LoanProgramController::class, 'store'])->name('loan-programs.store');
         Route::put('/loanPrograms/{id}', [LoanProgramController::class, 'update'])->name('loan-programs.update');
 
@@ -101,6 +103,22 @@ Route::middleware('auth')->group(function () {
 
         //Loan Details
         Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');
+
+    //Benefits
+    Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
+    Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
+
+    Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
+
+    //Contribution
+    Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
+    Route::get('/contributions/create', [ContributionController::class, 'create'])->name('contributions.create');
+    Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
+    Route::get('/contributions/{contribution}', [ContributionController::class, 'show'])->name('contributions.show');
+    Route::get('/contributions/{contribution}/edit', [ContributionController::class, 'edit'])->name('contributions.edit');
+    Route::put('/contributions/{contribution}', [ContributionController::class, 'update'])->name('contributions.update');
+
+
 
 });
 

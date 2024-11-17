@@ -74,6 +74,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/employees')) return '6';
         if (url.startsWith('/payroll/general')) return '7';
         if (url.startsWith('/loans')) return '8';
+        if (url.startsWith('/employee_benefits')) return '9';
         return '1';
     };
 
@@ -88,11 +89,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/payroll/general">Payroll</Link>,
         },
-        // {
-        //     key: '8',
-        //     icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
-        //     label: <Link href="/loans">Loans</Link>,
-        // },
+        {
+            key: '9',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/employee_benefits">Benefits</Link>,
+        },
         {
             key: '8',
             icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,

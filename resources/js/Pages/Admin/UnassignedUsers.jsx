@@ -1,8 +1,9 @@
 import React from 'react';
 import { Table, Button } from 'antd';
 import { Inertia } from '@inertiajs/inertia';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const UnassignedUsers = ({ users }) => {
+const UnassignedUsers = ({ auth, users }) => {
     const columns = [
         {
             title: 'Name',
@@ -26,17 +27,18 @@ const UnassignedUsers = ({ users }) => {
     ];
 
     const handleAssignDetails = (userId) => {
-        // Redirect to the form to assign employee details
         Inertia.visit(`/admin/employees/create/${userId}`, {
             method: 'get',
         });
     };
 
     return (
-        <div>
-            <h2>Unassigned Users</h2>
-            <Table dataSource={users} columns={columns} rowKey="id" />
-        </div>
+        <AuthenticatedLayout user={auth.user}>
+            <div>
+                <div className="flex justify-center pb-5 text-xl font-bold">Unassigned Users</div>
+                <Table dataSource={users} columns={columns} rowKey="id" />
+            </div>
+        </AuthenticatedLayout>
     );
 };
 
