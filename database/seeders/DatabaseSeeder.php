@@ -70,6 +70,14 @@ class DatabaseSeeder extends Seeder
             ['grade' => 5, 'step' => 8, 'monthly_salary' => 19485.00],
         ]);
 
+        //Benefits
+        DB::table('benefits')->insert([
+            ['name' =>'PERA','description' => 'PERA'],
+            ['name' =>'LWOP-PERA','description' => 'leave without pay'],
+            ['name' =>'RATA','description' => 'RATA'],
+            ['name' =>'SALARY DIFFERENTIAL','description' => 'SALARY DIFFERENTIAL'],
+        ]);
+
         //Fund Cluster
         DB::table('fund_cluster')->insert([
             ['cluster_code' =>'07','desc' => 'TF', 'amount'=> '0'],

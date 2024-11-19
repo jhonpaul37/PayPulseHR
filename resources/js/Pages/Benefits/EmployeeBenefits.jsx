@@ -78,11 +78,11 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
         <AuthenticatedLayout user={auth.user}>
             {/* Display available benefits using Card */}
             <h2 className="mb-5 text-lg font-semibold">Available Benefits</h2>
-            <div className="mb-5 flex items-center">
+            {/* <div className="mb-5 flex items-center">
                 <PrimaryButton type="default" onClick={showBenefitModal}>
                     Create Benefit
                 </PrimaryButton>
-            </div>
+            </div> */}
             {benefits && benefits.length > 0 ? (
                 <Card title="Benefits" className="mb-6">
                     {benefits.map((benefit) => (
@@ -194,9 +194,9 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                             placeholder="Enter Benefit Description"
                         />
                     </Form.Item>
-                    <Form.Item name="amount" label="Benefit Amount" rules={[{ required: true }]}>
+                    {/* <Form.Item name="amount" label="Benefit Amount" rules={[{ required: true }]}>
                         <InputNumber className="w-full" placeholder="Enter Amount" />
-                    </Form.Item>
+                    </Form.Item> */}
                 </Form>
             </Modal>
         </AuthenticatedLayout>

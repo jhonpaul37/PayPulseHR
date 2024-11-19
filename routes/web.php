@@ -126,7 +126,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 });
 
-Route::middleware(['auth', 'role:manager'])->group(function () {
+Route::middleware(['auth', 'role:acc'])->group(function () {
+
+});
+
+Route::middleware(['auth', 'role:cashier'])->group(function () {
+
+});
+
+Route::middleware(['auth', 'role:hr'])->group(function () {
 
 });
 

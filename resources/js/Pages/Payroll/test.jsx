@@ -62,15 +62,6 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 },
                 width: 150,
             },
-            {
-                title: 'TOTAL',
-                render: (_, record) => (
-                    <span className="font-semibold text-red-600">
-                        {PhpFormat(record.total || 0)}
-                    </span>
-                ),
-                width: 150,
-            },
         ];
 
         // Static Columns
@@ -116,32 +107,37 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 width: 150,
             },
             {
-                title: 'LWOP-Basic',
-                width: 150,
-            },
-            {
                 title: 'NET BASIC',
-                render: (_, record) => {
-                    const monthlySalary = record.salary_grade?.monthly_salary || 0;
-                    return (
-                        <span className="font-semibold text-blue-600">
-                            {PhpFormat(monthlySalary)}
-                        </span>
-                    );
-                },
+                render: (_, record) => (
+                    <span className="font-semibold text-blue-600">
+                        {PhpFormat(record.net_basic || 0)}
+                    </span>
+                ),
                 width: 150,
             },
         ];
-        // const totalColumn = {SS
-        //     title: 'TOTAL',
-        //     render: (_, record) => (
-        //         <span className="font-semibold text-red-600">{PhpFormat(record.total || 0)}</span>
-        //     ),
-        //     width: 150,
-        // };
+        const totalColumn = {
+            title: 'TOTAL',
+            render: (_, record) => {
+                const netBasic = record.net_basic || 0;
+                const pera = record.benefits?.find((b) => b.name === 'PERA')?.pivot.amount || 0;
+                const lwopPera =
+                    record.benefits?.find((b) => b.name === 'LWOP-PERA')?.pivot.amount || 0;
+                const netPera = pera - lwopPera;
+                const rata = record.benefits?.find((b) => b.name === 'RATA')?.pivot.amount || 0;
+                const salaryDifferential =
+                    record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL')?.pivot.amount ||
+                    0;
+
+                const total = netBasic + netPera + rata + salaryDifferential;
+
+                return <span className="font-semibold text-red-600">{PhpFormat(total)}</span>;
+            },
+            width: 150,
+        };
 
         // Combine all columns
-        setColumns([...staticColumns, ...specificBenefitColumns]);
+        setColumns([...staticColumns, ...specificBenefitColumns, totalColumn]);
     }, [loanTypes, benefits, employee]);
 
     return (

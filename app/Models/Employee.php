@@ -52,9 +52,21 @@ class Employee extends Model
         return $this->hasMany(EmployeeLoan::class, 'employee_id');
     }
 
-    // Define the relationship with SalaryGrade
     public function salaryGrade()
     {
         return $this->belongsTo(SalaryGrade::class);
     }
+
+    public function benefits()
+    {
+        return $this->belongsToMany(Benefit::class, 'employee_benefit')
+                    ->withPivot('amount')
+                    ->withTimestamps();
+    }
+
+    public function employeeBenefits()
+    {
+        return $this->hasMany(EmployeeBenefit::class);
+    }
+
 }

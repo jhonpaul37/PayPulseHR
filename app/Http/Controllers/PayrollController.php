@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\LoanType;
+use App\Models\Benefit;
 use Inertia\Inertia;
 class PayrollController extends Controller
 {
@@ -53,40 +54,65 @@ public function generalPayroll()
     ]);
 }
 
+public function payrollData()
+{
+    $employees = Employee::with([
+        'loans',
+        'loans.payments',
+        'salaryGrade',
+        'benefits', // Include benefits for employees
+    ])->get();
 
+    $loanTypes = LoanType::all(); // Retrieve all loan types
+    $benefits = Benefit::all();   // Retrieve all available benefits
 
+    foreach ($employees as $employee) {
+        // Handle loan calculations
+        foreach ($employee->loans as $loan) {
+            $totalPaid = $loan->payments->sum('amount');
+            $remainingAmount = $loan->amount - $totalPaid;
 
+            $loan->remainingAmortization = $remainingAmount > 0
+                ? min($remainingAmount, $loan->monthly_amortization)
+                : null;
+        }
 
-    public function payrollData()
-    {
-        $payrolls = Payroll::with('employee')->get();
-        $employees = Employee::with(['loans', 'loans.payments', 'salaryGrade'])->get(); // Add salaryGrade relationship
-        $loanTypes = LoanType::all();
+        // Calculate benefits
+        $peraAmount = 0;
+        $lwopPeraAmount = 0;
+        $netPera = 0;
+        $rataAmount = 0;
+        $salaryDifferentialAmount = 0;
 
-        // Calculate remaining amortization for each loan
-        foreach ($employees as $employee) {
-            foreach ($employee->loans as $loan) {
-                // Sum all payments made for this loan
-                $totalPaid = $loan->payments->sum('amount');
-                // Calculate remaining amount after payments
-                $remainingAmount = $loan->amount - $totalPaid;
-
-                // If remaining amount is greater than 0, set the remaining amortization
-                if ($remainingAmount > 0) {
-                    // Check if remaining amount is less than monthly amortization
-                    $loan->remainingAmortization = min($remainingAmount, $loan->monthly_amortization);
-                } else {
-                    $loan->remainingAmortization = null; // Loan fully paid
-                }
+        foreach ($employee->benefits as $benefit) {
+            if ($benefit->name === 'PERA') {
+                $peraAmount = $benefit->pivot->amount;
+            } elseif ($benefit->name === 'LWOP-PERA') {
+                $lwopPeraAmount = $benefit->pivot->amount;
+            } elseif ($benefit->name === 'RATA') {
+                $rataAmount = $benefit->pivot->amount;
+            } elseif ($benefit->name === 'SALARY DIFFERENTIAL') {
+                $salaryDifferentialAmount = $benefit->pivot->amount;
             }
         }
 
-        return Inertia::render('Payroll/PayrollData', [
-            'payrolls' => $payrolls,
-            'employee' => $employees,
-            'loanTypes' => $loanTypes,
-        ]);
+        // Calculate NET PERA
+        $netPera = $peraAmount - $lwopPeraAmount;
+
+        // Calculate TOTAL
+        $total = $employee->salaryGrade->monthly_salary + $netPera + $rataAmount + $salaryDifferentialAmount;
+
+        // Attach calculated values to employee object
+        $employee->net_pera = $netPera;
+        $employee->total = $total;
     }
+
+    return Inertia::render('Payroll/PayrollData', [
+        'employee' => $employees,
+        'loanTypes' => $loanTypes,
+        'benefits' => $benefits,
+    ]);
+}
 
     public function computation()
     {
