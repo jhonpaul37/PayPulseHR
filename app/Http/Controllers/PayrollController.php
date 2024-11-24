@@ -23,51 +23,21 @@ class PayrollController extends Controller
     //     ]);
     // }
 
-public function generalPayroll()
-{
-    $payrolls = Payroll::with('employee')->get();
-    $employees = Employee::with(['loans', 'loans.payments', 'salaryGrade'])->get(); // Add salaryGrade relationship
-    $loanTypes = LoanType::all();
-
-    // Calculate remaining amortization for each loan
-    foreach ($employees as $employee) {
-        foreach ($employee->loans as $loan) {
-            // Sum all payments made for this loan
-            $totalPaid = $loan->payments->sum('amount');
-            // Calculate remaining amount after payments
-            $remainingAmount = $loan->amount - $totalPaid;
-
-            // If remaining amount is greater than 0, set the remaining amortization
-            if ($remainingAmount > 0) {
-                // Check if remaining amount is less than monthly amortization
-                $loan->remainingAmortization = min($remainingAmount, $loan->monthly_amortization);
-            } else {
-                $loan->remainingAmortization = null; // Loan fully paid
-            }
-        }
-    }
-
-    return Inertia::render('Payroll/GeneralPayroll', [
-        'payrolls' => $payrolls,
-        'employee' => $employees,
-        'loanTypes' => $loanTypes,
-    ]);
-}
-
 public function payrollData()
 {
     $employees = Employee::with([
         'loans',
         'loans.payments',
         'salaryGrade',
-        'benefits', // Include benefits for employees
+        'benefits',
+        'contributions',
     ])->get();
 
-    $loanTypes = LoanType::all(); // Retrieve all loan types
-    $benefits = Benefit::all();   // Retrieve all available benefits
+    $loanTypes = LoanType::all();
+    $benefits = Benefit::all();
 
     foreach ($employees as $employee) {
-        // Handle loan calculations
+        // Cal remaining loan amortization
         foreach ($employee->loans as $loan) {
             $totalPaid = $loan->payments->sum('amount');
             $remainingAmount = $loan->amount - $totalPaid;
@@ -77,7 +47,7 @@ public function payrollData()
                 : null;
         }
 
-        // Calculate benefits
+        // Cal benefits
         $peraAmount = 0;
         $lwopPeraAmount = 0;
         $netPera = 0;
@@ -96,15 +66,21 @@ public function payrollData()
             }
         }
 
-        // Calculate NET PERA
+        // Cal NET PERA
         $netPera = $peraAmount - $lwopPeraAmount;
 
-        // Calculate TOTAL
+        // Cal TOTAL SALARY
         $total = $employee->salaryGrade->monthly_salary + $netPera + $rataAmount + $salaryDifferentialAmount;
 
-        // Attach calculated values to employee object
+        // Cal total deductions
+        $totalDeductions = $employee->contributions->reduce(function ($sum, $contribution) {
+            return $sum + $contribution->pivot->amount;
+        }, 0);
+
+        // Add compute properties
         $employee->net_pera = $netPera;
         $employee->total = $total;
+        $employee->total_deductions = $totalDeductions;
     }
 
     return Inertia::render('Payroll/PayrollData', [
@@ -113,6 +89,37 @@ public function payrollData()
         'benefits' => $benefits,
     ]);
 }
+
+    public function generalPayroll()
+    {
+        $payrolls = Payroll::with('employee')->get();
+        $employees = Employee::with(['loans', 'loans.payments', 'salaryGrade'])->get();
+        $loanTypes = LoanType::all();
+
+
+        foreach ($employees as $employee) {
+            foreach ($employee->loans as $loan) {
+                // Sum all payments made for this loan
+                $totalPaid = $loan->payments->sum('amount');
+                // Cal remaining amount after payments
+                $remainingAmount = $loan->amount - $totalPaid;
+
+                // If remaining amount < 0, set the remaining amortization
+                if ($remainingAmount > 0) {
+                    // Check remaining amount is > monthly amortization
+                    $loan->remainingAmortization = min($remainingAmount, $loan->monthly_amortization);
+                } else {
+                    $loan->remainingAmortization = null; // Loan paid
+                }
+            }
+        }
+
+        return Inertia::render('Payroll/GeneralPayroll', [
+            'payrolls' => $payrolls,
+            'employee' => $employees,
+            'loanTypes' => $loanTypes,
+        ]);
+    }
 
     public function computation()
     {
@@ -131,60 +138,5 @@ public function payrollData()
             'payrolls' => $payrolls, 'employee' => $employee
         ]);
     }
-
-
-//     public function calculateDeductions($employee)
-//     {
-//         $taxRate = 0.1;
-//         $insuranceDeduction = 100;
-
-//         $basicSalary = $employee->salary;
-
-//         $taxDeduction = $basicSalary * $taxRate;
-//         $totalDeductions = $taxDeduction + $insuranceDeduction;
-
-//         return $totalDeductions;
-// }
-//     public function calculateBonuses($employee)
-//     {
-//         $performanceBonus = 200;
-
-//         return $performanceBonus;
-//     }
-
-
-//     public function calculatePayroll($employee)
-//     {
-//         $basicSalary = $employee->salary;
-//         $deductions = $this->calculateDeductions($employee);
-//         $bonuses = $this->calculateBonuses($employee);
-
-//         $netSalary = $basicSalary - $deductions + $bonuses;
-
-//         return $netSalary;
-//     }
-
-//     public function store(Request $request)
-//     {
-//         $request->validate([
-//             'employee_id' => 'required',
-//             'basic_salary' => 'required|numeric',
-//             'deductions' => 'nullable|numeric',
-//             'bonuses' => 'nullable|numeric',
-//         ]);
-
-//         $netSalary = $request->basic_salary - $request->deductions + $request->bonuses;
-
-//         Payroll::create([
-//             'employee_id' => $request->employee_id,
-//             'pay_date' => now(),
-//             'basic_salary' => $request->basic_salary,
-//             'deductions' => $request->deductions,
-//             'bonuses' => $request->bonuses,
-//             'net_salary' => $netSalary,
-//         ]);
-
-//         return redirect()->back()->with('message', 'Payroll processed successfully');
-//     }
 
 }

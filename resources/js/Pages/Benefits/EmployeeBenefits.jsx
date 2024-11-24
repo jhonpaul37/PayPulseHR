@@ -18,7 +18,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 
 const { Grid } = Card;
 
-// Helper function to determine grid style based on the number of items
 const getGridStyle = (totalItems) => {
     const gridWidth = totalItems > 0 ? `${100 / Math.min(totalItems, 4)}%` : '25%';
     return {
@@ -31,7 +30,7 @@ const getGridStyle = (totalItems) => {
 const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
-    const [editingBenefit, setEditingBenefit] = useState(null); // Track if a benefit is being edited
+    const [editingBenefit, setEditingBenefit] = useState(null);
     const [form] = Form.useForm();
     const [benefitForm] = Form.useForm();
 
@@ -69,14 +68,14 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
     };
 
     const handleEditBenefit = (benefit) => {
-        benefitForm.setFieldsValue(benefit); // Prefill the form with benefit details
+        benefitForm.setFieldsValue(benefit);
         setEditingBenefit(benefit);
         setIsBenefitModalOpen(true);
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            {/* Display available benefits using Card */}
+            {/* available benefits */}
             <h2 className="mb-5 text-lg font-semibold">Available Benefits</h2>
             {/* <div className="mb-5 flex items-center">
                 <PrimaryButton type="default" onClick={showBenefitModal}>
@@ -127,9 +126,9 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                 <Table.Column title="Amount" dataIndex="amount" key="amount" />
             </Table>
 
-            {/* Modal for assigning employee benefit */}
+            {/* assigning employee benefit */}
             <Modal
-                title="Assign Benefit to Employee"
+                title="Assign Benefit to Employees"
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={[
@@ -142,8 +141,19 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                 ]}
             >
                 <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item name="employee_id" label="Employee" rules={[{ required: true }]}>
-                        <Select placeholder="Select Employee">
+                    <Form.Item
+                        name="employee_ids"
+                        label="Employees"
+                        rules={[
+                            { required: true, message: 'Please select at least one employee.' },
+                        ]}
+                    >
+                        <Select
+                            mode="multiple"
+                            placeholder="Select Employees"
+                            allowClear
+                            optionFilterProp="children"
+                        >
                             {employees.map((employee) => (
                                 <Select.Option key={employee.id} value={employee.id}>
                                     {employee.first_name} {employee.last_name}
@@ -166,7 +176,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                 </Form>
             </Modal>
 
-            {/* Modal for creating/editing a benefit */}
+            {/* editing benefit description */}
             <Modal
                 title={editingBenefit ? 'Edit Benefit' : 'Create New Benefit'}
                 open={isBenefitModalOpen}
@@ -181,9 +191,15 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                 ]}
             >
                 <Form form={benefitForm} layout="vertical" onFinish={handleBenefitSubmit}>
-                    <Form.Item name="name" label="Benefit Name" rules={[{ required: true }]}>
-                        <Input className="w-full" placeholder="Enter Benefit Name" />
-                    </Form.Item>
+                    {editingBenefit ? (
+                        <Form.Item label="Benefit Name">
+                            <Input className="w-full" value={editingBenefit.name} disabled />
+                        </Form.Item>
+                    ) : (
+                        <Form.Item name="name" label="Benefit Name" rules={[{ required: true }]}>
+                            <Input className="w-full" placeholder="Enter Benefit Name" />
+                        </Form.Item>
+                    )}
                     <Form.Item
                         name="description"
                         label="Benefit Description"
@@ -194,9 +210,6 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                             placeholder="Enter Benefit Description"
                         />
                     </Form.Item>
-                    {/* <Form.Item name="amount" label="Benefit Amount" rules={[{ required: true }]}>
-                        <InputNumber className="w-full" placeholder="Enter Amount" />
-                    </Form.Item> */}
                 </Form>
             </Modal>
         </AuthenticatedLayout>

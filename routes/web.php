@@ -104,7 +104,7 @@ Route::middleware('auth')->group(function () {
         //Loan Details
         Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');
 
-    //Benefits
+    //Benefits/ Gross Earning
     Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
     Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
 
@@ -112,11 +112,10 @@ Route::middleware('auth')->group(function () {
 
     //Contribution
     Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
-    Route::get('/contributions/create', [ContributionController::class, 'create'])->name('contributions.create');
     Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
-    Route::get('/contributions/{contribution}', [ContributionController::class, 'show'])->name('contributions.show');
-    Route::get('/contributions/{contribution}/edit', [ContributionController::class, 'edit'])->name('contributions.edit');
-    Route::put('/contributions/{contribution}', [ContributionController::class, 'update'])->name('contributions.update');
+
+    // Route::get('/contributions/{contribution}', [ContributionController::class, 'show'])->name('contributions.show');
+    // Route::put('/contributions/{contribution}', [ContributionController::class, 'update'])->name('contributions.update');
 
 
 

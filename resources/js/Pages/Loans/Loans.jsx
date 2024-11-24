@@ -9,7 +9,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import EmployeeLoanForm from './EmployeeLoanForm';
 import EmployeeLoanDetail from './EmployeeLoanDetail';
 
-// Styled Component moved outside the Loans function
 const FloatButton = styled(Btn)`
     background-color: #f0c519 !important;
     color: #fff !important;
@@ -23,32 +22,32 @@ const FloatButton = styled(Btn)`
 
 const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeLoan = [] }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedLoan, setSelectedLoan] = useState(null); // State for selected loan
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // State for loan detail modal
+    const [selectedLoan, setSelectedLoan] = useState(null);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-    // Function to open the modal for adding employee loan
+    // open the modal for adding employee loan
     const showModal = () => {
         setIsModalOpen(true);
     };
 
-    // Function to close the modal for adding employee loan
+    //  close the modal for adding employee loan
     const handleCancel = () => {
         setIsModalOpen(false);
     };
 
-    // Function to show loan details
+    //  show loan details
     const showLoanDetails = (loan) => {
         setSelectedLoan(loan);
         setIsDetailModalOpen(true);
     };
 
-    // Function to close the loan detail modal
+    // close the loan detail modal
     const handleDetailCancel = () => {
         setIsDetailModalOpen(false);
         setSelectedLoan(null);
     };
 
-    // Date formatting function
+    // Date formatting
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);

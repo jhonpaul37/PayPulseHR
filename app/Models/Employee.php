@@ -54,7 +54,7 @@ class Employee extends Model
 
     public function salaryGrade()
     {
-        return $this->belongsTo(SalaryGrade::class);
+        return $this->belongsTo(SalaryGrade::class, 'salary_grade_id');
     }
 
     public function benefits()
@@ -67,6 +67,13 @@ class Employee extends Model
     public function employeeBenefits()
     {
         return $this->hasMany(EmployeeBenefit::class);
+    }
+
+    public function contributions()
+    {
+        return $this->belongsToMany(Contribution::class, 'employee_contribution')
+                    ->withPivot('amount')
+                    ->withTimestamps();
     }
 
 }

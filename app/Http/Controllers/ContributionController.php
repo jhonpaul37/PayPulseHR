@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Contribution;
+use App\Models\EmployeeContribution;
+use App\Models\Employee;
 
 class ContributionController extends Controller
 {
     public function index()
     {
-        // Retrieve all contributions
-        $contributions = Contribution::all();
-        return inertia('Contribution/ContributionIndex', compact('contributions'));
+        $contributions = Contribution::with(['employee'])->get();
+        $employee = Employee::with(['salaryGrade'])->get();
+        $employeeContribution = EmployeeContribution::with(['employee', 'contribution'])->get();
+
+        return inertia('Contribution/ContributionIndex', [
+            'contributions' => $contributions,
+            'employees' => $employee,
+            'employeeContribution' => $employeeContribution,
+        ]);
     }
 
     public function create()
@@ -22,35 +30,36 @@ class ContributionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'amount' => 'nullable|numeric',
+            'employee_id' => 'required|exists:employees,id',
+            'contribution_id' => 'required|exists:contributions,id',
+            'amount' => 'required|numeric',
         ]);
 
-        Contribution::create($request->all());
+        EmployeeContribution::create([
+            'employee_id' => $request->employee_id,
+            'contribution_id' => $request->contribution_id,
+            'amount' => $request->amount,
+        ]);
+
         return redirect()->route('contributions.index')->with('success', 'Contribution created successfully');
     }
+
 
     public function edit(Contribution $contribution)
     {
         return inertia('Contribution/ContributionEdit', compact('contribution'));
     }
 
-    public function update(Request $request, Contribution $contribution)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'amount' => 'nullable|numeric',
-        ]);
+    // public function update(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //     ]);
 
-        $contribution->update($request->all());
-        return redirect()->route('contributions.index')->with('success', 'Contribution updated successfully');
-    }
+    //     $contribution = Contribution::findOrFail($id);
+    //     $contribution->update($request->all());
 
-    public function destroy(Contribution $contribution)
-    {
-        $contribution->delete();
-        return redirect()->route('contributions.index')->with('success', 'Contribution deleted successfully');
-    }
+    //     return back()->with('success', 'Contribution updated successfully');
+    // }
 }

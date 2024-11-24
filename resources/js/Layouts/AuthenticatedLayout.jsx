@@ -72,7 +72,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/settings')) return '4';
         if (url.startsWith('/leaveRequest')) return '5';
         if (url.startsWith('/employees')) return '6';
-        if (url.startsWith('/payroll/general')) return '7';
+        if (url.startsWith('/payroll/data')) return '7';
         if (url.startsWith('/loans')) return '8';
         if (url.startsWith('/employee_benefits')) return '9';
         return '1';
@@ -81,23 +81,23 @@ const AuthenticatedLayout = ({ user, children }) => {
     const menuItems = [
         {
             key: 'payrollTitle',
-            label: !collapsed ? 'Payroll' : null,
+            label: !collapsed ? 'Cashier' : null,
             type: 'group',
         },
         {
             key: '7',
             icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/payroll/general">Payroll</Link>,
+            label: <Link href="/payroll/data">Payroll</Link>,
         },
         {
             key: '9',
             icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/employee_benefits">Benefits</Link>,
+            label: <Link href="/employee_benefits">Gross Earnings</Link>,
         },
         {
             key: '8',
             icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
-            label: 'Leaves',
+            label: 'Deduction',
             children: [
                 {
                     key: '8-1',
@@ -109,8 +109,12 @@ const AuthenticatedLayout = ({ user, children }) => {
                 },
                 {
                     key: '8-3',
-                    label: <Link href="/salary_grades">Salary Grade</Link>,
+                    label: <Link href="/contributions">Contribution</Link>,
                 },
+                // {
+                //     key: '8-4',
+                //     label: <Link href="/salary_grades">Salary Grade</Link>,
+                // },
             ],
         },
         {

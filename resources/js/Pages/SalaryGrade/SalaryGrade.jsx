@@ -41,9 +41,9 @@ const Index = ({ salaryGrades, auth }) => {
         <AuthenticatedLayout user={auth.user}>
             <div className="container mx-auto p-6">
                 <Link href="/salary_grades/create">
-                    <Button type="primary" className="mb-4">
+                    {/* <Button type="primary" className="mb-4">
                         Create New Salary Grade
-                    </Button>
+                    </Button> */}
                 </Link>
                 <Table dataSource={salaryGrades} columns={columns} rowKey="id" />
             </div>

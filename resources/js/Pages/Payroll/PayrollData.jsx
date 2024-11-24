@@ -15,64 +15,6 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
     const [columns, setColumns] = useState([]);
 
     useEffect(() => {
-        // Benefit Columns (specific columns for PERA, LWOP-PERA, RATA, and SALARY DIFFERENTIAL)
-        const specificBenefitColumns = [
-            {
-                title: 'PERA',
-                render: (_, record) => {
-                    const benefit = record.benefits?.find((b) => b.name === 'PERA');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
-                },
-                width: 150,
-            },
-            {
-                title: 'LWOP-PERA',
-                render: (_, record) => {
-                    const benefit = record.benefits?.find((b) => b.name === 'LWOP-PERA');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
-                },
-                width: 150,
-            },
-            {
-                title: 'NET PERA',
-                render: (_, record) => {
-                    const pera = record.benefits?.find((b) => b.name === 'PERA')?.pivot.amount || 0;
-                    const lwopPera =
-                        record.benefits?.find((b) => b.name === 'LWOP-PERA')?.pivot.amount || 0;
-                    const netPera = pera - lwopPera;
-                    return (
-                        <span className="font-semibold text-green-600">{PhpFormat(netPera)}</span>
-                    );
-                },
-                width: 150,
-            },
-            {
-                title: 'RATA',
-                render: (_, record) => {
-                    const benefit = record.benefits?.find((b) => b.name === 'RATA');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
-                },
-                width: 150,
-            },
-            {
-                title: 'SALARY DIFFERENTIAL',
-                render: (_, record) => {
-                    const benefit = record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
-                },
-                width: 150,
-            },
-            {
-                title: 'TOTAL',
-                render: (_, record) => (
-                    <span className="font-semibold text-red-600">
-                        {PhpFormat(record.total || 0)}
-                    </span>
-                ),
-                width: 150,
-            },
-        ];
-
         // Static Columns
         const staticColumns = [
             {
@@ -123,25 +65,111 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 title: 'NET BASIC',
                 render: (_, record) => {
                     const monthlySalary = record.salary_grade?.monthly_salary || 0;
-                    return (
-                        <span className="font-semibold text-blue-600">
-                            {PhpFormat(monthlySalary)}
-                        </span>
-                    );
+                    return <span className="font-semibold">{PhpFormat(monthlySalary)}</span>;
+                },
+                width: 150,
+                className: 'bg-yellow-400',
+            },
+        ];
+
+        const BenefitColumns = [
+            {
+                title: 'PERA',
+                render: (_, record) => {
+                    const benefit = record.benefits?.find((b) => b.name === 'PERA');
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                },
+            },
+            {
+                title: 'LWOP-PERA',
+                render: (_, record) => {
+                    const benefit = record.benefits?.find((b) => b.name === 'LWOP-PERA');
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
                 },
                 width: 150,
             },
+            {
+                title: 'NET PERA',
+                render: (_, record) => {
+                    const pera = record.benefits?.find((b) => b.name === 'PERA')?.pivot.amount || 0;
+                    const lwopPera =
+                        record.benefits?.find((b) => b.name === 'LWOP-PERA')?.pivot.amount || 0;
+                    const netPera = pera - lwopPera;
+                    return <span className="font-semibold">{PhpFormat(netPera)}</span>;
+                },
+                width: 150,
+                className: 'bg-yellow-400',
+            },
+            {
+                title: 'RATA',
+                render: (_, record) => {
+                    const benefit = record.benefits?.find((b) => b.name === 'RATA');
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                },
+                width: 150,
+            },
+            {
+                title: 'SALARY DIFFERENTIAL',
+                render: (_, record) => {
+                    const benefit = record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL');
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                },
+                width: 150,
+            },
+            {
+                title: 'TOTAL',
+                render: (_, record) => (
+                    <span className="font-semibold">{PhpFormat(record.total || 0)}</span>
+                ),
+                width: 150,
+                className: 'bg-yellow-400',
+            },
         ];
-        // const totalColumn = {SS
-        //     title: 'TOTAL',
-        //     render: (_, record) => (
-        //         <span className="font-semibold text-red-600">{PhpFormat(record.total || 0)}</span>
-        //     ),
-        //     width: 150,
-        // };
+
+        const ContributionColumns = [
+            {
+                title: 'TAX',
+                render: (_, record) => {
+                    const contribution = record.contributions?.find((c) => c.name === 'TAX');
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                },
+                width: 150,
+            },
+            {
+                title: 'GSIS PREM',
+                render: (_, record) => {
+                    const contribution = record.contributions?.find((c) => c.name === 'GSIS PREM');
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                },
+                width: 150,
+            },
+            {
+                title: 'HDMF PREM1',
+                render: (_, record) => {
+                    const contribution = record.contributions?.find((c) => c.name === 'HDMF PREM1');
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                },
+                width: 150,
+            },
+            {
+                title: 'PHIC',
+                render: (_, record) => {
+                    const contribution = record.contributions?.find((c) => c.name === 'PHIC');
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                },
+                width: 150,
+            },
+            {
+                title: 'BIR GSIS PHIC HDMF TOTAL',
+                dataIndex: 'total_deductions',
+                render: PhpFormat,
+                width: 150,
+                className: 'bg-yellow-400',
+            },
+        ];
 
         // Combine all columns
-        setColumns([...staticColumns, ...specificBenefitColumns]);
+        setColumns([...staticColumns, ...BenefitColumns, ...ContributionColumns]);
     }, [loanTypes, benefits, employee]);
 
     return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { Divider, Card, Button, Empty, message, Modal, Form, Input, Select, Table } from 'antd';
+import { Card, Button, Empty, message, Modal, Form, Input, Select, Table } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const { Option } = Select;
@@ -12,9 +12,9 @@ export default function ContributionsIndex({
     employeeContribution,
 }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isAmountDisabled, setIsAmountDisabled] = useState(false); // Control amount field editability
     const [form] = Form.useForm();
 
+    // Handle modal visibility
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -22,14 +22,29 @@ export default function ContributionsIndex({
     const handleCancel = () => {
         setIsModalVisible(false);
         form.resetFields();
-        setIsAmountDisabled(false);
     };
 
     const handleOk = () => {
         form.validateFields()
             .then((values) => {
-                // Calculate the final amount to send
-                const calculatedAmount = form.getFieldValue('amount');
+                const selectedContribution = contributions.find(
+                    (contribution) => contribution.id === values.contribution_id
+                );
+
+                const employee = employees.find((emp) => emp.id === values.employee_id);
+                const monthlySalary = employee.salaryGrade?.monthly_salary || 0;
+
+                // Apply calculation for GSIS PREM or HDMF PREM1
+                let calculatedAmount = values.amount; // Default to manual input
+                if (['GSIS PREM', 'HDMF PREM1'].includes(selectedContribution.name)) {
+                    if (selectedContribution.name === 'GSIS PREM') {
+                        calculatedAmount = monthlySalary * 0.09;
+                    } else if (selectedContribution.name === 'HDMF PREM1') {
+                        calculatedAmount = monthlySalary * 0.02;
+                    }
+                }
+
+                // Send the single payload to the server
                 Inertia.post(
                     route('contributions.store'),
                     {
@@ -42,7 +57,6 @@ export default function ContributionsIndex({
                             message.success('Contribution added successfully');
                             setIsModalVisible(false);
                             form.resetFields();
-                            setIsAmountDisabled(false);
                         },
                     }
                 );
@@ -52,33 +66,7 @@ export default function ContributionsIndex({
             });
     };
 
-    const handleFieldChange = () => {
-        const { employee_id, contribution_id } = form.getFieldsValue();
-        const selectedContribution = contributions.find((c) => c.id === contribution_id);
-        const employee = employees.find((e) => e.id === employee_id);
-
-        if (selectedContribution && employee) {
-            const monthlySalary = employee.salary_grade?.monthly_salary || 0;
-
-            // Determine if the contribution requires auto-calculation
-            if (selectedContribution.name === 'GSIS PREM') {
-                const calculatedAmount = (monthlySalary * 0.09).toFixed(2);
-                form.setFieldsValue({ amount: calculatedAmount });
-                setIsAmountDisabled(true); // Disable the amount field
-            } else if (selectedContribution.name === 'HDMF PREM1') {
-                const calculatedAmount = (monthlySalary * 0.02).toFixed(2);
-                form.setFieldsValue({ amount: calculatedAmount });
-                setIsAmountDisabled(true); // Disable the amount field
-            } else {
-                form.setFieldsValue({ amount: '' });
-                setIsAmountDisabled(false); // Enable the amount field for manual input
-            }
-        } else {
-            form.setFieldsValue({ amount: '' });
-            setIsAmountDisabled(false); // Default to editable if no auto-calculation applies
-        }
-    };
-
+    // Define columns for the employee contribution table
     const columns = [
         {
             title: 'Employee',
@@ -97,27 +85,24 @@ export default function ContributionsIndex({
             render: (amount) => `₱${parseFloat(amount).toFixed(2)}`,
         },
     ];
+    console.log(employees.salary_grade_id);
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>
                 <Button type="primary" onClick={showModal} style={{ marginBottom: '16px' }}>
-                    Add Deduction
+                    Add Contribution
                 </Button>
+
                 <Modal
-                    title="Add Deduction"
+                    title="Add Contribution"
                     open={isModalVisible}
                     onOk={handleOk}
                     onCancel={handleCancel}
                     okText="Save"
                     cancelText="Cancel"
                 >
-                    <Form
-                        form={form}
-                        layout="vertical"
-                        name="add_contribution_form"
-                        onValuesChange={handleFieldChange} // Trigger calculation on field change
-                    >
+                    <Form form={form} layout="vertical" name="add_contribution_form">
                         <Form.Item
                             name="employee_id"
                             label="Employee"
@@ -125,9 +110,9 @@ export default function ContributionsIndex({
                         >
                             <Select placeholder="Select an employee">
                                 {employees.map((employee) => (
-                                    <Option key={employee.id} value={employee.id}>
+                                    <Select.Option key={employee.id} value={employee.id}>
                                         {employee.first_name} {employee.last_name}
-                                    </Option>
+                                    </Select.Option>
                                 ))}
                             </Select>
                         </Form.Item>
@@ -145,7 +130,7 @@ export default function ContributionsIndex({
                                 ))}
                             </Select>
                         </Form.Item>
-                        {/* {console.log(employees.map((employee) => employee.salary_grade_id))} */}
+
                         <Form.Item
                             name="amount"
                             label="Amount"
@@ -157,13 +142,14 @@ export default function ContributionsIndex({
                                             (contribution) => contribution.id === contributionId
                                         );
 
+                                        // Make amount optional if it's GSIS PREM or HDMF PREM1
                                         if (
                                             selectedContribution &&
                                             ['GSIS PREM', 'HDMF PREM1'].includes(
                                                 selectedContribution.name
                                             )
                                         ) {
-                                            return Promise.resolve(); // Auto-calculated, no validation needed
+                                            return Promise.resolve();
                                         }
 
                                         if (!value) {
@@ -177,18 +163,13 @@ export default function ContributionsIndex({
                                 }),
                             ]}
                         >
-                            <Input
-                                type="number"
-                                placeholder="Enter amount"
-                                disabled={isAmountDisabled} // Dynamically disable field
-                            />
+                            <Input type="number" placeholder="Enter amount" disabled={false} />
                         </Form.Item>
                     </Form>
                 </Modal>
 
-                {/* Contribution lists */}
                 {contributions && contributions.length > 0 ? (
-                    <Card title="Deduction" className="mb-6">
+                    <Card title="Contributions" className="mb-6">
                         {contributions.map((contribution) => (
                             <Card.Grid
                                 key={contribution.id}
@@ -208,20 +189,20 @@ export default function ContributionsIndex({
                         className="mb-6"
                     />
                 )}
-                <Divider style={{ borderColor: '#F0C519' }}> Employee Deduction</Divider>
 
-                {/* Employee Contribution list */}
                 {employeeContribution && employeeContribution.length > 0 ? (
-                    <Table
-                        dataSource={employeeContribution.map((item) => ({
-                            key: item.id,
-                            employee_name: `${item.employee.first_name} ${item.employee.last_name}`,
-                            contribution_name: item.contribution.name,
-                            amount: item.amount,
-                        }))}
-                        columns={columns}
-                        pagination={false}
-                    />
+                    <Card title="Employee Contributions" className="mt-6">
+                        <Table
+                            dataSource={employeeContribution.map((item) => ({
+                                key: item.id,
+                                employee_name: `${item.employee.first_name} ${item.employee.last_name}`,
+                                contribution_name: item.contribution.name,
+                                amount: item.amount,
+                            }))}
+                            columns={columns}
+                            pagination={false}
+                        />
+                    </Card>
                 ) : (
                     <Empty
                         image={Empty.PRESENTED_IMAGE_SIMPLE}

@@ -78,6 +78,14 @@ class DatabaseSeeder extends Seeder
             ['name' =>'SALARY DIFFERENTIAL','description' => 'SALARY DIFFERENTIAL'],
         ]);
 
+        //Contribution
+        DB::table('contributions')->insert([
+            ['name' =>'TAX','description' => 'Income TAX'],
+            ['name' =>'GSIS PREM','description' => 'GSIS PREM'],
+            ['name' =>'HDMF PREM1','description' => 'HDMF PREM1'],
+            ['name' =>'PHIC','description' => 'PhilHealth'],
+        ]);
+
         //Fund Cluster
         DB::table('fund_cluster')->insert([
             ['cluster_code' =>'07','desc' => 'TF', 'amount'=> '0'],

@@ -12,7 +12,6 @@ class Contribution extends Model
     protected $fillable = [
         'name',
         'description',
-        'amount',
     ];
 
     // Relationship with EmployeeContribution
@@ -20,4 +19,12 @@ class Contribution extends Model
     {
         return $this->hasMany(EmployeeContribution::class);
     }
+
+    public function employee()
+    {
+        return $this->belongsToMany(Employee::class, 'employee_contribution')
+                    ->withPivot('amount')
+                    ->withTimestamps();
+    }
+
 }

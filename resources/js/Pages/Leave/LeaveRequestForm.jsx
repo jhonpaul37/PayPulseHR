@@ -137,6 +137,7 @@ const leaveRequestForm = ({ auth, employee }) => {
                 ? data.other_leave_type
                 : '',
         };
+        console.log('Submitting data:', formattedData);
 
         Inertia.post(route('LeaveRequstForm.store'), formattedData);
     };

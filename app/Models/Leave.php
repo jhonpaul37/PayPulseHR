@@ -21,7 +21,7 @@ class Leave extends Model
         'leave_type',
     ];
         protected $casts = [
-        'leave_type' => 'array', // Cast leave_type as an array
+        'leave_type' => 'array', // leave_type as an array
     ];
     public function employee()
     {

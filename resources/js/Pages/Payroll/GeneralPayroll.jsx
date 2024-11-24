@@ -18,7 +18,7 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
     const [columnDefs, setColumnDefs] = useState([]);
 
     useEffect(() => {
-        // Get a list of all loan types that have at least one existing loan
+        // list of all loan types
         const activeLoanTypes = loanTypes.filter((loanType) =>
             employee.some((emp) => emp.loans.some((loan) => loan.loan_type_id === loanType.id))
         );
@@ -30,12 +30,12 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
             cellRenderer: (params) => {
                 const loan = params.data.loans?.find((loan) => loan.loan_type_id === loanType.id);
                 if (loan) {
-                    // Check if remaining amortization exists and is greater than 0
+                    // Check remaining amortization exists and < 0
                     return loan.remainingAmortization && loan.remainingAmortization > 0
                         ? PhpFormat({ value: loan.remainingAmortization })
-                        : ''; // Return empty if no remaining amortization
+                        : ''; // empty no remaining amortization
                 }
-                return ''; // If no loan, return empty
+                return ''; // no loan return empty
             },
         }));
         console.log(employee);
@@ -70,7 +70,6 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
         setColumnDefs([...staticColumns, ...loanTypeColumns]);
     }, [loanTypes, employee]);
 
-    // Function to handle cell value changes
     const onCellValueChanged = (params) => {
         const updatedRow = params.data;
         setRowData((prevRowData) =>
@@ -94,7 +93,7 @@ const GeneralPayroll = ({ auth, employee, loanTypes }) => {
                     }}
                     pagination={true}
                     paginationPageSize={15}
-                    paginationPageSizeSelector={[15, 20, 50, 100]} // Add 15 here
+                    paginationPageSizeSelector={[15, 20, 50, 100]}
                     domLayout="normal"
                 />
             </div>
