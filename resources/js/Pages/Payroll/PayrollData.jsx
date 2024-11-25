@@ -10,12 +10,51 @@ const PhpFormat = (value) => {
         : `₱${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
+const PayrollData = ({ auth, employee, loanTypes }) => {
     const [dataSource, setDataSource] = useState(employee);
     const [columns, setColumns] = useState([]);
 
     useEffect(() => {
-        // Static Columns
+        // loan columns for all loan types
+        const loanColumns = loanTypes.map((loanType) => ({
+            title: loanType.type.toUpperCase(),
+            render: (_, record) => {
+                const loan = record.loans?.find((loan) => loan.loan_type_id === loanType.id);
+                if (loan) {
+                    return loan.remainingAmortization && loan.remainingAmortization > 0
+                        ? PhpFormat(loan.remainingAmortization)
+                        : ''; // empty if no remaining amortization
+                }
+                return ''; // no loan, return empty
+            },
+            width: 150,
+        }));
+
+        // "Loans Total" column
+        const loansTotalColumn = {
+            title: 'LOANS TOTAL',
+            render: (_, record) => {
+                const totalLoans = record.loans?.reduce(
+                    (sum, loan) => sum + (loan.remainingAmortization || 0),
+                    0
+                );
+                return <span className="font-semibold">{PhpFormat(totalLoans || 0)}</span>;
+            },
+            width: 150,
+            className: 'bg-yellow-400',
+        };
+
+        const PATVEColumn = {
+            title: 'PATVE CONT.',
+            render: (_, record) => {
+                const contribution = record.contributions?.find((c) => c.name === 'PATVE CONT.');
+                return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+            },
+            width: 150,
+            className: 'bg-yellow-300',
+        };
+
+        // Static columns
         const staticColumns = [
             {
                 title: 'EMPLOYEE NO',
@@ -72,30 +111,28 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
             },
         ];
 
+        // Gross income
         const BenefitColumns = [
             {
                 title: 'PERA',
                 render: (_, record) => {
                     const benefit = record.benefits?.find((b) => b.name === 'PERA');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '';
                 },
             },
             {
                 title: 'LWOP-PERA',
                 render: (_, record) => {
                     const benefit = record.benefits?.find((b) => b.name === 'LWOP-PERA');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '';
                 },
                 width: 150,
             },
             {
                 title: 'NET PERA',
                 render: (_, record) => {
-                    const pera = record.benefits?.find((b) => b.name === 'PERA')?.pivot.amount || 0;
-                    const lwopPera =
-                        record.benefits?.find((b) => b.name === 'LWOP-PERA')?.pivot.amount || 0;
-                    const netPera = pera - lwopPera;
-                    return <span className="font-semibold">{PhpFormat(netPera)}</span>;
+                    // Directly use the computed `net_pera` from the backend
+                    return <span className="font-semibold">{PhpFormat(record.net_pera)}</span>;
                 },
                 width: 150,
                 className: 'bg-yellow-400',
@@ -104,7 +141,7 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 title: 'RATA',
                 render: (_, record) => {
                     const benefit = record.benefits?.find((b) => b.name === 'RATA');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : ' ';
                 },
                 width: 150,
             },
@@ -112,26 +149,27 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 title: 'SALARY DIFFERENTIAL',
                 render: (_, record) => {
                     const benefit = record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : '₱0.00';
+                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : ' ';
                 },
                 width: 150,
             },
             {
                 title: 'TOTAL',
                 render: (_, record) => (
-                    <span className="font-semibold">{PhpFormat(record.total || 0)}</span>
+                    <span className="font-semibold">{PhpFormat(record.total_salary || 0)}</span>
                 ),
                 width: 150,
                 className: 'bg-yellow-400',
             },
         ];
 
+        // Deductions
         const ContributionColumns = [
             {
                 title: 'TAX',
                 render: (_, record) => {
                     const contribution = record.contributions?.find((c) => c.name === 'TAX');
-                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
                 },
                 width: 150,
             },
@@ -139,7 +177,7 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 title: 'GSIS PREM',
                 render: (_, record) => {
                     const contribution = record.contributions?.find((c) => c.name === 'GSIS PREM');
-                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
                 },
                 width: 150,
             },
@@ -147,7 +185,7 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 title: 'HDMF PREM1',
                 render: (_, record) => {
                     const contribution = record.contributions?.find((c) => c.name === 'HDMF PREM1');
-                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
                 },
                 width: 150,
             },
@@ -155,26 +193,78 @@ const PayrollData = ({ auth, employee, loanTypes, benefits }) => {
                 title: 'PHIC',
                 render: (_, record) => {
                     const contribution = record.contributions?.find((c) => c.name === 'PHIC');
-                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : '₱0.00';
+                    return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
                 },
                 width: 150,
             },
             {
                 title: 'BIR GSIS PHIC HDMF TOTAL',
-                dataIndex: 'total_deductions',
+                dataIndex: 'total_contributions',
                 render: PhpFormat,
                 width: 150,
                 className: 'bg-yellow-400',
             },
         ];
 
+        // Total Deduction
+        const totalDeductionColumn = {
+            title: 'TOTAL DEDUCTION',
+            render: (_, record) => {
+                // Using the computed `total_deductions` from backend
+                return (
+                    <span className="font-semibold">{PhpFormat(record.total_deductions || 0)}</span>
+                );
+            },
+            width: 200,
+            className: 'bg-orange-400 ',
+        };
+
+        // Net Amont
+        const NetAmountColumn = {
+            title: 'Net Amount',
+            render: (_, record) => {
+                return <span className="font-semibold">{PhpFormat(record.net_amount || 0)}</span>;
+            },
+            width: 200,
+            // className: 'bg-red-400 ',
+        };
+
+        const NetPay1To15Column = [
+            {
+                title: 'Net Pay 1-15',
+                render: (_, record) => {
+                    return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+                },
+                width: 200,
+                className: 'bg-green-200',
+            },
+            {
+                title: 'Net Pay 16-30',
+                render: (_, record) => {
+                    return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+                },
+                width: 200,
+                className: 'bg-green-300',
+            },
+        ];
+
         // Combine all columns
-        setColumns([...staticColumns, ...BenefitColumns, ...ContributionColumns]);
-    }, [loanTypes, benefits, employee]);
+        setColumns([
+            ...staticColumns,
+            ...BenefitColumns,
+            ...ContributionColumns,
+            ...loanColumns,
+            PATVEColumn,
+            loansTotalColumn,
+            totalDeductionColumn,
+            NetAmountColumn,
+            ...NetPay1To15Column,
+        ]);
+    }, [loanTypes, employee]);
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <h2 className="text-2xl font-bold">Payroll Data</h2>
+            <h2 className="pb-10 text-center text-2xl font-bold">Payroll Data</h2>
             <Table
                 dataSource={dataSource}
                 columns={columns}

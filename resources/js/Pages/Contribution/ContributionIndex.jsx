@@ -60,22 +60,28 @@ export default function ContributionsIndex({
         if (selectedContribution && employee) {
             const monthlySalary = employee.salary_grade?.monthly_salary || 0;
 
-            // Determine if the contribution requires auto-calculation
+            // Auto-calculate specific contributions
             if (selectedContribution.name === 'GSIS PREM') {
                 const calculatedAmount = (monthlySalary * 0.09).toFixed(2);
                 form.setFieldsValue({ amount: calculatedAmount });
-                setIsAmountDisabled(true); // Disable the amount field
+                setIsAmountDisabled(true); // Disable amount field
             } else if (selectedContribution.name === 'HDMF PREM1') {
                 const calculatedAmount = (monthlySalary * 0.02).toFixed(2);
                 form.setFieldsValue({ amount: calculatedAmount });
-                setIsAmountDisabled(true); // Disable the amount field
+                setIsAmountDisabled(true); // Disable amount field
+            } else if (selectedContribution.name === 'PHIC') {
+                const netBasic = monthlySalary; // Assuming net basic is monthly salary for this calculation
+                const calculatedAmount = (netBasic * 0.025).toFixed(2);
+                form.setFieldsValue({ amount: calculatedAmount });
+                setIsAmountDisabled(true); // Disable amount field
             } else {
-                form.setFieldsValue({ amount: '' });
-                setIsAmountDisabled(false); // Enable the amount field for manual input
+                // Allow manual entry
+                setIsAmountDisabled(false);
             }
         } else {
+            // Reset when no valid employee or contribution is selected
+            setIsAmountDisabled(false);
             form.setFieldsValue({ amount: '' });
-            setIsAmountDisabled(false); // Default to editable if no auto-calculation applies
         }
     };
 
@@ -157,16 +163,18 @@ export default function ContributionsIndex({
                                             (contribution) => contribution.id === contributionId
                                         );
 
+                                        // Skip validation for auto-calculated contributions
                                         if (
                                             selectedContribution &&
                                             ['GSIS PREM', 'HDMF PREM1'].includes(
                                                 selectedContribution.name
                                             )
                                         ) {
-                                            return Promise.resolve(); // Auto-calculated, no validation needed
+                                            return Promise.resolve(); // Auto-calculated, no manual validation needed
                                         }
 
-                                        if (!value) {
+                                        // For manual input, ensure a value is provided
+                                        if (!value && !isAmountDisabled) {
                                             return Promise.reject(
                                                 new Error('Please input the amount!')
                                             );
@@ -180,7 +188,7 @@ export default function ContributionsIndex({
                             <Input
                                 type="number"
                                 placeholder="Enter amount"
-                                disabled={isAmountDisabled} // Dynamically disable field
+                                disabled={isAmountDisabled} // Dynamically disable the field
                             />
                         </Form.Item>
                     </Form>

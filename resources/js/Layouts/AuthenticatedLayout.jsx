@@ -109,7 +109,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                 },
                 {
                     key: '8-3',
-                    label: <Link href="/contributions">Contribution</Link>,
+                    label: <Link href="/contributions">Deduction</Link>,
                 },
                 // {
                 //     key: '8-4',

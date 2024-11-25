@@ -49,6 +49,11 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
         sick_days: employee.sick_days || 0,
         leave_balance: employee.leave_balance || 0,
         photo: employee.photo || null,
+        classification: employee.classification || '',
+        gsis_no: employee.gsis_no || '',
+        hdmf_no: employee.hdmf_no || '',
+        phic_no: employee.phic_no || '',
+        bir_tin_no: employee.bir_tin_no || '',
     });
 
     const [loading, setLoading] = useState(false);
@@ -255,6 +260,55 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                             />
                             {errors.phone && <div>{errors.phone}</div>}
                         </div>
+                        <div>
+                            <div className="flex gap-5 p-2">
+                                {/* GSIS No */}
+                                <div className="flex flex-col">
+                                    <label>GSIS No</label>
+                                    <TextInput
+                                        type="text"
+                                        value={data.gsis_no}
+                                        onChange={(e) => setData('gsis_no', e.target.value)}
+                                    />
+                                    {errors.gsis_no && <div>{errors.gsis_no}</div>}
+                                </div>
+
+                                {/* HDMF No */}
+                                <div className="flex flex-col">
+                                    <label>HDMF No</label>
+                                    <TextInput
+                                        type="text"
+                                        value={data.hdmf_no}
+                                        onChange={(e) => setData('hdmf_no', e.target.value)}
+                                    />
+                                    {errors.hdmf_no && <div>{errors.hdmf_no}</div>}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-5 p-2">
+                                {/* PHIC No */}
+                                <div className="flex flex-col">
+                                    <label>PHIC No</label>
+                                    <TextInput
+                                        type="text"
+                                        value={data.phic_no}
+                                        onChange={(e) => setData('phic_no', e.target.value)}
+                                    />
+                                    {errors.phic_no && <div>{errors.phic_no}</div>}
+                                </div>
+
+                                {/* BIR TIN No */}
+                                <div className="flex flex-col">
+                                    <label>BIR TIN No</label>
+                                    <TextInput
+                                        type="text"
+                                        value={data.bir_tin_no}
+                                        onChange={(e) => setData('bir_tin_no', e.target.value)}
+                                    />
+                                    {errors.bir_tin_no && <div>{errors.bir_tin_no}</div>}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div>
@@ -311,6 +365,26 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                         </div>
 
                         <div className="flex gap-5 p-2">
+                            <div className="">
+                                {/* Classification */}
+                                <div className="flex flex-col">
+                                    <label>Classification</label>
+                                    <select
+                                        value={data.classification}
+                                        onChange={(e) => setData('classification', e.target.value)}
+                                    >
+                                        <option value="">Select Classification</option>
+                                        <option value="Regular">Regular</option>
+                                        <option value="Casual">Casual</option>
+                                        <option value="OJ/Job Order">OJ/Job Order</option>
+                                        <option value="COS/Contract of Service">
+                                            COS/Contract of Service
+                                        </option>
+                                    </select>
+                                    {errors.classification && <div>{errors.classification}</div>}
+                                </div>
+                            </div>
+
                             {/* Employment Type */}
                             <div className="flex flex-col">
                                 <label>Employment Type</label>

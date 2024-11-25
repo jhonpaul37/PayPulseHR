@@ -71,6 +71,12 @@ public function update(Request $request, Employee $employee)
         'termination_date' => 'nullable|date',
         'termination_reason' => 'nullable|string',
         'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'classification' => 'required|in:Regular,Casual,OJ/Job Order,COS/Contract of Service',
+        'gsis_no' => 'nullable|string',
+        'hdmf_no' => 'nullable|string',
+        'phic_no' => 'nullable|string',
+        'bir_tin_no' => 'nullable|string',
+
     ]);
 
     // Check new photo was uploaded
@@ -95,6 +101,7 @@ public function update(Request $request, Employee $employee)
             'user' => $user,
         ]);
     }
+
     public function storeNew(Request $request)
     {
         $validated = $request->validate([
@@ -113,6 +120,11 @@ public function update(Request $request, Employee $employee)
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
             'salary_grade_id' => 'required|exists:salary_grades,id',
+            'classification' => 'required|in:Regular,Casual,OJ/Job Order,COS/Contract of Service',
+            'gsis_no' => 'nullable|string',
+            'hdmf_no' => 'nullable|string',
+            'phic_no' => 'nullable|string',
+            'bir_tin_no' => 'nullable|string',
             'termination_date' => 'nullable|date',
             'termination_reason' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -124,6 +136,7 @@ public function update(Request $request, Employee $employee)
         if ($request->hasFile('photo')) {
             $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
         }
+
         $validated['user_id'] = $request->user_id;
 
         // Create employee with the user_id

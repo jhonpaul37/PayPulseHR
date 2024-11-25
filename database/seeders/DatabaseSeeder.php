@@ -84,6 +84,8 @@ class DatabaseSeeder extends Seeder
             ['name' =>'GSIS PREM','description' => 'GSIS PREM'],
             ['name' =>'HDMF PREM1','description' => 'HDMF PREM1'],
             ['name' =>'PHIC','description' => 'PhilHealth'],
+
+            ['name' =>'PATVE CONT.','description' => 'PATVE CONT'],
         ]);
 
         //Fund Cluster

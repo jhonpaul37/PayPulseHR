@@ -30,6 +30,14 @@ class Employee extends Model
         'termination_reason',
         'photo_url',
         'user_id',
+
+
+        'classification',    // New column
+        'gsis_no',           // New column
+        'hdmf_no',           // New column
+        'phic_no',           // New column
+        'bir_tin_no',        // New column
+
     ];
 
     public function payrolls()
