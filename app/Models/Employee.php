@@ -32,12 +32,11 @@ class Employee extends Model
         'user_id',
 
 
-        'classification',    // New column
-        'gsis_no',           // New column
-        'hdmf_no',           // New column
-        'phic_no',           // New column
-        'bir_tin_no',        // New column
-
+        'classification',
+        'gsis_no',
+        'hdmf_no',
+        'phic_no',
+        'bir_tin_no',
     ];
 
     public function payrolls()

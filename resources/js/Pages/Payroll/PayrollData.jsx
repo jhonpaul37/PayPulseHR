@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Inertia } from '@inertiajs/inertia';
 import { Table } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
@@ -10,7 +11,7 @@ const PhpFormat = (value) => {
         : `₱${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-const PayrollData = ({ auth, employee, loanTypes }) => {
+const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) => {
     const [dataSource, setDataSource] = useState(employee);
     const [columns, setColumns] = useState([]);
 
@@ -131,7 +132,6 @@ const PayrollData = ({ auth, employee, loanTypes }) => {
             {
                 title: 'NET PERA',
                 render: (_, record) => {
-                    // Directly use the computed `net_pera` from the backend
                     return <span className="font-semibold">{PhpFormat(record.net_pera)}</span>;
                 },
                 width: 150,
@@ -210,7 +210,6 @@ const PayrollData = ({ auth, employee, loanTypes }) => {
         const totalDeductionColumn = {
             title: 'TOTAL DEDUCTION',
             render: (_, record) => {
-                // Using the computed `total_deductions` from backend
                 return (
                     <span className="font-semibold">{PhpFormat(record.total_deductions || 0)}</span>
                 );
@@ -262,9 +261,39 @@ const PayrollData = ({ auth, employee, loanTypes }) => {
         ]);
     }, [loanTypes, employee]);
 
+    const saveTransaction = () => {
+        const dataToSend = dataSource.map((employee) => ({
+            id: employee.id,
+            loans: employee.loans.map((loan) => ({
+                loan_id: loan.id,
+                remaining_amortization: loan.remainingAmortization, // Include this value
+            })),
+        }));
+
+        Inertia.post('/transactions', {
+            data: dataToSend, // Send data with remaining_amortization
+        });
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <h2 className="pb-10 text-center text-2xl font-bold">Payroll Data</h2>
+            {message && (
+                <div className="pb-4 text-center font-semibold text-green-600">{message}</div>
+            )}
+            {reference_number && (
+                <div className="pb-4 text-center font-semibold text-blue-600">
+                    Transaction Reference: {reference_number}
+                </div>
+            )}
+            <div className="flex justify-end pb-5">
+                <button
+                    onClick={saveTransaction}
+                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
+                >
+                    Save Transaction
+                </button>
+            </div>
             <Table
                 dataSource={dataSource}
                 columns={columns}

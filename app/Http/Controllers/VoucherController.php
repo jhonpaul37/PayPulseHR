@@ -6,41 +6,44 @@ use Illuminate\Http\Request;
 use App\Models\voucher;
 use App\Models\accounting_entry;
 use App\Models\FundCluster;
+use App\Models\Employee;
 use App\Models\User;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
 class VoucherController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $disVoucher = voucher::latest()->paginate(5);
         return inertia('voucher/Voucher',['vouchers' => $disVoucher]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $uacsCodes = accounting_entry::all();
-        $fundClusters = FundCluster::all();
-        $user = User::all();
-        return inertia('voucher/Create',['uacsCodes'=>$uacsCodes, 'fundClusters' => $fundClusters,'users' =>$user]);
-    }
+public function create()
+{
+    $uacsCodes = accounting_entry::all();
+    // dd($uacsCodes = accounting_entry::all());
+    $fundClusters = FundCluster::all();
+    $user = Auth::user();
 
-    // Helper method to generate JEV No.
+    $employee = Employee::where('user_id', $user->id)->first();
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    $filEmployees = Employee::whereIn('classification', ['Regular', 'Casual'])->get();
+
+    return inertia('voucher/Create',[
+    'uacsCodes'=>$uacsCodes,
+    'fundClusters' => $fundClusters,
+    'employee' => $employee,
+    'filEmployees' => $filEmployees,
+    'auth' => $user,
+]);
+}
     public function getAutoIncrement()
     {
-        // Retrieve the last voucher ID
+        // Retrieve last voucher ID
         $latestVoucher = Voucher::latest('id')->first();
         $incrementNumber = $latestVoucher ? str_pad($latestVoucher->id + 1, 5, '0', STR_PAD_LEFT) : '00001';
 
@@ -49,63 +52,77 @@ class VoucherController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+public function store(Request $request)
 {
-    // Get latest ID to determine the next incrementing number
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Get the latest ID for generating the code
     $latestVoucher = Voucher::latest('id')->first();
     $incrementNumber = $latestVoucher ? str_pad($latestVoucher->id + 1, 5, '0', STR_PAD_LEFT) : '00001';
 
-    // Generate the code using the format yearMonth-fundCluster-autoIncrement
+    // Generate the code in the format (yearMonth-fundCluster-autoIncrement)
     $code = now()->format('ym') . '-' . $request->f_cluster . '-' . $incrementNumber;
 
-    // Validate the request fields, including uacs_code, debit, and credit as arrays
+    // Validate the incoming request
     $fields = $request->validate([
-        'ors_burs_no' => ['required'],
-        'f_cluster' => ['required'],
+        'ors_burs_no' => ['required', 'string'],
+        'f_cluster' => ['required', 'string'],
         'uacs_code' => ['required', 'array'],
         'debit' => ['required', 'array'],
         'credit' => ['required', 'array'],
-        'user_id' => ['required'],
-        'amount' => ['required'],
-        'ApproveAmount' => ['required'],
-        'particulars' => ['required'],
-        'address' => ['required'],
-        'payee' => ['required'],
-        'tin_no' => ['required'],
-        'bankName' => ['required'],
+        'user_id' => ['required', 'integer'],
+        'amount' => ['required', 'numeric'],
+        'ApproveAmount' => ['required', 'numeric'],
+        'particulars' => ['required', 'string'],
+        'address' => ['required', 'string'],
+        'payee' => ['required', 'string'],
+        'tin_no' => ['required', 'string'],
+        'bankName' => ['required', 'string'],
+
+        'approved_by' => ['required', 'integer'],
+        'signatory_1' => ['required', 'integer'],
+        'signatory_2' => ['required', 'integer'],
+        'responsibility_center' => ['nullable', 'string'],
+        'mfo_pap' => ['nullable', 'string'],
+        'paymentMode' => ['nullable', 'string'],
     ]);
 
     // Add the generated code and default div_num to the fields
     $fields['jev_no'] = $code;
     $fields['div_num'] = $fields['div_num'] ?? '0123';
 
-    // Store uacs_code, debit, and credit as JSON-encoded arrays in the database
-    $fields['uacs_code'] = json_encode($request->uacs_code);
-    $fields['debit'] = json_encode($request->debit);
-    $fields['credit'] = json_encode($request->credit);
+    // Set the currently logged-in user's employee ID as `prepared_by`
+    $employee = Employee::where('user_id', $user->id)->first();
+    if (!$employee) {
+        return redirect()->back()->withErrors(['prepared_by' => 'Employee details not found for the logged-in user.']);
+    }
+    $fields['prepared_by'] = $employee->id;
 
-    // Create a new voucher record
+    // Handle mode of payment for "Others"
+    if ($request->paymentMode === 'Others') {
+        $fields['paymentMode'] = $request->otherPaymentMode;
+    }
+
+    // Convert arrays to JSON for storage
+    $fields['uacs_code'] = json_encode($fields['uacs_code']);
+    $fields['debit'] = json_encode($fields['debit']);
+    $fields['credit'] = json_encode($fields['credit']);
+
+    // Create the voucher in the database
     Voucher::create($fields);
 
-    // Redirect to the voucher page
-    return redirect('/voucher');
+    // Redirect to the voucher listing page with a success message
+    return redirect('/voucher')->with('success', 'Voucher created successfully!');
 }
 
 
-
-    /**
-     * Display the specified resource.
-     */
-    // public function show(voucher $voucher)
-    // {
-    //     return inertia('voucher/Show',['voucher' => $voucher]);
-    // }
     public function show($id)
     {
         $voucher = Voucher::find($id);
 
 
-        // Decode uacs_code if it's a JSON string
+        // Decode uacs_code JSON
         $uacs_codes = is_string($voucher->uacs_code) ? json_decode($voucher->uacs_code, true) : $voucher->uacs_code;
 
         $voucher->uacs_code = array_map(function($code) {
@@ -117,27 +134,10 @@ class VoucherController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(voucher $voucher)
+    public function fCluster()
     {
-        //
+        $fundClusters = FundCluster::all();
+        return response()->json($fundClusters);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, voucher $voucher)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(voucher $voucher)
-    {
-        //
-    }
 }

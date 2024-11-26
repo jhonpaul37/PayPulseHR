@@ -25,35 +25,7 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         payee: '',
         tin_no: '',
         bankName: '',
-
-        approved_by: null,
-        signatory_1: null,
-        signatory_2: null,
-        paymentMode: '',
-        otherPaymentMode: '',
-        responsibility_center: '',
-        mfo_pap: '',
-        particulars: '',
     });
-
-    const [selectedEmployees, setSelectedEmployees] = useState({});
-    // const [selectedEmployees, setSelectedEmployees] = useState({
-    //     approved_by: null,
-    //     signatory_1: null,
-    //     signatory_2: null,
-    // });
-
-    const handleEmployeeChange = (field, value) => {
-        setData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-        const selectedEmployee = filEmployees.find((emp) => emp.id === value);
-        setSelectedEmployees((prev) => ({
-            ...prev,
-            [field]: selectedEmployee || null,
-        }));
-    };
 
     useEffect(() => {
         if (data.f_cluster) {
@@ -90,12 +62,6 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         }));
     };
 
-    // const handleInputChange = (e) => {
-    //     setData((prevData) => ({
-    //         ...prevData,
-    //         [e.target.name]: e.target.value,
-    //     }));
-    // };
     const handleInputChange = (e) => {
         setData((prevData) => ({
             ...prevData,
@@ -185,12 +151,22 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         return `${day}-${month}-${year}`;
     })();
 
-    console.log(data);
-
     function submit(e) {
         e.preventDefault();
         post('/voucher');
     }
+
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+    const handleEmployeeChange = (value) => {
+        setData((prevData) => ({
+            ...prevData,
+            approved_by: value,
+        }));
+
+        const employee = filEmployees.find((emp) => emp.id === parseInt(value));
+        setSelectedEmployee(employee);
+    };
 
     return (
         <>
@@ -240,35 +216,48 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                                 />
                             </div>
                         </div>
-
                         {/* Mode of Payment */}
+
                         <div className="grid grid-cols-8 border-b-2 border-black">
                             <div className="col-span-2 p-2 font-bold">Mode of Payment</div>
                             <div className="col-span-6 flex justify-between border-l border-black px-5">
                                 {['MDS Check', 'Commercial Check', 'ADA'].map((mode) => (
                                     <label key={mode} className="inline-flex items-center">
                                         <Radio
-                                            name="paymentMode"
                                             value={mode}
                                             checked={data.paymentMode === mode}
-                                            onChange={handleInputChange} // Directly handle input changes
+                                            onChange={(e) =>
+                                                setData({
+                                                    ...data,
+                                                    paymentMode: e.target.value,
+                                                })
+                                            }
                                         />
                                         <span className="ml-2">{mode}</span>
                                     </label>
                                 ))}
+
                                 <label className="inline-flex items-center">
                                     <Radio
-                                        name="paymentMode"
                                         value="Others"
                                         checked={data.paymentMode === 'Others'}
-                                        onChange={handleInputChange}
+                                        onChange={(e) =>
+                                            setData({
+                                                ...data,
+                                                paymentMode: e.target.value,
+                                            })
+                                        }
                                     />
                                     <span className="ml-2">Others (Please Specify)</span>
                                     <TextInput
                                         type="text"
-                                        name="otherPaymentMode"
                                         value={data.otherPaymentMode || ''}
-                                        onChange={handleInputChange}
+                                        onChange={(e) =>
+                                            setData({
+                                                ...data,
+                                                otherPaymentMode: e.target.value,
+                                            })
+                                        }
                                         className="ml-2 border-b-2 border-black focus:outline-none"
                                         autoComplete="off"
                                         disabled={data.paymentMode !== 'Others'}
@@ -369,34 +358,49 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                         </div>
                         {/* TextInput Section */}
                         <div className="grid grid-cols-10 border-b border-black">
-                            <textarea
-                                name="particulars"
-                                rows="4"
-                                value={data.particulars}
-                                onChange={handleInputChange}
-                                className="col-span-4 w-full border p-2 focus:outline-none"
-                            />
-                            <TextInput
-                                name="responsibility_center"
-                                value={data.responsibility_center}
-                                onChange={handleInputChange}
-                                className="col-span-2 border-l p-2"
-                            />
-                            <TextInput
-                                name="mfo_pap"
-                                value={data.mfo_pap}
-                                onChange={handleInputChange}
-                                className="col-span-2 border-l p-2"
-                            />
-                            <TextInput
-                                name="amount"
-                                type="number"
-                                value={data.amount}
-                                onChange={handleInputChange}
-                                className="col-span-2 border-l p-2"
-                            />
+                            <div className="col-span-4 flex items-center p-2">
+                                <textarea
+                                    name="particulars"
+                                    rows="4"
+                                    value={data.particulars}
+                                    onChange={(e) => {
+                                        setData('particulars', e.target.value);
+                                    }}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                        !data.particulars ? 'border-high' : ''
+                                    } ${errors.particulars ? 'border-red-500' : 'border-gray-300'}`}
+                                />
+                            </div>
+                            <div className="col-span-2 flex items-center border-l border-black p-2">
+                                <TextInput
+                                    className="w-full rounded border px-3 py-2 shadow focus:outline-none"
+                                    type="text"
+                                    name="ResponsibilityCenter"
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className="col-span-2 flex items-center border-l border-black p-2">
+                                <TextInput
+                                    className="w-full rounded border px-3 py-2 shadow focus:outline-none"
+                                    type="text"
+                                    name="MFO/PAP"
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className="col-span-2 flex items-center border-l border-black p-2">
+                                <TextInput
+                                    placeholder="Enter amount"
+                                    type="number"
+                                    name="amount"
+                                    autoComplete="off"
+                                    value={data.amount}
+                                    onChange={handleAmountChange} // Use only handleAmountChange here
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
+                                        !data.amount ? 'border-high' : ''
+                                    } ${errors.amount ? 'border-red-500' : 'border-gray-300'}`}
+                                />
+                            </div>
                         </div>
-
                         {/* Certified Section */}
                         <div className="border-b border-black p-2">
                             <div className="text-xs">
@@ -473,37 +477,14 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                                         </div>
                                     </div>
 
-                                    {/* Signatory 2 */}
                                     <div className="col-span-3 border-l border-black text-center">
                                         <div className="border-b border-black p-2">Empty space</div>
                                         <div className="border-b border-black p-2 font-bold">
-                                            <Select
-                                                name="signatory_2"
-                                                value={data.signatory_2}
-                                                onChange={(value) =>
-                                                    handleEmployeeChange('signatory_2', value)
-                                                }
-                                                placeholder="Select an employee"
-                                                style={{ width: '80%' }}
-                                            >
-                                                {filEmployees.map((emp) => (
-                                                    <Option key={emp.id} value={emp.id}>
-                                                        <span className="text-bold">
-                                                            {emp.first_name} {emp.last_name}
-                                                        </span>
-                                                    </Option>
-                                                ))}
-                                            </Select>
+                                            RHEA ANGELLICA D. ADDATU, CPA
                                         </div>
                                         <div className="grid grid-rows-2">
                                             <div className="border-b border-black p-2">
-                                                {selectedEmployees.signatory_2 && (
-                                                    <div className="mt-2 text-center">
-                                                        <div className="text-xs">
-                                                            {selectedEmployees.signatory_2.position}
-                                                        </div>
-                                                    </div>
-                                                )}
+                                                College Accountant
                                             </div>
                                             <div className="p-2">
                                                 Head, Accounting Unit/Authorized Representative
@@ -544,40 +525,17 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                                         </div>
                                     </div>
 
-                                    {/* Signatory 1 */}
                                     <div className="col-span-3 border-l border-black text-center">
                                         <div className="border-b border-black p-2">Empty space</div>
                                         <div className="border-b border-black p-2 font-bold">
-                                            <Select
-                                                name="signatory_1"
-                                                value={data.signatory_1}
-                                                onChange={(value) =>
-                                                    handleEmployeeChange('signatory_1', value)
-                                                }
-                                                placeholder="Select an employee"
-                                                style={{ width: '80%' }}
-                                            >
-                                                {filEmployees.map((emp) => (
-                                                    <Option key={emp.id} value={emp.id}>
-                                                        <span className="text-bold">
-                                                            {emp.first_name} {emp.last_name}
-                                                        </span>
-                                                    </Option>
-                                                ))}
-                                            </Select>
+                                            RHEA ANGELLICA D. ADDATU, CPA
                                         </div>
                                         <div className="grid grid-rows-2">
                                             <div className="border-b border-black p-2">
-                                                {selectedEmployees.signatory_1 && (
-                                                    <div className="mt-2 text-center">
-                                                        <div className="text-xs">
-                                                            {selectedEmployees.signatory_1.position}
-                                                        </div>
-                                                    </div>
-                                                )}
+                                                College Accountant
                                             </div>
                                             <div className="p-2">
-                                                Agency Head/Athorized Representative
+                                                Head, Accounting Unit/Authorized Representative
                                             </div>
                                         </div>
                                     </div>
@@ -636,37 +594,31 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
 
                             {/* "Approved by" Section */}
                             <div className="border-l border-black p-2">
-                                <div className="border-l border-black p-2">
-                                    <div>Approved by:</div>
-                                    <div className="flex flex-col items-center justify-center">
-                                        <Select
-                                            name="approved_by"
-                                            value={data.approved_by}
-                                            onChange={(value) =>
-                                                handleInputChange({
-                                                    target: { name: 'approved_by', value },
-                                                })
-                                            }
-                                            placeholder="Select an employee"
-                                            style={{ width: '80%' }}
-                                        >
-                                            {filEmployees.map((emp) => (
-                                                <Option key={emp.id} value={emp.id}>
+                                <div>Approved by:</div>
+                                <div className="flex flex-col items-center justify-center">
+                                    <Select
+                                        name="approved_by"
+                                        value={data.approved_by}
+                                        onChange={handleEmployeeChange}
+                                        placeholder="Select an employee"
+                                    >
+                                        {filEmployees.map((emp) => (
+                                            <Option key={emp.id} value={emp.id}>
+                                                {
                                                     <span className="text-bold">
                                                         {emp.first_name} {emp.last_name}
                                                     </span>
-                                                </Option>
-                                            ))}
-                                        </Select>
-
-                                        {selectedEmployees.approved_by && (
-                                            <div className="mt-2 text-center">
-                                                <div className="text-xs">
-                                                    {selectedEmployees.approved_by.position}
-                                                </div>
+                                                }
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                    {selectedEmployee && (
+                                        <div className="mt-2 text-center">
+                                            <div className="text-xs">
+                                                {selectedEmployee.position}
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -674,12 +626,12 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                     {/* Submit and Print Buttons */}
                     <div className="flex items-center justify-between pt-5">
                         <PrimaryButton disabled={processing}>Add</PrimaryButton>
-                        {/* <button
+                        <button
                             className="focus:shadow-outline rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700 focus:outline-none"
                             type="button"
                         >
                             Print
-                        </button> */}
+                        </button>
                     </div>
                 </form>
             </AuthenticatedLayout>

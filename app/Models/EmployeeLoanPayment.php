@@ -19,4 +19,10 @@ class EmployeeLoanPayment extends Model
     {
         return $this->belongsTo(EmployeeLoan::class);
     }
+
+    public function loan()
+    {
+        return $this->belongsTo(EmployeeLoan::class, 'employee_loan_id');
+    }
+
 }

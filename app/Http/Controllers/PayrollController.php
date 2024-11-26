@@ -7,9 +7,16 @@ use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\LoanType;
 use App\Models\Benefit;
+use App\Models\Loan;
+use App\Models\Contribution;
 use Inertia\Inertia;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 class PayrollController extends Controller
 {
+
+
     // public function generalPayroll()
     // {
     //     $payrolls = Payroll::with('employee')->get();
@@ -25,19 +32,20 @@ class PayrollController extends Controller
 
 public function payrollData()
 {
+    // filter employee by classification
     $employees = Employee::with([
         'loans',
         'loans.payments',
         'salaryGrade',
         'benefits',
         'contributions',
-    ])->get();
+    ])->whereIn('classification', ['Regular', 'Casual'])->get();
 
     $loanTypes = LoanType::all();
     $benefits = Benefit::all();
 
     foreach ($employees as $employee) {
-        // Calculate remaining loan amortization
+        // Cal remaining loan amortization
         foreach ($employee->loans as $loan) {
             $totalPaid = $loan->payments->sum('amount');
             $remainingAmount = $loan->amount - $totalPaid;
@@ -47,7 +55,7 @@ public function payrollData()
                 : null;
         }
 
-        // Calculate Gross
+        // Cal Gross
         $peraAmount = 0;
         $lwopPeraAmount = 0;
         $netPera = 0;
@@ -77,7 +85,7 @@ public function payrollData()
             return $sum + ($loan->remainingAmortization ?? 0);
         }, 0);
 
-        // Separate PATEV contributions from others
+        // Separate PATEV contributions
         $patevContribution = 0;
         $otherContributionsTotal = 0;
 
@@ -91,28 +99,28 @@ public function payrollData()
             }
         }
 
-        // Total Contributions = Other Contributions (excluding PATEV)
+        // Total Contributions (except PATEV)
         $totalContributions = $otherContributionsTotal;
 
-        // Add PATEV to total deductions
+        // Include PATEV to total deductions
         $totalDeductions = $loanTotal + $totalContributions + $patevContribution;
 
-        // Calculate Net Amount (Total Salary - Total Deductions)
+        // Cal Net Amount (Total Salary - Total Deductions)
         $netAmount = $totalSalary - $totalDeductions;
 
-        // Calculate NET PAY 1-15 (half of NET AMOUNT)
+        // Cal NET PAY 1-15
         $netPay1To15 = $netAmount / 2;
 
-        // Add computed properties to employee
+        // computed properties
         $employee->net_pera = $netPera;
         $employee->total_salary = $totalSalary;
-        $employee->total_loans = $loanTotal; // Add total loan amount
+        $employee->total_loans = $loanTotal; // total loan amount
         $employee->total_contributions = $totalContributions; // Add total contributions excluding PATEV
-        $employee->total_patev_contribution = $patevContribution; // Add PATEV separately
-        $employee->total_deductions = $totalDeductions; // Add PATEV to total deductions
+        $employee->total_patev_contribution = $patevContribution; // separately PATEV
+        $employee->total_deductions = $totalDeductions; // total deductions including (PATEV)
         $employee->total_payable = $totalSalary - $employee->total_deductions; // Payable after deductions
         $employee->net_amount = $netAmount;
-        $employee->net_pay = $netPay1To15; // Store the value for NET PAY 1-15
+        $employee->net_pay = $netPay1To15;
     }
 
     return Inertia::render('Payroll/PayrollData', [
@@ -121,9 +129,6 @@ public function payrollData()
         'benefits' => $benefits,
     ]);
 }
-
-
-
 
 
 // public function payrollData()

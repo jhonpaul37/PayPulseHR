@@ -17,6 +17,7 @@ use App\Http\Controllers\EmployeeBenefitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\TransactionController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,11 +36,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
 
     //Accounting
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::resource('/voucher',VoucherController::class);
     Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
-    Route::get('/fClusters', [FundClusterController::class, 'fCluster']);
+    Route::get('/fClusters', [VoucherController::class, 'fCluster']);
 
     //HR
     //Leave Management
@@ -72,11 +74,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/salary_grades/{salaryGrade}', [SalaryGradeController::class, 'update'])->name('salary_grades.update');
 
     //Payroll
-    Route::get('/payroll/general', [PayrollController::class, 'generalPayroll'])->name('generalPayroll');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('PayrollSaved'); // Saved Payroll release
 
     Route::get('/payroll/data', [PayrollController::class, 'payrollData'])->name('payrollData');
 
-    Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
+    // Route::get('/payroll/general', [PayrollController::class, 'generalPayroll'])->name('generalPayroll');
+    // Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
     // Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
 
     //Loans
@@ -104,18 +107,19 @@ Route::middleware('auth')->group(function () {
         //Loan Details
         Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');
 
-    //Benefits/ Gross Earning
+    //Benefits / Gross Earning
     Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
     Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
 
     Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
 
-    //Contribution
+    //Contribution / Deduction
     Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
     Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
 
     // Route::get('/contributions/{contribution}', [ContributionController::class, 'show'])->name('contributions.show');
     // Route::put('/contributions/{contribution}', [ContributionController::class, 'update'])->name('contributions.update');
+
 
 
 

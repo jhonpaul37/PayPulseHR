@@ -33,7 +33,7 @@ class EmployeeLoan extends Model
 
     public function payments()
     {
-        return $this->hasMany(EmployeeLoanPayment::class);
+        return $this->hasMany(EmployeeLoanPayment::class, 'employee_loan_id');
     }
 
 }

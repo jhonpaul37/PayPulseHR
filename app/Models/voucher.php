@@ -24,7 +24,15 @@ class voucher extends Model
         'tin_no',
         'jev_no',
         'div_num',
-        'bankName'
+        'bankName',
+
+        'responsibility_center',
+        'mfo_pap',
+        'mode_of_payment',
+        'approved_by',
+        'prepared_by',
+        'signatory_1',
+        'signatory_2',
     ];
 
     protected $casts = [
