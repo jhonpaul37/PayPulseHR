@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-export default function Show({ voucher, auth }) {
+export default function Show({ voucher, auth, signatories }) {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = date.getDate();
@@ -16,14 +16,10 @@ export default function Show({ voucher, auth }) {
     } catch (error) {
         console.error('Error parsing JSON:', error);
     }
-    const totalDebit = debitArray.reduce(
-        (acc, val) => acc + (parseFloat(val) || 0),
-        0
-    );
-    const totalCredit = creditArray.reduce(
-        (acc, val) => acc + (parseFloat(val) || 0),
-        0
-    );
+    const totalDebit = debitArray.reduce((acc, val) => acc + (parseFloat(val) || 0), 0);
+    const totalCredit = creditArray.reduce((acc, val) => acc + (parseFloat(val) || 0), 0);
+
+    console.log(voucher);
     return (
         <>
             <AuthenticatedLayout user={auth.user}>
@@ -44,9 +40,7 @@ export default function Show({ voucher, auth }) {
                                     </span>
                                 </div>
 
-                                <div className="border-b border-black p-1">
-                                    Date:
-                                </div>
+                                <div className="border-b border-black p-1">Date:</div>
                                 <div className="flex p-1">
                                     <span>DV No. </span>
                                     <span className="ml-5 text-center font-bold">
@@ -58,26 +52,19 @@ export default function Show({ voucher, auth }) {
                     </div>
                     {/* Mode of Payment */}
                     <div className="grid grid-cols-8 border-b-2 border-black">
-                        <div className="col-span-2 p-2 font-bold">
-                            Mode of Payment
-                        </div>
+                        <div className="col-span-2 p-2 font-bold">Mode of Payment</div>
                         <div className="col-span-6 flex justify-between border-l border-black px-5">
-                            {['MDS Check', 'Commercial Check', 'ADA'].map(
-                                (mode) => (
-                                    <label
-                                        key={mode}
-                                        className="inline-flex items-center"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            className="form-checkbox"
-                                            autoComplete="off"
-                                        />
+                            {['MDS Check', 'Commercial Check', 'ADA'].map((mode) => (
+                                <label key={mode} className="inline-flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        className="form-checkbox"
+                                        autoComplete="off"
+                                    />
 
-                                        <span className="ml-2">{mode}</span>
-                                    </label>
-                                )
-                            )}
+                                    <span className="ml-2">{mode}</span>
+                                </label>
+                            ))}
 
                             <label className="inline-flex items-center">
                                 <input
@@ -85,9 +72,7 @@ export default function Show({ voucher, auth }) {
                                     className="form-checkbox"
                                     autoComplete="off"
                                 />
-                                <span className="ml-2">
-                                    Others (Please Specify)
-                                </span>
+                                <span className="ml-2">Others (Please Specify)</span>
                                 <input
                                     type="text"
                                     className="ml-2 border-b-2 border-black focus:outline-none"
@@ -100,10 +85,7 @@ export default function Show({ voucher, auth }) {
                     <div>
                         <div className="grid grid-cols-8 border-b border-black">
                             <div className="col-span-2 flex items-center gap-2 p-2">
-                                <label
-                                    className="font-bold"
-                                    htmlFor="clientName"
-                                >
+                                <label className="font-bold" htmlFor="clientName">
                                     Payee
                                 </label>
                             </div>
@@ -112,33 +94,21 @@ export default function Show({ voucher, auth }) {
                                 {voucher.payee}
                             </div>
                             <div className="col-span-2 border-l border-black p-2">
-                                <label className="text-xs">
-                                    TIN/Employee No.
-                                </label>
-                                <span className="font-bold">
-                                    {voucher.tin_no}
-                                </span>
+                                <label className="text-xs">TIN/Employee No.</label>
+                                <span className="font-bold">{voucher.tin_no}</span>
                             </div>
                             <div className="col-span-2 border-l border-black p-2">
                                 <label className="text-xs">ORS/BRS No.</label>
-                                <span className="font-bold">
-                                    {' '}
-                                    {voucher.ors_burs_no}
-                                </span>
+                                <span className="font-bold"> {voucher.ors_burs_no}</span>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-8 items-center border-b border-black">
                             <div className="col-span-2 flex p-2">
-                                <label className="block text-sm font-bold">
-                                    Address
-                                </label>
+                                <label className="block text-sm font-bold">Address</label>
                             </div>
                             <div className="col-span-6 border-l border-black p-2">
-                                <span className="font-bold">
-                                    {' '}
-                                    {voucher.address}{' '}
-                                </span>
+                                <span className="font-bold"> {voucher.address} </span>
                             </div>
                         </div>
                     </div>
@@ -161,28 +131,13 @@ export default function Show({ voucher, auth }) {
                     <div className="grid grid-cols-10 border-b border-black">
                         <div className="col-span-4 flex items-center p-2">
                             {/* <span className="font-bold">{voucher.particulars}</span> */}
-                            <textarea
-                                value={voucher.particulars}
-                                className="w-full rounded px-3 py-2 font-bold focus:outline-none"
-                                readOnly
-                                rows="4"
-                            />
+                            {voucher.particulars}
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
-                            <input
-                                className="w-full rounded border px-3 py-2 shadow focus:outline-none"
-                                type="text"
-                                name="ResponsibilityCenter"
-                                autoComplete="off"
-                            />
+                            {voucher.responsibility_center}
                         </div>
                         <div className="col-span-2 flex items-center border-l border-black p-2">
-                            <input
-                                className="w-full rounded border px-3 py-2 shadow focus:outline-none"
-                                type="text"
-                                name="MFO/PAP"
-                                autoComplete="off"
-                            />
+                            {voucher.mfo_pap}
                         </div>
                         <div className="col-span-2 flex items-center justify-center border-l border-black p-2">
                             <span className="font-bold">{voucher.amount}</span>
@@ -191,24 +146,23 @@ export default function Show({ voucher, auth }) {
                     {/* Certified Section */}
                     <div className="border-b border-black p-2">
                         <div className="text-xs">
-                            A. Certified: Expenses/Cash Advance necessary,
-                            lawful and incurred under my direct supervision
+                            A. Certified: Expenses/Cash Advance necessary, lawful and incurred under
+                            my direct supervision
                         </div>
-                        <div className="flex flex-col items-center justify-center">
-                            <div className="mt-2 text-center font-bold">
-                                {/* {namePositions[3]?.name_pos} */} Name
+                        {signatories.signatory1 ? (
+                            <div className="flex flex-col items-center">
+                                <strong>{`${signatories.signatory1.first_name} ${signatories.signatory1.last_name}`}</strong>
+
+                                <span>{signatories.signatory1.position}</span>
                             </div>
-                            <div className="text-xs">
-                                {/* {namePositions[3]?.position} */}Position
-                            </div>
-                        </div>
+                        ) : (
+                            'Not Assigned'
+                        )}
                     </div>
 
                     {/* Accounting Entry */}
                     <div>
-                        <div className="border-b border-black p-2 text-xs">
-                            B. Accounting Entry
-                        </div>
+                        <div className="border-b border-black p-2 text-xs">B. Accounting Entry</div>
                         <div>
                             <div className="grid grid-cols-4 border-b border-black text-xs">
                                 <div className="flex items-center justify-center">
@@ -231,9 +185,7 @@ export default function Show({ voucher, auth }) {
                                 >
                                     <div className="grid grid-cols-4 border-b border-black">
                                         <div className="flex p-2">
-                                            <div className="mr-2">
-                                                {uacs.Account_title}
-                                            </div>
+                                            <div className="mr-2">{uacs.Account_title}</div>
                                         </div>
                                         <div className="flex items-center justify-center border-l border-black p-2">
                                             {uacs.UACS_code}
@@ -258,9 +210,7 @@ export default function Show({ voucher, auth }) {
                     <div className="grid grid-cols-2 border-b border-black">
                         {/* C Section */}
                         <div className="">
-                            <div className="border-b border-black p-2">
-                                C. Certified
-                            </div>
+                            <div className="border-b border-black p-2">C. Certified</div>
                             <div className="flex h-28 flex-col justify-center p-2">
                                 {' '}
                                 <label className="inline-flex items-center">
@@ -278,8 +228,7 @@ export default function Show({ voucher, auth }) {
                                         autoComplete="off"
                                     />
                                     <span className="ml-2">
-                                        Subject to Authority to Debt Account
-                                        (when applicable)
+                                        Subject to Authority to Debt Account (when applicable)
                                     </span>
                                 </label>
                                 <label className="inline-flex items-center">
@@ -289,56 +238,50 @@ export default function Show({ voucher, auth }) {
                                         autoComplete="off"
                                     />
                                     <span className="ml-2">
-                                        Supporting document complete and amount
-                                        claim proper
+                                        Supporting document complete and amount claim proper
                                     </span>
                                 </label>
                             </div>
 
                             <div className="grid grid-cols-4 border-t border-black">
                                 <div className="flex flex-col justify-between">
-                                    <div className="border-b border-black p-2">
-                                        Signature
-                                    </div>
-                                    <div className="border-b border-black p-2">
-                                        Printed Name
-                                    </div>
+                                    <div className="border-b border-black p-2">Signature</div>
+                                    <div className="border-b border-black p-2">Printed Name</div>
                                     <div className="flex flex-grow items-center border-black p-2">
                                         Position
                                     </div>
                                 </div>
 
                                 <div className="col-span-3 border-l border-black text-center">
-                                    <div className="border-b border-black p-2">
-                                        Empty space
-                                    </div>
-                                    <div className="border-b border-black p-2 font-bold">
-                                        RHEA ANGELLICA D. ADDATU, CPA
-                                    </div>
-                                    <div className="grid grid-rows-2">
-                                        <div className="border-b border-black p-2">
-                                            College Accountant
+                                    <div className="border-b border-black p-2">Empty space</div>
+
+                                    {signatories.signatory2 ? (
+                                        <div className="">
+                                            <div className="border-b border-black p-2 font-bold">
+                                                {`${signatories.signatory2.first_name} ${signatories.signatory2.last_name}`}
+                                            </div>
+                                            <div className="grid grid-rows-2">
+                                                <div className="border-b border-black p-2">
+                                                    {signatories.signatory2.position}
+                                                </div>
+                                                <div className="p-2">
+                                                    Head, Accounting Unit/Authorized Representative
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="p-2">
-                                            Head, Accounting Unit/Authorized
-                                            Representative
-                                        </div>
-                                    </div>
+                                    ) : (
+                                        'Not Assigned'
+                                    )}
                                 </div>
                             </div>
                         </div>
 
                         {/* D Section */}
                         <div className="border-l border-black">
-                            <div className="border-b border-black p-2">
-                                D. Approved for Payment
-                            </div>
+                            <div className="border-b border-black p-2">D. Approved for Payment</div>
                             <div className="flex h-28 items-center justify-center p-2">
                                 {' '}
-                                <span className="font-bold">
-                                    {' '}
-                                    {voucher.ApproveAmount}
-                                </span>
+                                <span className="font-bold"> {voucher.ApproveAmount}</span>
                                 {/* <input
                                 className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
                                 type="text"
@@ -348,73 +291,60 @@ export default function Show({ voucher, auth }) {
                             </div>
                             <div className="grid grid-cols-4 border-t border-black">
                                 <div className="flex flex-col justify-between">
-                                    <div className="border-b border-black p-2">
-                                        Signature
-                                    </div>
-                                    <div className="border-b border-black p-2">
-                                        Printed Name
-                                    </div>
+                                    <div className="border-b border-black p-2">Signature</div>
+                                    <div className="border-b border-black p-2">Printed Name</div>
                                     <div className="flex flex-grow items-center border-black p-2">
                                         Position
                                     </div>
                                 </div>
 
                                 <div className="col-span-3 border-l border-black text-center">
-                                    <div className="border-b border-black p-2">
-                                        Empty space
-                                    </div>
-                                    <div className="border-b border-black p-2 font-bold">
-                                        RHEA ANGELLICA D. ADDATU, CPA
-                                    </div>
-                                    <div className="grid grid-rows-2">
-                                        <div className="border-b border-black p-2">
-                                            College Accountant
+                                    <div className="border-b border-black p-2">Empty space</div>
+                                    {signatories.signatory3 ? (
+                                        <div className="">
+                                            <div className="border-b border-black p-2 font-bold">
+                                                {`${signatories.signatory3.first_name} ${signatories.signatory3.last_name}`}
+                                            </div>
+                                            <div className="grid grid-rows-2">
+                                                <div className="border-b border-black p-2">
+                                                    {signatories.signatory3.position}
+                                                </div>
+                                                <div className="p-2">
+                                                    Head, Accounting Unit/Authorized Representative
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="p-2">
-                                            Head, Accounting Unit/Authorized
-                                            Representative
-                                        </div>
-                                    </div>
+                                    ) : (
+                                        'Not Assigned'
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
                     {/* Receipt of Payment */}
                     <div className="border-b border-black">
-                        <div className="border-b border-black p-2">
-                            E. Receipt of Payment
-                        </div>
+                        <div className="border-b border-black p-2">E. Receipt of Payment</div>
                         <div className="grid grid-cols-5">
                             <div className="col-span-1">
-                                <div className="border-b border-black p-2">
-                                    Check/ADA No.
-                                </div>
+                                <div className="border-b border-black p-2">Check/ADA No.</div>
                                 <div className="p-2">Signatures</div>
                             </div>
                             <div className="border-l border-black">
-                                <div className="border-b border-black p-2">
-                                    //for signature
-                                </div>
+                                <div className="border-b border-black p-2">//for signature</div>
                                 <div className="p-2">//for signature</div>
                             </div>
                             <div className="border-l border-black">
-                                <div className="border-b border-black p-2">
-                                    Date:
-                                </div>
+                                <div className="border-b border-black p-2">Date:</div>
                                 <div className="p-2">Date:</div>
                             </div>
                             <div className="border-l border-black">
                                 <div className="border-b border-black p-2">
                                     <span>Bank Name & Account Number:</span>
-                                    <span className="ml-2 font-bold">
-                                        {voucher.bankName}
-                                    </span>
+                                    <span className="ml-2 font-bold">{voucher.bankName}</span>
                                 </div>
                                 <div className="p-2">
                                     <span>Printed Name:</span>
-                                    <span className="ml-2 font-bold">
-                                        {voucher.payee}
-                                    </span>
+                                    <span className="ml-2 font-bold">{voucher.payee}</span>
                                 </div>
                             </div>
                             <div className="border-l border-black">
@@ -435,27 +365,19 @@ export default function Show({ voucher, auth }) {
                     <div className="border-b border-black p-2">
                         Official Receipt No. & Date/Other Documents
                     </div>
-                    <div className="flex justify-end border-b border-black p-2">
-                        Annex-3
-                    </div>
+                    <div className="flex justify-end border-b border-black p-2">Annex-3</div>
 
                     {/* Journal Entry Voucher */}
                     <div className="grid grid-cols-3 border-b border-black">
                         <div className="col-span-2 flex flex-col items-center justify-center p-2">
-                            <label className="font-bold">
-                                Journal Entry Voucher
-                            </label>
-                            <label className="font-bold">
-                                BATANES STATE COLLEGE
-                            </label>
+                            <label className="font-bold">Journal Entry Voucher</label>
+                            <label className="font-bold">BATANES STATE COLLEGE</label>
                             <label>Agency Name</label>
                         </div>
                         <div className="flex flex-col justify-center border-l border-black p-2">
                             <span>
                                 No.
-                                <span className="ml-2 font-bold">
-                                    {voucher.jev_no}
-                                </span>
+                                <span className="ml-2 font-bold">{voucher.jev_no}</span>
                             </span>
                             <span>
                                 Date{' '}
@@ -473,9 +395,7 @@ export default function Show({ voucher, auth }) {
                                 Responsibility Center
                             </div>
                             <div className="col-span-4 border-l border-black">
-                                <div className="border-b border-black p-2">
-                                    ACCOUNTING ENTRIES
-                                </div>
+                                <div className="border-b border-black p-2">ACCOUNTING ENTRIES</div>
                                 <div className="grid grid-cols-5 border-b border-black">
                                     <div className="col-span-2 flex items-center justify-center">
                                         Accounts
@@ -487,14 +407,10 @@ export default function Show({ voucher, auth }) {
                                         Ref
                                     </div>
                                     <div className="flex flex-col border-l border-black">
-                                        <div className="border-b border-black">
-                                            Amount
-                                        </div>
+                                        <div className="border-b border-black">Amount</div>
                                         <div className="grid grid-cols-2">
                                             <div>Debit</div>
-                                            <div className="border-l border-black">
-                                                Credit
-                                            </div>
+                                            <div className="border-l border-black">Credit</div>
                                         </div>
                                     </div>
                                 </div>
@@ -520,14 +436,12 @@ export default function Show({ voucher, auth }) {
                                         <div className="flex flex-col border-l border-black">
                                             <div className="grid grid-cols-2">
                                                 <div className="p-2">
-                                                    {debitArray[index] !==
-                                                    undefined
+                                                    {debitArray[index] !== undefined
                                                         ? debitArray[index]
                                                         : '0'}
                                                 </div>
                                                 <div className="border-l border-black p-2">
-                                                    {creditArray[index] !==
-                                                    undefined
+                                                    {creditArray[index] !== undefined
                                                         ? creditArray[index]
                                                         : '0'}
                                                 </div>
@@ -563,25 +477,29 @@ export default function Show({ voucher, auth }) {
 
                     <div className="grid grid-cols-2">
                         <div className="p-2">
-                            <div className="">
-                                {/* sino naka sign auto here the complete name */}
-                                Prepared by:
-                            </div>
-                            <div className="flex flex-col items-center justify-center">
-                                <span className="font-bold">
-                                    {voucher.user_id} userID_name here
-                                </span>
-                                <span>Adimistrative Aide VI/ Position</span>
-                            </div>
+                            <div className="">Prepared by:</div>
+
+                            {signatories.preparedBy ? (
+                                <div className="flex flex-col items-center">
+                                    <strong>{`${signatories.preparedBy.first_name} ${signatories.preparedBy.last_name}`}</strong>
+
+                                    <span>{signatories.preparedBy.position}</span>
+                                </div>
+                            ) : (
+                                'Not Assigned'
+                            )}
                         </div>
                         <div className="border-l border-black p-2">
                             <div> Approved by:</div>
-                            <div className="flex flex-col items-center justify-center">
-                                <span className="font-bold">
-                                    RHEA ANGELLICA D. ADDATU, CPA
-                                </span>
-                                <span>Accountant II</span>
-                            </div>
+                            {signatories.approvedBy ? (
+                                <div className="flex flex-col items-center">
+                                    <strong>{`${signatories.approvedBy.first_name} ${signatories.approvedBy.last_name}`}</strong>
+
+                                    <span>{signatories.approvedBy.position}</span>
+                                </div>
+                            ) : (
+                                'Not Assigned'
+                            )}
                         </div>
                     </div>
                 </div>

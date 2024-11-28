@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import {
     Button,
@@ -10,7 +10,7 @@ import {
     Select,
     Card,
     Empty,
-    message,
+    message as antdMessage,
     Divider,
 } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -27,7 +27,7 @@ const getGridStyle = (totalItems) => {
     };
 };
 
-const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
+const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, customMessage }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
     const [editingBenefit, setEditingBenefit] = useState(null);
@@ -47,16 +47,16 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
         try {
             if (editingBenefit) {
                 await Inertia.put(`/benefits/${editingBenefit.id}`, values);
-                message.success('Benefit updated successfully');
+                antdMessage.success('Benefit updated successfully');
             } else {
                 await Inertia.post(route('benefits.store'), values);
-                message.success('Benefit created successfully');
+                antdMessage.success('Benefit created successfully');
             }
             benefitForm.resetFields();
             setEditingBenefit(null);
             setIsBenefitModalOpen(false);
         } catch (error) {
-            message.error('Failed to save benefit');
+            antdMessage.error('Failed to save benefit');
         }
     };
 
@@ -73,15 +73,46 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
         setIsBenefitModalOpen(true);
     };
 
+    const [editedBenefits, setEditedBenefits] = useState([]);
+
+    // LWOP-PERA change value
+    const handleLWOPChange = (employeeId, value) => {
+        setEditedBenefits((prev) => {
+            const updated = [...prev];
+            const index = updated.findIndex((item) => item.employee_id === employeeId);
+            if (index > -1) {
+                updated[index].lwop_pera = value;
+            } else {
+                updated.push({ employee_id: employeeId, lwop_pera: value });
+            }
+            return updated;
+        });
+    };
+
+    useEffect(() => {
+        if (customMessage) {
+            antdMessage.success(customMessage);
+        }
+    }, [customMessage]);
+
+    // Submit LWOP-PERA changes to the server
+    const submitLWOPChanges = async () => {
+        try {
+            await Inertia.post(route('employee_benefits.update_lwop_pera'), {
+                changes: editedBenefits,
+            });
+            antdMessage.success('LWOP-PERA updated successfully!');
+            setEditedBenefits([]);
+        } catch (error) {
+            antdMessage.error('Failed to update LWOP-PERA.');
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             {/* available benefits */}
-            <h2 className="mb-5 text-lg font-semibold">Available Benefits</h2>
-            {/* <div className="mb-5 flex items-center">
-                <PrimaryButton type="default" onClick={showBenefitModal}>
-                    Create Benefit
-                </PrimaryButton>
-            </div> */}
+            <h2 className="mb-5 text-lg font-semibold">Available Gross Earnings</h2>
+
             {benefits && benefits.length > 0 ? (
                 <Card title="Benefits" className="mb-6">
                     {benefits.map((benefit) => (
@@ -111,8 +142,61 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                     Add Benefit
                 </PrimaryButton>
             </div>
+            <div>
+                <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>
+                <Table
+                    dataSource={employees} // Data is based on employees
+                    rowKey="id"
+                    className="mt-4"
+                    pagination={{ pageSize: 10 }}
+                >
+                    {/* Employee Column */}
+                    <Table.Column
+                        title="Employee"
+                        render={(text, record) => (
+                            <span>
+                                {record.first_name} {record.last_name}
+                            </span>
+                        )}
+                    />
 
-            <Table dataSource={employeeBenefits} rowKey="id" className="mt-4">
+                    {/* Dynamically Generate Benefit Columns */}
+                    {benefits.map((benefit) => (
+                        <Table.Column
+                            key={benefit.id}
+                            title={benefit.name}
+                            render={(text, record) => {
+                                const employeeBenefit = employeeBenefits.find(
+                                    (eb) =>
+                                        eb.employee_id === record.id && eb.benefit_id === benefit.id
+                                );
+
+                                return <span>{employeeBenefit?.amount || '—'}</span>;
+                            }}
+                        />
+                    ))}
+
+                    {/* LWOP-PERA Column */}
+                    <Table.Column
+                        title="LWOP-PERA"
+                        render={(text, record) => (
+                            <InputNumber
+                                defaultValue={record.lwop_pera || 0}
+                                onChange={(value) => handleLWOPChange(record.id, value)}
+                            />
+                        )}
+                    />
+                </Table>
+
+                {/* Submit Button for LWOP-PERA Changes */}
+                <div className="mt-6">
+                    <PrimaryButton type="primary" onClick={submitLWOPChanges}>
+                        Submit LWOP-PERA Changes
+                    </PrimaryButton>
+                </div>
+            </div>
+
+            {/* <Table dataSource={employeeBenefits} rowKey="id" className="mt-4">
                 <Table.Column
                     title="Employee"
                     key="employee"
@@ -124,7 +208,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
                 />
                 <Table.Column title="Benefit" dataIndex={['benefit', 'name']} key="benefit" />
                 <Table.Column title="Amount" dataIndex="amount" key="amount" />
-            </Table>
+            </Table> */}
 
             {/* assigning employee benefit */}
             <Modal

@@ -19,6 +19,8 @@ public function up()
         $table->unsignedBigInteger('prepared_by')->nullable();
         $table->unsignedBigInteger('signatory_1')->nullable();
         $table->unsignedBigInteger('signatory_2')->nullable();
+        $table->unsignedBigInteger('signatory_3')->nullable();
+
     });
 }
 
@@ -35,7 +37,8 @@ public function down()
             'approved_by',
             'prepared_by',
             'signatory_1',
-            'signatory_2'
+            'signatory_2',
+            'signatory_3'
         ]);
     });
 }

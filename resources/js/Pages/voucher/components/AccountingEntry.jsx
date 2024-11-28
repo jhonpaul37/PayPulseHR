@@ -180,7 +180,6 @@ const AccountingEntry = ({
                                               ? 'border-red-500'
                                               : 'border-gray-300'
                                     }`}
-                                    s
                                 />
                             </div>
                             <div className="flex items-center justify-center border-l border-black p-2">

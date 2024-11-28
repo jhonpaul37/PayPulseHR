@@ -29,6 +29,7 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         approved_by: null,
         signatory_1: null,
         signatory_2: null,
+        signatory_3: null,
         paymentMode: '',
         otherPaymentMode: '',
         responsibility_center: '',
@@ -37,11 +38,6 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
     });
 
     const [selectedEmployees, setSelectedEmployees] = useState({});
-    // const [selectedEmployees, setSelectedEmployees] = useState({
-    //     approved_by: null,
-    //     signatory_1: null,
-    //     signatory_2: null,
-    // });
 
     const handleEmployeeChange = (field, value) => {
         setData((prev) => ({
@@ -103,7 +99,6 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         }));
     };
 
-    // used in AccountingEntry Component
     const [entries, setEntries] = useState([
         {
             uacsTitle: '',
@@ -184,8 +179,6 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         const year = date.getFullYear().toString().slice(-2);
         return `${day}-${month}-${year}`;
     })();
-
-    console.log(data);
 
     function submit(e) {
         e.preventDefault();
@@ -375,25 +368,29 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                                 value={data.particulars}
                                 onChange={handleInputChange}
                                 className="col-span-4 w-full border p-2 focus:outline-none"
+                                autoComplete="off"
                             />
                             <TextInput
                                 name="responsibility_center"
                                 value={data.responsibility_center}
                                 onChange={handleInputChange}
                                 className="col-span-2 border-l p-2"
+                                autoComplete="off"
                             />
                             <TextInput
                                 name="mfo_pap"
                                 value={data.mfo_pap}
                                 onChange={handleInputChange}
                                 className="col-span-2 border-l p-2"
+                                autoComplete="off"
                             />
                             <TextInput
                                 name="amount"
                                 type="number"
                                 value={data.amount}
-                                onChange={handleInputChange}
+                                onChange={handleAmountChange}
                                 className="col-span-2 border-l p-2"
+                                autoComplete="off"
                             />
                         </div>
 
@@ -404,12 +401,36 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
                                 under my direct supervision
                             </div>
                             <div className="flex flex-col items-center justify-center">
-                                <div className="mt-2 text-center font-bold">
-                                    {/* {namePositions[3]?.name_pos} */} Name
-                                </div>
-                                <div className="text-xs">
-                                    {/* {namePositions[3]?.position} */}Position
-                                </div>
+                                <Select
+                                    className="font-bold"
+                                    placeholder="Select an employee"
+                                    onChange={(value) => {
+                                        setData('signatory_3', value);
+                                        // Update selected employee details dynamically
+                                        const selectedEmployee = filEmployees.find(
+                                            (employee) => employee.id === value
+                                        );
+                                        setSelectedEmployees((prev) => ({
+                                            ...prev,
+                                            signatory_3: selectedEmployee || null,
+                                        }));
+                                    }}
+                                    value={data.signatory_3}
+                                >
+                                    {filEmployees.map((employee) => (
+                                        <Option key={employee.id} value={employee.id}>
+                                            {`${employee.first_name} ${employee.last_name}`}
+                                        </Option>
+                                    ))}
+                                </Select>
+
+                                {selectedEmployees.signatory_3 && (
+                                    <div className="mt-2 text-center">
+                                        <div className="text-xs">
+                                            {selectedEmployees.signatory_3.position}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {/* Accounting Entry */}
@@ -636,37 +657,35 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
 
                             {/* "Approved by" Section */}
                             <div className="border-l border-black p-2">
-                                <div className="border-l border-black p-2">
-                                    <div>Approved by:</div>
-                                    <div className="flex flex-col items-center justify-center">
-                                        <Select
-                                            name="approved_by"
-                                            value={data.approved_by}
-                                            onChange={(value) =>
-                                                handleInputChange({
-                                                    target: { name: 'approved_by', value },
-                                                })
-                                            }
-                                            placeholder="Select an employee"
-                                            style={{ width: '80%' }}
-                                        >
-                                            {filEmployees.map((emp) => (
-                                                <Option key={emp.id} value={emp.id}>
-                                                    <span className="text-bold">
-                                                        {emp.first_name} {emp.last_name}
-                                                    </span>
-                                                </Option>
-                                            ))}
-                                        </Select>
+                                <div>Approved by:</div>
+                                <div className="flex flex-col items-center justify-center">
+                                    <Select
+                                        name="approved_by"
+                                        value={data.approved_by}
+                                        onChange={(value) =>
+                                            handleInputChange({
+                                                target: { name: 'approved_by', value },
+                                            })
+                                        }
+                                        placeholder="Select an employee"
+                                        style={{ width: '80%' }}
+                                    >
+                                        {filEmployees.map((emp) => (
+                                            <Option key={emp.id} value={emp.id}>
+                                                <span className="text-bold">
+                                                    {emp.first_name} {emp.last_name}
+                                                </span>
+                                            </Option>
+                                        ))}
+                                    </Select>
 
-                                        {selectedEmployees.approved_by && (
-                                            <div className="mt-2 text-center">
-                                                <div className="text-xs">
-                                                    {selectedEmployees.approved_by.position}
-                                                </div>
+                                    {selectedEmployees.approved_by && (
+                                        <div className="mt-2 text-center">
+                                            <div className="text-xs">
+                                                {selectedEmployees.approved_by.position}
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

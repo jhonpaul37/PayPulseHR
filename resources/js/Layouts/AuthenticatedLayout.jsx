@@ -62,20 +62,38 @@ const ScrollableContent = styled(Content)`
 `;
 
 const AuthenticatedLayout = ({ user, children }) => {
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(false); //true is  close by default sidebar
     const { url, props } = usePage();
     const { auth } = props;
 
+    // const selectedKey = () => {
+    //     // if (url.startsWith('/dashboard')) return '1';
+    //     if (url.startsWith('/dashboard')) return '2';
+    //     if (url.startsWith('/voucher')) return '3';
+    //     if (url.startsWith('/settings')) return '4';
+    //     if (url.startsWith('/leaveRequest')) return '5';
+    //     if (url.startsWith('/employees')) return '6';
+    //     if (url.startsWith('/payroll/data')) return '7';
+    //     if (url.startsWith('/loans')) return '8';
+    //     if (url.startsWith('/employee_benefits')) return '9';
+    //     if (url.startsWith('/leaveRequestForm')) return '10';
+    //     if (url.startsWith('/my_loans')) return '11';
+    //     return '1';
+    // };
     const selectedKey = () => {
-        if (url.startsWith('/dashboard')) return '1';
-        if (url.startsWith('/voucher')) return '3';
-        if (url.startsWith('/settings')) return '4';
-        if (url.startsWith('/leaveRequest')) return '5';
-        if (url.startsWith('/employees')) return '6';
+        if (url === '/dashboard') return '2';
+        if (url === '/voucher') return '3';
+        if (url === '/settings') return '4';
+        if (url === '/leaveRequest') return '5';
+        if (url === '/employees') return '6';
         if (url.startsWith('/payroll/data')) return '7';
-        if (url.startsWith('/loans')) return '8';
-        if (url.startsWith('/employee_benefits')) return '9';
-        return '1';
+        if (url === '/loans') return '8';
+        if (url === '/employee_benefits') return '9';
+        if (url === '/leaveRequestForm') return '10';
+        if (url === '/my_loans') return '11';
+        if (url === '/contributions') return '12';
+        if (url === '/salary_grades') return '13';
+        return '1'; // Default case
     };
 
     const menuItems = [
@@ -90,32 +108,28 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: <Link href="/payroll/data">Payroll</Link>,
         },
         {
-            key: '9',
-            icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/employee_benefits">Gross Earnings</Link>,
-        },
-        {
             key: '8',
             icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
-            label: 'Deduction',
-            children: [
-                {
-                    key: '8-1',
-                    label: <Link href="/my_loans">My Loans (Employee)</Link>,
-                },
-                {
-                    key: '8-2',
-                    label: <Link href="/loans">Loans</Link>,
-                },
-                {
-                    key: '8-3',
-                    label: <Link href="/contributions">Deduction</Link>,
-                },
-                // {
-                //     key: '8-4',
-                //     label: <Link href="/salary_grades">Salary Grade</Link>,
-                // },
-            ],
+            label: <Link href="/loans">Loans</Link>,
+            // label: 'Deduction',
+            // children: [
+            //     // {
+            //     //     key: '8-1',
+            //     //     label: <Link href="/my_loans">My Loans (Employee)</Link>,
+            //     // },
+            //     {
+            //         key: '8-2',
+            //         label: <Link href="/loans">Loans</Link>,
+            //     },
+            //     {
+            //         key: '8-3',
+            //         label: <Link href="/contributions">Deduction</Link>,
+            //     },
+            //     {
+            //         key: '8-4',
+            //         label: <Link href="/salary_grades">Salary Grade</Link>,
+            //     },
+            // ],
         },
         {
             type: 'divider',
@@ -126,7 +140,7 @@ const AuthenticatedLayout = ({ user, children }) => {
             type: 'group',
         },
         {
-            key: '1',
+            key: '2',
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/dashboard">Dashboard</Link>,
         },
@@ -134,6 +148,21 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: '3',
             icon: <FontAwesomeIcon icon={faFolder} />,
             label: <Link href="/voucher">Voucher</Link>,
+        },
+        {
+            key: '9',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/employee_benefits">Gross Earnings</Link>,
+        },
+        {
+            key: '12',
+            icon: <FontAwesomeIcon icon={faFolder} />,
+            label: <Link href="/contributions">Deduction</Link>,
+        },
+        {
+            key: '13',
+            icon: <FontAwesomeIcon icon={faFolder} />,
+            label: <Link href="/salary_grades">Salary Grade</Link>,
         },
         {
             type: 'divider',
@@ -146,17 +175,18 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
-            label: 'Leaves',
-            children: [
-                {
-                    key: '5-1',
-                    label: <Link href="/leaveRequestForm">Add Leave (Employee)</Link>,
-                },
-                {
-                    key: '5-2',
-                    label: <Link href="/leaveRequest">Leaves Request</Link>,
-                },
-            ],
+            label: <Link href="/leaveRequest">Leaves Request</Link>,
+            // label: 'Leaves',
+            // children: [
+            //     {
+            //         key: '5-1',
+            //         label: <Link href="/leaveRequestForm">Add Leave (Employee)</Link>,
+            //     },
+            //     {
+            //         key: '5-2',
+            //         label: <Link href="/leaveRequest">Leaves Request</Link>,
+            //     },
+            // ],
         },
         {
             key: '6',
@@ -167,10 +197,29 @@ const AuthenticatedLayout = ({ user, children }) => {
             type: 'divider',
         },
         {
-            key: '4',
-            icon: <FontAwesomeIcon icon={faGear} />,
-            label: <Link href="/settings">Settings</Link>,
+            key: 'employeeTitle',
+            label: !collapsed ? 'Employee' : null,
+            type: 'group',
         },
+        {
+            key: '10',
+            icon: <FontAwesomeIcon icon={faHeartPulse} />,
+            label: <Link href="/leaveRequestForm">Leave</Link>,
+        },
+        {
+            key: '11',
+            icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
+            label: <Link href="/my_loans">Loans</Link>,
+        },
+
+        // {
+        //     type: 'divider',
+        // },
+        // {
+        //     key: '4',
+        //     icon: <FontAwesomeIcon icon={faGear} />,
+        //     label: <Link href="/settings">Settings</Link>,
+        // },
     ];
 
     return (

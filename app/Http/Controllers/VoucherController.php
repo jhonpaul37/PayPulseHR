@@ -56,6 +56,7 @@ public function store(Request $request)
 {
     // Get the authenticated user
     $user = Auth::user();
+    // dd($request->all());
 
     // Get the latest ID for generating the code
     $latestVoucher = Voucher::latest('id')->first();
@@ -83,6 +84,7 @@ public function store(Request $request)
         'approved_by' => ['required', 'integer'],
         'signatory_1' => ['required', 'integer'],
         'signatory_2' => ['required', 'integer'],
+        'signatory_3' => ['required', 'integer'],
         'responsibility_center' => ['nullable', 'string'],
         'mfo_pap' => ['nullable', 'string'],
         'paymentMode' => ['nullable', 'string'],
@@ -99,40 +101,51 @@ public function store(Request $request)
     }
     $fields['prepared_by'] = $employee->id;
 
-    // Handle mode of payment for "Others"
     if ($request->paymentMode === 'Others') {
         $fields['paymentMode'] = $request->otherPaymentMode;
     }
 
-    // Convert arrays to JSON for storage
+    // Convert arrays JSON
     $fields['uacs_code'] = json_encode($fields['uacs_code']);
     $fields['debit'] = json_encode($fields['debit']);
     $fields['credit'] = json_encode($fields['credit']);
 
-    // Create the voucher in the database
     Voucher::create($fields);
 
-    // Redirect to the voucher listing page with a success message
     return redirect('/voucher')->with('success', 'Voucher created successfully!');
 }
 
+public function show($id)
+{
+    $voucher = Voucher::find($id);
 
-    public function show($id)
-    {
-        $voucher = Voucher::find($id);
-
-
-        // Decode uacs_code JSON
-        $uacs_codes = is_string($voucher->uacs_code) ? json_decode($voucher->uacs_code, true) : $voucher->uacs_code;
-
-        $voucher->uacs_code = array_map(function($code) {
-            return accounting_entry::where('UACS_code', $code)->first(['UACS_code', 'Account_title']);
-        }, $uacs_codes);
-
-        return Inertia::render('voucher/Show', [
-            'voucher' => $voucher,
-        ]);
+    if (!$voucher) {
+        return redirect()->back()->with('error', 'Voucher not found.');
     }
+
+    // Fetch signatories
+    $signatories = [
+        'approvedBy' => $voucher->signatory('approved_by')->first(),
+        'preparedBy' => $voucher->signatory('prepared_by')->first(),
+        'signatory1' => $voucher->signatory('signatory_1')->first(),
+        'signatory2' => $voucher->signatory('signatory_2')->first(),
+        'signatory3' => $voucher->signatory('signatory_3')->first(),
+    ];
+
+    // Decode UACS Code JSON
+    $uacs_codes = is_string($voucher->uacs_code) ? json_decode($voucher->uacs_code, true) : $voucher->uacs_code;
+
+    $entries = accounting_entry::whereIn('UACS_code', $uacs_codes)->get(['UACS_code', 'Account_title']);
+
+    $voucher->uacs_code = collect($uacs_codes)->map(function ($code) use ($entries) {
+        return $entries->firstWhere('UACS_code', $code);
+    });
+
+    return Inertia::render('voucher/Show', [
+        'voucher' => $voucher,
+        'signatories' => $signatories,
+    ]);
+}
 
     public function fCluster()
     {

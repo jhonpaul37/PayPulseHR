@@ -33,6 +33,7 @@ class voucher extends Model
         'prepared_by',
         'signatory_1',
         'signatory_2',
+        'signatory_3',
     ];
 
     protected $casts = [
@@ -47,7 +48,20 @@ class voucher extends Model
     public function fund_cluster(){
         return $this->hasMany(FundCluster::class);
     }
-    public function users(){
-        return $this->hasMany(User::class);
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'user_id', 'id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function signatory($field)
+    {
+        return $this->belongsTo(Employee::class, $field);
+    }
+
+
 }
