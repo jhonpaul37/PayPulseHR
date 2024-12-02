@@ -96,25 +96,28 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
     }, [customMessage]);
 
     // Submit LWOP-PERA changes to the server
-    const submitLWOPChanges = async () => {
-        try {
-            await Inertia.post(route('employee_benefits.update_lwop_pera'), {
-                changes: editedBenefits,
-            });
-            antdMessage.success('LWOP-PERA updated successfully!');
-            setEditedBenefits([]);
-        } catch (error) {
-            antdMessage.error('Failed to update LWOP-PERA.');
-        }
+    const submitLWOPChanges = () => {
+        Inertia.post(
+            route('update_lwop_pera'),
+            { changes: editedBenefits },
+            {
+                onSuccess: () => {
+                    antdMessage.success('LWOP-PERA updated successfully!');
+                    setEditedBenefits([]);
+                },
+                onError: () => {
+                    antdMessage.error('Failed to update LWOP-PERA.');
+                },
+            }
+        );
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
             {/* available benefits */}
-            <h2 className="mb-5 text-lg font-semibold">Available Gross Earnings</h2>
 
             {benefits && benefits.length > 0 ? (
-                <Card title="Benefits" className="mb-6">
+                <Card title="Gross earings" className="mb-6">
                     {benefits.map((benefit) => (
                         <Grid
                             key={benefit.id}
@@ -132,83 +135,6 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                     className="mb-6"
                 />
             )}
-
-            <Divider style={{ borderColor: '#F0C519' }} className="pt-5">
-                {/* <span className="text-xl font-bold">Loan Types</span> */}
-            </Divider>
-
-            <div className="mb-6">
-                <PrimaryButton type="primary" onClick={showModal}>
-                    Add Benefit
-                </PrimaryButton>
-            </div>
-            <div>
-                <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>
-                <Table
-                    dataSource={employees} // Data is based on employees
-                    rowKey="id"
-                    className="mt-4"
-                    pagination={{ pageSize: 10 }}
-                >
-                    {/* Employee Column */}
-                    <Table.Column
-                        title="Employee"
-                        render={(text, record) => (
-                            <span>
-                                {record.first_name} {record.last_name}
-                            </span>
-                        )}
-                    />
-
-                    {/* Dynamically Generate Benefit Columns */}
-                    {benefits.map((benefit) => (
-                        <Table.Column
-                            key={benefit.id}
-                            title={benefit.name}
-                            render={(text, record) => {
-                                const employeeBenefit = employeeBenefits.find(
-                                    (eb) =>
-                                        eb.employee_id === record.id && eb.benefit_id === benefit.id
-                                );
-
-                                return <span>{employeeBenefit?.amount || '—'}</span>;
-                            }}
-                        />
-                    ))}
-
-                    {/* LWOP-PERA Column */}
-                    <Table.Column
-                        title="LWOP-PERA"
-                        render={(text, record) => (
-                            <InputNumber
-                                defaultValue={record.lwop_pera || 0}
-                                onChange={(value) => handleLWOPChange(record.id, value)}
-                            />
-                        )}
-                    />
-                </Table>
-
-                {/* Submit Button for LWOP-PERA Changes */}
-                <div className="mt-6">
-                    <PrimaryButton type="primary" onClick={submitLWOPChanges}>
-                        Submit LWOP-PERA Changes
-                    </PrimaryButton>
-                </div>
-            </div>
-
-            {/* <Table dataSource={employeeBenefits} rowKey="id" className="mt-4">
-                <Table.Column
-                    title="Employee"
-                    key="employee"
-                    render={(text, record) => (
-                        <span>
-                            {record.employee.first_name} {record.employee.last_name}
-                        </span>
-                    )}
-                />
-                <Table.Column title="Benefit" dataIndex={['benefit', 'name']} key="benefit" />
-                <Table.Column title="Amount" dataIndex="amount" key="amount" />
-            </Table> */}
 
             {/* assigning employee benefit */}
             <Modal
@@ -261,7 +187,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
             </Modal>
 
             {/* editing benefit description */}
-            <Modal
+            {/* <Modal
                 title={editingBenefit ? 'Edit Benefit' : 'Create New Benefit'}
                 open={isBenefitModalOpen}
                 onCancel={handleBenefitCancel}
@@ -295,7 +221,71 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                         />
                     </Form.Item>
                 </Form>
-            </Modal>
+            </Modal> */}
+
+            <Divider style={{ borderColor: '#F0C519' }} className="pt-5">
+                {/* <span className="text-xl font-bold">Loan Types</span> */}
+            </Divider>
+
+            <div className="mb-6">
+                <PrimaryButton type="primary" onClick={showModal}>
+                    Add Benefit
+                </PrimaryButton>
+            </div>
+
+            <div>
+                <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>
+                <Table
+                    dataSource={employees} // Data is based on employees
+                    rowKey="id"
+                    className="mt-4"
+                    pagination={{ pageSize: 10 }}
+                >
+                    {/* Employee Column */}
+                    <Table.Column
+                        title="Employee"
+                        render={(text, record) => (
+                            <span>
+                                {record.first_name} {record.last_name}
+                            </span>
+                        )}
+                    />
+
+                    {/* Dynamically Generate Benefit Columns */}
+                    {benefits.map((benefit) => (
+                        <Table.Column
+                            key={benefit.id}
+                            title={benefit.name}
+                            render={(text, record) => {
+                                const employeeBenefit = employeeBenefits.find(
+                                    (eb) =>
+                                        eb.employee_id === record.id && eb.benefit_id === benefit.id
+                                );
+
+                                return <span>{employeeBenefit?.amount || '—'}</span>;
+                            }}
+                        />
+                    ))}
+
+                    {/* LWOP-PERA Column */}
+                    <Table.Column
+                        title="LWOP-PERA"
+                        render={(text, record) => (
+                            <InputNumber
+                                defaultValue={record.lwop_pera || 0}
+                                onChange={(value) => handleLWOPChange(record.id, value)}
+                            />
+                        )}
+                    />
+                </Table>
+
+                {/* Submit Button for LWOP-PERA Changes */}
+                <div className="mt-6 flex justify-end">
+                    <PrimaryButton type="primary" onClick={submitLWOPChanges}>
+                        Submit LWOP-PERA Changes
+                    </PrimaryButton>
+                </div>
+            </div>
         </AuthenticatedLayout>
     );
 };

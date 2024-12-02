@@ -202,14 +202,14 @@ const AuthenticatedLayout = ({ user, children }) => {
             type: 'group',
         },
         {
+            key: '11',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/my_loans">Dashboard</Link>,
+        },
+        {
             key: '10',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequestForm">Leave</Link>,
-        },
-        {
-            key: '11',
-            icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
-            label: <Link href="/my_loans">Loans</Link>,
         },
 
         // {

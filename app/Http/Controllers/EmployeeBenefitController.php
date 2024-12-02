@@ -88,5 +88,4 @@ public function updateLWOPPera(Request $request)
         return redirect()->back()->with('success', 'Benefit assigned to employees successfully.');
     }
 
-
 }

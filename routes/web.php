@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/salary_grades/{salaryGrade}', [SalaryGradeController::class, 'update'])->name('salary_grades.update');
 
     //Payroll
-    Route::post('/transactions', [TransactionController::class, 'store'])->name('PayrollSaved'); // Saved Payroll release
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('PayrollSaved');
 
     Route::get('/payroll/data', [PayrollController::class, 'payrollData'])->name('payrollData');
 
@@ -110,8 +110,9 @@ Route::middleware('auth')->group(function () {
     //Benefits / Gross Earning
     Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
     Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
-    Route::post('/employee_benefits', [EmployeeBenefitController::class, 'submitLWOP'])->name('employee_benefits.store');
-    Route::post('/employee-benefits/update-lwop-pera', [EmployeeBenefitController::class, 'updateLWOPPera'])->name('employee_benefits.update_lwop_pera');
+    // Route::post('/employee_benefits', [EmployeeBenefitController::class, 'submitLWOP'])->name('employee_benefits.store');
+
+    Route::post('/employee-benefits/update-lwop-pera', [EmployeeBenefitController::class, 'updateLWOPPera'])->name('update_lwop_pera');
 
     Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
 

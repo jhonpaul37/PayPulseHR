@@ -218,17 +218,45 @@ export default function ContributionsIndex({
                 )}
                 <Divider style={{ borderColor: '#F0C519' }}> Employee Deduction</Divider>
 
-                {/* Employee Contribution list */}
+                {/* Employee Dedcution/Contribution list */}
                 {employeeContribution && employeeContribution.length > 0 ? (
                     <Table
-                        dataSource={employeeContribution.map((item) => ({
-                            key: item.id,
-                            employee_name: `${item.employee.first_name} ${item.employee.last_name}`,
-                            contribution_name: item.contribution.name,
-                            amount: item.amount,
-                        }))}
-                        columns={columns}
+                        dataSource={employees.map((employee) => {
+                            // deduction employee
+                            const contributionsForEmployee = employeeContribution.filter(
+                                (item) => item.employee.id === employee.id
+                            );
+
+                            // contributions are grouped by name
+                            const contributionsByName = {};
+                            contributionsForEmployee.forEach((item) => {
+                                contributionsByName[item.contribution.name] =
+                                    `₱${parseFloat(item.amount).toFixed(2)}`;
+                            });
+
+                            return {
+                                key: employee.id,
+                                employee_name: `${employee.first_name} ${employee.last_name}`,
+                                ...contributionsByName,
+                            };
+                        })}
+                        columns={[
+                            {
+                                title: 'Employee',
+                                dataIndex: 'employee_name',
+                                key: 'employee_name',
+                                fixed: 'left',
+                            },
+                            // columns for each Deduction
+                            ...contributions.map((contribution) => ({
+                                title: contribution.name,
+                                dataIndex: contribution.name,
+                                key: contribution.name,
+                                render: (amount) => amount || '----', // Default
+                            })),
+                        ]}
                         pagination={false}
+                        scroll={{ x: 'max-content' }}
                     />
                 ) : (
                     <Empty

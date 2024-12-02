@@ -55,7 +55,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            {/* Existing Sections for Loan Programs and Loan Types */}
+            {/* Loan Programs and Loan Types */}
             <div className="grid grid-cols-2 gap-5">
                 <div>
                     <Divider style={{ borderColor: '#F0C519' }}>
@@ -97,7 +97,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                 />
             </Modal>
 
-            {/* Loan Detail Modal */}
+            {/* Loan Detail */}
             <Modal
                 title="Employee Loan Details"
                 open={isDetailModalOpen}
@@ -112,7 +112,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                 )}
             </Modal>
 
-            {/* Section for Unpaid Loans */}
+            {/*  Unpaid Loans */}
             {employeeLoan
                 .filter((loan) => {
                     const totalPaid = loan.payments.reduce(
@@ -175,7 +175,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                                 </div>
 
                                 {/* Payment History Button */}
-                                <div className="mt-4 flex justify-end">
+                                {/* <div className="mt-4 flex justify-end">
                                     <PrimaryButton
                                         onClick={() =>
                                             (window.location.href = route('loan.details', {
@@ -186,7 +186,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                                     >
                                         Payment History
                                     </PrimaryButton>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     );
