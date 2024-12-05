@@ -211,6 +211,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequestForm">Leave</Link>,
         },
+        // {
+        //     key: 'dashboardLanding',
+        //     icon: <FontAwesomeIcon icon={faHouse} />,
+        //     label: <Link href="/dashboards">Dashboard</Link>,
+        // },
 
         // {
         //     type: 'divider',
@@ -226,8 +231,17 @@ const AuthenticatedLayout = ({ user, children }) => {
         <div>
             <Layout className="h-screen">
                 <StyledSider trigger={null} collapsible collapsed={collapsed}>
-                    <div className="flex h-16 items-center justify-center bg-mainD">
-                        <span className="text-xl text-white">Logo</span>
+                    <div className="relative flex h-16 items-center justify-center bg-mainD">
+                        {/* Display the logo only when collapsed */}
+                        <img
+                            src="/images/PayPulseHR.png"
+                            alt="PayPulseHR Logo"
+                            className={`h-12 ${collapsed ? 'block' : 'block'}`}
+                        />
+                        {/* Display text when not collapsed */}
+                        <span className={`font-bold text-white ${collapsed ? 'hidden' : 'block'}`}>
+                            PayPulseHR
+                        </span>
                     </div>
                     <StyledMenu
                         theme="dark"

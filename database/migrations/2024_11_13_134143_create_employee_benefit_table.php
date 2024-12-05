@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->foreignId('benefit_id')->constrained('benefits')->onDelete('cascade');
-            $table->decimal('amount', 10, 2)->nullable();  // Specific amount if needed for this employee
+            $table->decimal('amount', 10, 2)->nullable();
             $table->timestamps();
         });
     }

@@ -26,7 +26,6 @@ class RolesAndPermissionController extends Controller
     }
     public function index()
     {
-        $employees = Employee::all();
         $users = User::select('name', 'id')->with('employee')->get();
         $permissions = Permission::all();
 

@@ -19,6 +19,7 @@ use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\RolesAndPermissionController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\HomeController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,6 +34,7 @@ Route::get('/', function () {
 
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboards', [HomeController::class, 'landingPage'])->name('dashboards');
 
     Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
     Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');

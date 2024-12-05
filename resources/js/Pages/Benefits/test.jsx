@@ -186,6 +186,43 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                 </Form>
             </Modal>
 
+            {/* editing benefit description */}
+            {/* <Modal
+                title={editingBenefit ? 'Edit Benefit' : 'Create New Benefit'}
+                open={isBenefitModalOpen}
+                onCancel={handleBenefitCancel}
+                footer={[
+                    <Button key="cancel" onClick={handleBenefitCancel} style={{ marginRight: 8 }}>
+                        Cancel
+                    </Button>,
+                    <PrimaryButton key="submit" type="primary" onClick={() => benefitForm.submit()}>
+                        {editingBenefit ? 'Update' : 'Create'}
+                    </PrimaryButton>,
+                ]}
+            >
+                <Form form={benefitForm} layout="vertical" onFinish={handleBenefitSubmit}>
+                    {editingBenefit ? (
+                        <Form.Item label="Benefit Name">
+                            <Input className="w-full" value={editingBenefit.name} disabled />
+                        </Form.Item>
+                    ) : (
+                        <Form.Item name="name" label="Benefit Name" rules={[{ required: true }]}>
+                            <Input className="w-full" placeholder="Enter Benefit Name" />
+                        </Form.Item>
+                    )}
+                    <Form.Item
+                        name="description"
+                        label="Benefit Description"
+                        rules={[{ required: true }]}
+                    >
+                        <Input.TextArea
+                            className="w-full"
+                            placeholder="Enter Benefit Description"
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal> */}
+
             <Divider style={{ borderColor: '#F0C519' }} className="pt-5">
                 {/* <span className="text-xl font-bold">Loan Types</span> */}
             </Divider>
