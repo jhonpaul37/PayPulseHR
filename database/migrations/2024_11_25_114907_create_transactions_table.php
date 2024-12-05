@@ -17,7 +17,6 @@ return new class extends Migration
             $table->json('data');
             $table->timestamps();
         });
-
     }
 
     /**

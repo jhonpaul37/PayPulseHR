@@ -17,6 +17,7 @@ use App\Http\Controllers\EmployeeBenefitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\RolesAndPermissionController;
 use App\Http\Controllers\TransactionController;
 
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,8 @@ Route::get('/', function () {
     ]);
 });
 
+
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
@@ -39,9 +42,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('/voucher',VoucherController::class);
-    Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add');
+    Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add')->middleware('permission:Voucher');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
     Route::get('/fClusters', [VoucherController::class, 'fCluster']);
+
+Route::get('/add-permission', [RolesAndPermissionController::class, 'addPermission']);
+Route::get('/RolesAndPermission', [RolesAndPermissionController::class, 'index']);
 
     //HR
     //Leave Management
@@ -72,6 +78,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/salary_grades', [SalaryGradeController::class, 'store'])->name('salary_grades.store');
     Route::get('/salary_grades/{salaryGrade}/edit', [SalaryGradeController::class, 'edit'])->name('salary_grades.edit');
     Route::put('/salary_grades/{salaryGrade}', [SalaryGradeController::class, 'update'])->name('salary_grades.update');
+
+    Route::post('/salary_grades/bulk_update', [SalaryGradeController::class, 'bulkUpdate'])->name('salary_grades.bulk_update');
 
     //Payroll
     Route::post('/transactions', [TransactionController::class, 'store'])->name('PayrollSaved');
@@ -127,27 +135,6 @@ Route::middleware('auth')->group(function () {
 
 
 });
-
-Route::middleware(['auth', 'role:admin'])->group(function () {
-
-});
-
-Route::middleware(['auth', 'role:acc'])->group(function () {
-
-});
-
-Route::middleware(['auth', 'role:cashier'])->group(function () {
-
-});
-
-Route::middleware(['auth', 'role:hr'])->group(function () {
-
-});
-
-Route::middleware(['auth', 'role:employee'])->group(function () {
-
-});
-
 
 // for the User Profit
     Route::middleware('auth')->group(function () {

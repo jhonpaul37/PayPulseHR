@@ -25,7 +25,7 @@ class Employee extends Model
         'start_date',
         'employment_type',
         'salary_grade_id',
-        'roles',
+        'role',
         'termination_date',
         'termination_reason',
         'photo_url',

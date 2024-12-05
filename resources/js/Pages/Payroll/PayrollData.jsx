@@ -32,28 +32,28 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
         }));
 
         // "Loans Total" column
-        const loansTotalColumn = {
-            title: 'LOANS TOTAL',
-            render: (_, record) => {
-                const totalLoans = record.loans?.reduce(
-                    (sum, loan) => sum + (loan.remainingAmortization || 0),
-                    0
-                );
-                return <span className="font-semibold">{PhpFormat(totalLoans || 0)}</span>;
-            },
-            width: 150,
-            className: 'bg-yellow-400',
-        };
+        // const loansTotalColumn = {
+        //     title: 'LOANS TOTAL',
+        //     render: (_, record) => {
+        //         const totalLoans = record.loans?.reduce(
+        //             (sum, loan) => sum + (loan.remainingAmortization || 0),
+        //             0
+        //         );
+        //         return <span className="font-semibold">{PhpFormat(totalLoans || 0)}</span>;
+        //     },
+        //     width: 150,
+        //     className: 'bg-yellow-400',
+        // };
 
-        const PATVEColumn = {
-            title: 'PATVE CONT.',
-            render: (_, record) => {
-                const contribution = record.contributions?.find((c) => c.name === 'PATVE CONT.');
-                return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
-            },
-            width: 150,
-            className: 'bg-yellow-300',
-        };
+        // const PATVEColumn = {
+        //     title: 'PATVE CONT.',
+        //     render: (_, record) => {
+        //         const contribution = record.contributions?.find((c) => c.name === 'PATVE CONT.');
+        //         return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+        //     },
+        //     width: 150,
+        //     className: 'bg-yellow-300',
+        // };
 
         // Static columns
         const staticColumns = [
@@ -70,14 +70,14 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                 },
                 width: 200,
             },
-            {
-                title: 'DEPARTMENT',
-                render: (_, record) => {
-                    const { department } = record;
-                    return `${department || ''}`.trim();
-                },
-                width: 150,
-            },
+            // {
+            //     title: 'DEPARTMENT',
+            //     render: (_, record) => {
+            //         const { department } = record;
+            //         return `${department || ''}`.trim();
+            //     },
+            //     width: 150,
+            // },
             {
                 title: 'SG-STEP',
                 render: (_, record) => {
@@ -98,10 +98,6 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                 width: 150,
             },
             {
-                title: 'LWOP-Basic',
-                width: 150,
-            },
-            {
                 title: 'NET BASIC',
                 render: (_, record) => {
                     const monthlySalary = record.salary_grade?.monthly_salary || 0;
@@ -110,10 +106,6 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                 width: 150,
                 className: 'bg-yellow-400',
             },
-        ];
-
-        // Gross income
-        const BenefitColumns = [
             {
                 title: 'PERA',
                 render: (_, record) => {
@@ -121,6 +113,14 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                     return benefit ? PhpFormat(benefit.pivot.amount || 0) : '';
                 },
             },
+            // {
+            //     title: 'LWOP-Basic',
+            //     width: 150,
+            // },
+        ];
+
+        // Gross income
+        const BenefitColumns = [
             {
                 title: 'LWOP-PERA',
                 render: (_, record) => {
@@ -145,22 +145,22 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                 },
                 width: 150,
             },
-            {
-                title: 'SALARY DIFFERENTIAL',
-                render: (_, record) => {
-                    const benefit = record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL');
-                    return benefit ? PhpFormat(benefit.pivot.amount || 0) : ' ';
-                },
-                width: 150,
-            },
-            {
-                title: 'TOTAL',
-                render: (_, record) => (
-                    <span className="font-semibold">{PhpFormat(record.total_salary || 0)}</span>
-                ),
-                width: 150,
-                className: 'bg-yellow-400',
-            },
+            // {
+            //     title: 'SALARY DIFFERENTIAL',
+            //     render: (_, record) => {
+            //         const benefit = record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL');
+            //         return benefit ? PhpFormat(benefit.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'TOTAL',
+            //     render: (_, record) => (
+            //         <span className="font-semibold">{PhpFormat(record.total_salary || 0)}</span>
+            //     ),
+            //     width: 150,
+            //     className: 'bg-yellow-400',
+            // },
         ];
 
         // Deductions
@@ -197,26 +197,26 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                 },
                 width: 150,
             },
-            {
-                title: 'BIR GSIS PHIC HDMF TOTAL',
-                dataIndex: 'total_contributions',
-                render: PhpFormat,
-                width: 150,
-                className: 'bg-yellow-400',
-            },
+            // {
+            //     title: 'BIR GSIS PHIC HDMF TOTAL',
+            //     dataIndex: 'total_contributions',
+            //     render: PhpFormat,
+            //     width: 150,
+            //     className: 'bg-yellow-400',
+            // },
         ];
 
         // Total Deduction
-        const totalDeductionColumn = {
-            title: 'TOTAL DEDUCTION',
-            render: (_, record) => {
-                return (
-                    <span className="font-semibold">{PhpFormat(record.total_deductions || 0)}</span>
-                );
-            },
-            width: 200,
-            className: 'bg-orange-400 ',
-        };
+        // const totalDeductionColumn = {
+        //     title: 'TOTAL DEDUCTION',
+        //     render: (_, record) => {
+        //         return (
+        //             <span className="font-semibold">{PhpFormat(record.total_deductions || 0)}</span>
+        //         );
+        //     },
+        //     width: 200,
+        //     className: 'bg-orange-400 ',
+        // };
 
         // Net Amont
         const NetAmountColumn = {
@@ -228,24 +228,24 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
             // className: 'bg-red-400 ',
         };
 
-        const NetPay1To15Column = [
-            {
-                title: 'Net Pay 1-15',
-                render: (_, record) => {
-                    return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
-                },
-                width: 200,
-                className: 'bg-green-200',
-            },
-            {
-                title: 'Net Pay 16-30',
-                render: (_, record) => {
-                    return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
-                },
-                width: 200,
-                className: 'bg-green-300',
-            },
-        ];
+        // const NetPay1To15Column = [
+        //     {
+        //         title: 'Net Pay 1-15',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-200',
+        //     },
+        //     {
+        //         title: 'Net Pay 16-30',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-300',
+        //     },
+        // ];
 
         // Combine all columns
         setColumns([
@@ -253,11 +253,11 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
             ...BenefitColumns,
             ...ContributionColumns,
             ...loanColumns,
-            PATVEColumn,
-            loansTotalColumn,
-            totalDeductionColumn,
+            // PATVEColumn,
+            // loansTotalColumn,
+            // totalDeductionColumn,
             NetAmountColumn,
-            ...NetPay1To15Column,
+            // ...NetPay1To15Column,
         ]);
     }, [loanTypes, employee]);
 

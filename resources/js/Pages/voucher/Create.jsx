@@ -20,7 +20,6 @@ export default function Create({ uacsCodes, fundClusters, auth, employee, filEmp
         autoIncrement: '',
         amount: '',
         ApproveAmount: '',
-        particulars: '',
         address: '',
         payee: '',
         tin_no: '',

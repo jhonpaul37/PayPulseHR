@@ -32,7 +32,7 @@ class PayrollController extends Controller
 
 public function payrollData()
 {
-    // filter employee by classification
+    // filter employee classification
     $employees = Employee::with([
         'loans',
         'loans.payments',

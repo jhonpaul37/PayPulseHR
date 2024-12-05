@@ -65,4 +65,22 @@ class SalaryGradeController extends Controller
 
         return redirect()->route('salary_grades.index');
     }
+
+    public function bulkUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'updatedGrades' => 'required|array',
+            'updatedGrades.*.id' => 'required|exists:salary_grades,id',
+            'updatedGrades.*.monthly_salary' => 'required|numeric',
+        ]);
+
+        foreach ($validated['updatedGrades'] as $grade) {
+            SalaryGrade::where('id', $grade['id'])->update([
+                'monthly_salary' => $grade['monthly_salary'],
+            ]);
+        }
+
+        return redirect()->route('salary_grades.index')->with('success', 'Salaries updated successfully.');
+    }
+
 }
