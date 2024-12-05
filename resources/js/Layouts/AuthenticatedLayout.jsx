@@ -234,7 +234,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                     <div className="relative flex h-16 items-center justify-center bg-mainD">
                         {/* Display the logo only when collapsed */}
                         <img
-                            src="/images/PayPulseHR.png"
+                            src="/images/PayPulseHRWhite.png"
                             alt="PayPulseHR Logo"
                             className={`h-12 ${collapsed ? 'block' : 'block'}`}
                         />

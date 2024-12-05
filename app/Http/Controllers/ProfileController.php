@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Employee;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,9 +19,14 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        // Get the authenticated user's employee information
+        $employee = Employee::with('salaryGrade')->where('user_id', $request->user()->id)->first();
+
+        // Return the Inertia response with employee data
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'employee' => $employee, // Pass the employee data to the view
         ]);
     }
 
@@ -43,21 +49,21 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+    // public function destroy(Request $request): RedirectResponse
+    // {
+    //     $request->validate([
+    //         'password' => ['required', 'current_password'],
+    //     ]);
 
-        $user = $request->user();
+    //     $user = $request->user();
 
-        Auth::logout();
+    //     Auth::logout();
 
-        $user->delete();
+    //     $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    //     $request->session()->invalidate();
+    //     $request->session()->regenerateToken();
 
-        return Redirect::to('/');
-    }
+    //     return Redirect::to('/');
+    // }
 }
