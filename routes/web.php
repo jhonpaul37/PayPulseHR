@@ -51,25 +51,48 @@ Route::middleware('auth')->group(function () {
     Route::get('/fClusters', [VoucherController::class, 'fCluster']);
     Route::post('/voucher/{id}/complete', [VoucherController::class, 'complete'])->name('voucher.complete');
 
-    //HR
-    //Leave Management
-    Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
-    Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
+    // //HR
+    // //Leave Management
+    // Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
+    // Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
 
-    Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
-    Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
-    Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+    // Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
+    // Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
+    // Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
 
-    //Employee Records
-    Route::get('/employees', [EmployeeController::class, 'EmployeeList'])->name('employees.index');
-    Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
-    Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-    Route::get('/employees/{employee}', [EmployeeController::class, 'EmployeeInfo'])->name('employees.info');
-    Route::post('/employees/{id}/terminate', [EmployeeController::class, 'terminate'])->name('employees.terminate');
+    // //Employee Records
+    // Route::get('/employees', [EmployeeController::class, 'EmployeeList'])->name('employees.index');
+    // Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    // Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
+    // Route::get('/employees/{employee}', [EmployeeController::class, 'EmployeeInfo'])->name('employees.info');
+    // Route::post('/employees/{id}/terminate', [EmployeeController::class, 'terminate'])->name('employees.terminate');
 
-    Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
-    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    // Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+    // Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+        // TESTING FOR MIDDLEWARES NI ASSUME KO NA TO AS HR
+    Route::middleware(['hr'])->group(function () {
+        //HR
+        //Leave Management
+        Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
+        Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
+
+        Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
+        Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
+        Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+
+
+        //Employee Records
+        Route::get('/employees', [EmployeeController::class, 'EmployeeList'])->name('employees.index');
+        Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+        Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
+        Route::get('/employees/{employee}', [EmployeeController::class, 'EmployeeInfo'])->name('employees.info');
+        Route::post('/employees/{id}/terminate', [EmployeeController::class, 'terminate'])->name('employees.terminate');
+
+        Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+        Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    });
+
 
     //Employee Loans
     Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');

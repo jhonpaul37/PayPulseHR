@@ -46,6 +46,7 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         // 'role' => \App\Http\Middleware\EmployeeRoleMiddleware::class,
         'role' => EmployeeRoleMiddleware::class,
+        'hr' => \App\Http\Middleware\HRMiddleware::class,
 
 
     ];

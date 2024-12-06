@@ -176,13 +176,12 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                 </Form>
             </Modal>
 
-            <Divider style={{ borderColor: '#F0C519' }} className="pt-5" />
-
-            <div className="mb-6">
+            <div className="mb-6 flex justify-end">
                 <PrimaryButton type="primary" onClick={showModal}>
                     Add
                 </PrimaryButton>
             </div>
+            <Divider style={{ borderColor: '#F0C519' }} className="pt-5" />
 
             <div>
                 <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>

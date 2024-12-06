@@ -83,4 +83,17 @@ class Employee extends Model
                     ->withTimestamps();
     }
 
+        public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    public function hasAnyRole($roles)
+    {
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+        return $this->hasRole($roles);
+    }
+
 }
