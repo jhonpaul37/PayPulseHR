@@ -416,6 +416,21 @@ export default function NewEmployee({ auth, salaryGrades }) {
                                 />
                                 {errors.department && <div>{errors.department}</div>}
                             </div>
+                            <div className="flex flex-col">
+                                <label>Role</label>
+                                <select
+                                    value={data.role}
+                                    onChange={(e) => setData('role', e.target.value)}
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value="employee">Employee</option>
+                                    <option value="Accounting">Accounting</option>
+                                    <option value="Cashier">Cashier</option>
+                                    <option value="HR">HR</option>
+                                    <option value="SuperAdmin">SuperAdmin</option>
+                                </select>
+                                {errors.role && <div>{errors.role}</div>}
+                            </div>
                         </div>
                         <div className="pt-10">
                             <div className="pb-2">

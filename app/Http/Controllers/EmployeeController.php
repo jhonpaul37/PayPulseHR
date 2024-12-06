@@ -174,6 +174,7 @@ public function update(Request $request, Employee $employee)
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
             'salary_grade_id' => 'required|exists:salary_grades,id',
+            'role' => 'required|in:employee,Accounting,Cashier,HR,SuperAdmin',
             'termination_date' => 'nullable|date',
             'termination_reason' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
