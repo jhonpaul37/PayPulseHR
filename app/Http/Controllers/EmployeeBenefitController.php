@@ -24,47 +24,32 @@ class EmployeeBenefitController extends Controller
             'employeeBenefits' => $employeeBenefits,
         ]);
     }
-public function updateLWOPPera(Request $request)
+public function bulkUpdate(Request $request)
 {
-    // Validate the incoming request data
     $request->validate([
         'changes' => 'required|array',
         'changes.*.employee_id' => 'required|exists:employees,id',
-        'changes.*.lwop_pera' => 'required|numeric',
+        'changes.*.benefit_id' => 'required|exists:benefits,id',
+        'changes.*.amount' => 'required|numeric',
     ]);
 
-    // Get the updated LWOP-PERA values from the request
-    $changes = $request->input('changes', []);
-
-    // Find the LWOP-PERA benefit by its name
-    $lwopBenefit = Benefit::where('name', 'LWOP-PERA')->first();
-
-    if (!$lwopBenefit) {
-        return response()->json(['message' => 'LWOP-PERA benefit not found.'], 404);
-    }
-
-    // Update the employee benefit records
-    foreach ($changes as $change) {
+    foreach ($request->changes as $change) {
         $employeeBenefit = EmployeeBenefit::where('employee_id', $change['employee_id'])
-            ->where('benefit_id', $lwopBenefit->id)
+            ->where('benefit_id', $change['benefit_id'])
             ->first();
 
         if ($employeeBenefit) {
-            $employeeBenefit->update(['amount' => $change['lwop_pera']]);
+            $employeeBenefit->update(['amount' => $change['amount']]);
         } else {
             EmployeeBenefit::create([
                 'employee_id' => $change['employee_id'],
-                'benefit_id' => $lwopBenefit->id,
-                'amount' => $change['lwop_pera'],
+                'benefit_id' => $change['benefit_id'],
+                'amount' => $change['amount'],
             ]);
         }
     }
 
-    return Inertia::render('BenefitsDashboard', [
-        'message' => 'LWOP-PERA updated successfully!',
-        'employeeBenefits' => EmployeeBenefit::with('benefit')->get(),
-        'benefits' => Benefit::all(),
-    ]);
+    return redirect()->back()->with('success', 'Benefits updated successfully!');
 }
 
 
@@ -77,15 +62,33 @@ public function updateLWOPPera(Request $request)
             'amount' => 'required|numeric',
         ]);
 
+
+
+        $existing = [];
+        $created = [];
+
         foreach ($request->employee_ids as $employeeId) {
-            EmployeeBenefit::create([
-                'employee_id' => $employeeId,
-                'benefit_id' => $request->benefit_id,
-                'amount' => $request->amount,
-            ]);
+            $exists = EmployeeBenefit::where('employee_id', $employeeId)
+                ->where('benefit_id', $request->benefit_id)
+                ->exists();
+
+            if ($exists) {
+                $existing[] = $employeeId; // Track employees with existing benefits
+            } else {
+                EmployeeBenefit::create([
+                    'employee_id' => $employeeId,
+                    'benefit_id' => $request->benefit_id,
+                    'amount' => $request->amount,
+                ]);
+                $created[] = $employeeId; // successfully created benefits
+            }
         }
 
-        return redirect()->back()->with('success', 'Benefit assigned to employees successfully.');
+        return redirect()->back()->with([
+            'success' => count($created) > 0 ? 'Benefit assigned successfully!' : null,
+            'warning' => count($existing) > 0 ? 'Some employees already have this benefit.' : null,
+        ]);
     }
+
 
 }

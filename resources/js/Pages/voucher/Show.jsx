@@ -44,7 +44,7 @@ export default function Show({ voucher, auth, signatories }) {
                                 <div className="flex p-1">
                                     <span>DV No. </span>
                                     <span className="ml-5 text-center font-bold">
-                                        {voucher.div_num}
+                                        {/* {voucher.div_num} */}
                                     </span>
                                 </div>
                             </div>

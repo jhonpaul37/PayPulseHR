@@ -5,12 +5,11 @@ import {
     Table,
     Modal,
     Form,
-    Input,
     InputNumber,
     Select,
     Card,
     Empty,
-    message as antdMessage,
+    message,
     Divider,
 } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -31,41 +30,13 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
     const [editingBenefit, setEditingBenefit] = useState(null);
+    const [isEditing, setIsEditing] = useState(false); // Toggle edit mode
+    const [editedBenefits, setEditedBenefits] = useState([]); // Track changes during edit mode
     const [form] = Form.useForm();
     const [benefitForm] = Form.useForm();
 
     const showModal = () => setIsModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
-
-    const showBenefitModal = () => setIsBenefitModalOpen(true);
-    const handleBenefitCancel = () => {
-        setEditingBenefit(null);
-        setIsBenefitModalOpen(false);
-    };
-
-    const handleBenefitSubmit = async (values) => {
-        try {
-            if (editingBenefit) {
-                await Inertia.put(`/benefits/${editingBenefit.id}`, values);
-                antdMessage.success('Benefit updated successfully');
-            } else {
-                await Inertia.post(route('benefits.store'), values);
-                antdMessage.success('Benefit created successfully');
-            }
-            benefitForm.resetFields();
-            setEditingBenefit(null);
-            setIsBenefitModalOpen(false);
-        } catch (error) {
-            antdMessage.error('Failed to save benefit');
-        }
-    };
-
-    const handleSubmit = (values) => {
-        Inertia.post(route('employee_benefits.store'), values, {
-            onSuccess: () => form.resetFields(),
-        });
-        setIsModalOpen(false);
-    };
 
     const handleEditBenefit = (benefit) => {
         benefitForm.setFieldsValue(benefit);
@@ -73,43 +44,62 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
         setIsBenefitModalOpen(true);
     };
 
-    const [editedBenefits, setEditedBenefits] = useState([]);
-
     // LWOP-PERA change value
-    const handleLWOPChange = (employeeId, value) => {
+    const handleLWOPChange = (employeeId, benefitId, value) => {
         setEditedBenefits((prev) => {
             const updated = [...prev];
-            const index = updated.findIndex((item) => item.employee_id === employeeId);
+            const index = updated.findIndex(
+                (item) => item.employee_id === employeeId && item.benefit_id === benefitId
+            );
             if (index > -1) {
-                updated[index].lwop_pera = value;
+                updated[index].amount = value;
             } else {
-                updated.push({ employee_id: employeeId, lwop_pera: value });
+                updated.push({ employee_id: employeeId, benefit_id: benefitId, amount: value });
             }
             return updated;
         });
     };
 
-    useEffect(() => {
-        if (customMessage) {
-            antdMessage.success(customMessage);
-        }
-    }, [customMessage]);
+    const handleSubmit = (values) => {
+        Inertia.post(route('employee_benefits.store'), values, {
+            onSuccess: (page) => {
+                if (page.props.flash.warning) {
+                    message.warning(page.props.flash.warning); // Display warning message if exists
+                }
+                if (page.props.flash.success) {
+                    message.success(page.props.flash.success); // Display success message if exists
+                }
+                form.resetFields();
+            },
+            onError: () => {
+                message.error('Failed to assign benefits.'); // Display error message on failure
+            },
+        });
+        setIsModalOpen(false);
+    };
 
-    // Submit LWOP-PERA changes to the server
-    const submitLWOPChanges = () => {
+    const handleSave = () => {
+        const flatChanges = editedBenefits;
+
         Inertia.post(
-            route('update_lwop_pera'),
-            { changes: editedBenefits },
+            route('employee_benefits.bulkUpdate'),
+            { changes: flatChanges },
             {
                 onSuccess: () => {
-                    antdMessage.success('LWOP-PERA updated successfully!');
+                    message.success('Bulk benefits updated successfully!'); // Success notification
                     setEditedBenefits([]);
+                    setIsEditing(false); // Exit edit mode
                 },
                 onError: () => {
-                    antdMessage.error('Failed to update LWOP-PERA.');
+                    message.error('Failed to update benefits.'); // Error notification
                 },
             }
         );
+    };
+
+    const handleCancelEdit = () => {
+        setEditedBenefits([]); // Discard changes
+        setIsEditing(false); // Exit edit mode
     };
 
     return (
@@ -186,9 +176,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                 </Form>
             </Modal>
 
-            <Divider style={{ borderColor: '#F0C519' }} className="pt-5">
-                {/* <span className="text-xl font-bold">Loan Types</span> */}
-            </Divider>
+            <Divider style={{ borderColor: '#F0C519' }} className="pt-5" />
 
             <div className="mb-6">
                 <PrimaryButton type="primary" onClick={showModal}>
@@ -199,12 +187,11 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
             <div>
                 <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>
                 <Table
-                    dataSource={employees} // Data is based on employees
+                    dataSource={employees}
                     rowKey="id"
                     className="mt-4"
                     pagination={{ pageSize: 10 }}
                 >
-                    {/* Employee Column */}
                     <Table.Column
                         title="Employee"
                         render={(text, record) => (
@@ -213,8 +200,6 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                             </span>
                         )}
                     />
-
-                    {/* Dynamically Generate Benefit Columns */}
                     {benefits.map((benefit) => (
                         <Table.Column
                             key={benefit.id}
@@ -225,28 +210,33 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                                         eb.employee_id === record.id && eb.benefit_id === benefit.id
                                 );
 
-                                return <span>{employeeBenefit?.amount || '—'}</span>;
+                                return isEditing ? (
+                                    <InputNumber
+                                        defaultValue={employeeBenefit?.amount || 0}
+                                        onChange={(value) =>
+                                            handleLWOPChange(record.id, benefit.id, value)
+                                        }
+                                    />
+                                ) : (
+                                    <span>{employeeBenefit?.amount || 0}</span>
+                                );
                             }}
                         />
                     ))}
-
-                    {/* LWOP-PERA Column */}
-                    <Table.Column
-                        title="LWOP-PERA"
-                        render={(text, record) => (
-                            <InputNumber
-                                defaultValue={record.lwop_pera || 0}
-                                onChange={(value) => handleLWOPChange(record.id, value)}
-                            />
-                        )}
-                    />
                 </Table>
-
-                {/* Submit Button for LWOP-PERA Changes */}
-                <div className="mt-6 flex justify-end">
-                    <PrimaryButton type="primary" onClick={submitLWOPChanges}>
-                        Submit LWOP-PERA Changes
-                    </PrimaryButton>
+                <div className="mt-6 flex justify-end gap-2">
+                    {isEditing ? (
+                        <>
+                            <PrimaryButton type="primary" onClick={handleSave}>
+                                Save
+                            </PrimaryButton>
+                            <Button onClick={handleCancelEdit}>Cancel</Button>
+                        </>
+                    ) : (
+                        <PrimaryButton type="primary" onClick={() => setIsEditing(true)}>
+                            Edit
+                        </PrimaryButton>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

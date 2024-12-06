@@ -92,7 +92,8 @@ public function store(Request $request)
 
     // Add the generated code and default div_num to the fields
     $fields['jev_no'] = $code;
-    $fields['div_num'] = $fields['div_num'] ?? '0123';
+    //defualt value
+    $fields['div_num'] = $fields['div_num'] ?? '0000';
 
     // Set the currently logged-in user's employee ID as `prepared_by`
     $employee = Employee::where('user_id', $user->id)->first();
@@ -152,5 +153,21 @@ public function show($id)
         $fundClusters = FundCluster::all();
         return response()->json($fundClusters);
     }
+
+public function complete(Request $request, $id)
+{
+    $request->validate([
+        'div_num' => 'required|string',
+    ]);
+
+    // Find the voucher by ID
+    $voucher = Voucher::findOrFail($id);
+
+    // Update the voucher with the div_num
+    $voucher->div_num = $request->div_num;
+    $voucher->save();
+
+    return redirect()->route('voucher.index')->with('success', 'Transaction completed successfully!');
+}
 
 }

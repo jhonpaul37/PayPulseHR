@@ -113,10 +113,10 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                     return benefit ? PhpFormat(benefit.pivot.amount || 0) : '';
                 },
             },
-            {
-                title: 'LWOP-Basic',
-                width: 150,
-            },
+            // {
+            //     title: 'LWOP-Basic',
+            //     width: 150,
+            // },
         ];
 
         // Gross income

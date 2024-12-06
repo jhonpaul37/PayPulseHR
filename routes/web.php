@@ -20,6 +20,8 @@ use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\RolesAndPermissionController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,8 +32,6 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
-
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboards', [HomeController::class, 'landingPage'])->name('dashboards');
@@ -44,12 +44,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('/voucher',VoucherController::class);
-    Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add')->middleware('permission:Voucher');
+    Route::get('/voucher/{voucher}', [VoucherController::class, 'show'])->name('voucher.show');
+    Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add');
+    // Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add')->middleware('permission:Voucher');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
     Route::get('/fClusters', [VoucherController::class, 'fCluster']);
-
-Route::get('/add-permission', [RolesAndPermissionController::class, 'addPermission']);
-Route::get('/RolesAndPermission', [RolesAndPermissionController::class, 'index']);
+    Route::post('/voucher/{id}/complete', [VoucherController::class, 'complete'])->name('voucher.complete');
 
     //HR
     //Leave Management
@@ -122,7 +122,7 @@ Route::get('/RolesAndPermission', [RolesAndPermissionController::class, 'index']
     Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
     // Route::post('/employee_benefits', [EmployeeBenefitController::class, 'submitLWOP'])->name('employee_benefits.store');
 
-    Route::post('/employee-benefits/update-lwop-pera', [EmployeeBenefitController::class, 'updateLWOPPera'])->name('update_lwop_pera');
+    Route::post('/employee-benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
 
     Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
 
