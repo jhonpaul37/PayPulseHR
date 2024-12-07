@@ -176,7 +176,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                 </Form>
             </Modal>
 
-            <div className="mb-6 flex justify-end">
+            <div className="mb-6 flex">
                 <PrimaryButton type="primary" onClick={showModal}>
                     Add
                 </PrimaryButton>
@@ -185,6 +185,20 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
 
             <div>
                 <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>
+                <div className="mt-6 flex gap-2">
+                    {isEditing ? (
+                        <>
+                            <PrimaryButton type="primary" onClick={handleSave}>
+                                Save
+                            </PrimaryButton>
+                            <Button onClick={handleCancelEdit}>Cancel</Button>
+                        </>
+                    ) : (
+                        <PrimaryButton type="primary" onClick={() => setIsEditing(true)}>
+                            Edit
+                        </PrimaryButton>
+                    )}
+                </div>
                 <Table
                     dataSource={employees}
                     rowKey="id"
@@ -223,20 +237,6 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                         />
                     ))}
                 </Table>
-                <div className="mt-6 flex justify-end gap-2">
-                    {isEditing ? (
-                        <>
-                            <PrimaryButton type="primary" onClick={handleSave}>
-                                Save
-                            </PrimaryButton>
-                            <Button onClick={handleCancelEdit}>Cancel</Button>
-                        </>
-                    ) : (
-                        <PrimaryButton type="primary" onClick={() => setIsEditing(true)}>
-                            Edit
-                        </PrimaryButton>
-                    )}
-                </div>
             </div>
         </AuthenticatedLayout>
     );

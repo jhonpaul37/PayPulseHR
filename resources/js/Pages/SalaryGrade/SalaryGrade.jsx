@@ -1,22 +1,41 @@
 import React, { useState } from 'react';
-import { Table, InputNumber, Button, Space, Pagination, Row, Col } from 'antd';
+import {
+    Table,
+    InputNumber,
+    Modal,
+    Row,
+    Col,
+    Input,
+    Space,
+    Pagination,
+    Button,
+    message,
+} from 'antd';
 import { Inertia } from '@inertiajs/inertia';
+import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-const BulkEdit = ({ salaryGrades, auth }) => {
-    // Group salary grades by grade
+const SalaryGradeManager = ({ salaryGrades, auth }) => {
+    // State for managing salary grades
     const grades = salaryGrades.reduce((acc, grade) => {
         acc[grade.grade] = acc[grade.grade] || [];
         acc[grade.grade].push(grade);
         return acc;
     }, {});
+    const gradeKeys = Object.keys(grades);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [editableGrades, setEditableGrades] = useState(grades);
+    const [originalGrades, setOriginalGrades] = useState(grades);
+    const [isEditMode, setIsEditMode] = useState(false);
 
-    const gradeKeys = Object.keys(grades); // Get unique grades
-    const [currentPage, setCurrentPage] = useState(1); // Current page state
-    const [editableGrades, setEditableGrades] = useState(grades); // State to store edited grades
-    const [originalGrades, setOriginalGrades] = useState(grades); // State to store original grades for cancel
-    const [isEditMode, setIsEditMode] = useState(false); // Tracks whether we are in edit mode
+    // State for adding a new salary grade
+    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+    const [newGrade, setNewGrade] = useState('');
+    const [steps, setSteps] = useState(
+        Array.from({ length: 8 }, (_, i) => ({ step: i + 1, monthly_salary: '' }))
+    );
 
+    // Bulk edit functions
     const handleSalaryChange = (grade, step, value) => {
         setEditableGrades((prev) => ({
             ...prev,
@@ -27,13 +46,13 @@ const BulkEdit = ({ salaryGrades, auth }) => {
     };
 
     const handleEdit = () => {
-        setIsEditMode(true); // Enter edit mode
-        setOriginalGrades(editableGrades); // Save the current state to allow canceling
+        setIsEditMode(true);
+        setOriginalGrades(editableGrades);
     };
 
     const handleCancel = () => {
-        setEditableGrades(originalGrades); // Restore the original state
-        setIsEditMode(false); // Exit edit mode
+        setEditableGrades(originalGrades);
+        setIsEditMode(false);
     };
 
     const handleSave = () => {
@@ -44,7 +63,7 @@ const BulkEdit = ({ salaryGrades, auth }) => {
             {
                 onSuccess: () => {
                     message.success('Salaries updated successfully');
-                    setIsEditMode(false); // Exit edit mode after saving
+                    setIsEditMode(false);
                 },
                 onError: () => {
                     message.error('Failed to update salaries');
@@ -53,6 +72,53 @@ const BulkEdit = ({ salaryGrades, auth }) => {
         );
     };
 
+    // Add a new salary grade
+    const handleNewGradeSave = () => {
+        if (!newGrade) {
+            message.error('Please enter a salary grade.');
+            return;
+        }
+
+        const data = { grade: newGrade, steps };
+        Inertia.post('/salary_grades/check_and_add', data, {
+            onSuccess: () => {
+                message.success('Salary grade added successfully!');
+                setIsAddModalVisible(false);
+                setSteps(
+                    Array.from({ length: 8 }, (_, i) => ({ step: i + 1, monthly_salary: '' }))
+                );
+                setNewGrade('');
+            },
+            onError: (errors) => {
+                if (errors.grade) {
+                    message.error(errors.grade);
+                } else {
+                    message.error('Failed to add salary grade.');
+                }
+            },
+        });
+    };
+
+    const handleNewSalaryChange = (step, value) => {
+        setSteps((prev) =>
+            prev.map((row) => (row.step === step ? { ...row, monthly_salary: value } : row))
+        );
+    };
+
+    const addRow = () => {
+        const newStep = steps.length + 1;
+        setSteps([...steps, { step: newStep, monthly_salary: '' }]);
+    };
+
+    const removeRow = (step) => {
+        setSteps(steps.filter((row) => row.step !== step));
+    };
+
+    // Pagination for bulk edit
+    const pageSize = 3;
+    const currentGrades = gradeKeys.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    // Table columns
     const columns = [
         {
             title: 'Step',
@@ -63,8 +129,8 @@ const BulkEdit = ({ salaryGrades, auth }) => {
             title: 'Monthly Salary',
             dataIndex: 'monthly_salary',
             key: 'monthly_salary',
-            render: (text, record) => {
-                return isEditMode ? (
+            render: (text, record) =>
+                isEditMode ? (
                     <InputNumber
                         value={record.monthly_salary}
                         onChange={(value) => handleSalaryChange(record.grade, record.step, value)}
@@ -72,32 +138,37 @@ const BulkEdit = ({ salaryGrades, auth }) => {
                         parser={(value) => value.replace('₱', '')}
                     />
                 ) : (
-                    `₱${record.monthly_salary}` // Display as text when not in edit mode
-                );
-            },
+                    `₱${record.monthly_salary}`
+                ),
         },
     ];
-
-    const pageSize = 3; // Number of grades per page
-    const currentGrades = gradeKeys.slice((currentPage - 1) * pageSize, currentPage * pageSize); // Get the grades for the current page
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="container mx-auto p-6">
-                <h2 className="flex justify-center pb-4 text-xl font-bold">Salary Grade</h2>
-                <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-center text-xl font-bold">Salary Grade Manager</h2>
+
+                <div className="mb-6 flex justify-between">
                     <Space>
                         {isEditMode ? (
                             <>
-                                <Button type="primary" onClick={handleSave}>
+                                <PrimaryButton type="primary" onClick={handleSave}>
                                     Save Changes
-                                </Button>
+                                </PrimaryButton>
                                 <Button onClick={handleCancel}>Cancel</Button>
                             </>
                         ) : (
-                            <Button type="primary" onClick={handleEdit}>
-                                Edit
-                            </Button>
+                            <>
+                                <PrimaryButton type="primary" onClick={handleEdit}>
+                                    Edit
+                                </PrimaryButton>
+                                <PrimaryButton
+                                    type="primary"
+                                    onClick={() => setIsAddModalVisible(true)}
+                                >
+                                    Add Salary Grade
+                                </PrimaryButton>
+                            </>
                         )}
                     </Space>
                     <Pagination
@@ -108,6 +179,7 @@ const BulkEdit = ({ salaryGrades, auth }) => {
                         showSizeChanger={false}
                     />
                 </div>
+
                 <Row gutter={[16, 16]}>
                     {currentGrades.map((grade) => (
                         <Col span={8} key={grade}>
@@ -125,9 +197,89 @@ const BulkEdit = ({ salaryGrades, auth }) => {
                         </Col>
                     ))}
                 </Row>
+
+                {/* Modal for Adding a New Salary Grade */}
+                <Modal
+                    title="Add Salary Grade"
+                    open={isAddModalVisible}
+                    onOk={handleNewGradeSave}
+                    onCancel={() => setIsAddModalVisible(false)}
+                    okText="Save"
+                    cancelText="Cancel"
+                    footer={[
+                        <Button
+                            key="cancel"
+                            onClick={() => setIsAddModalVisible(false)}
+                            style={{ marginRight: '8px' }}
+                        >
+                            Cancel
+                        </Button>,
+                        <PrimaryButton
+                            key="save"
+                            type="primary"
+                            onClick={handleNewGradeSave}
+                            style={{ marginLeft: '8px' }}
+                        >
+                            Save
+                        </PrimaryButton>,
+                    ]}
+                >
+                    <Row gutter={[16, 16]} className="mb-4">
+                        <Col span={8}>
+                            <Input
+                                placeholder="Grade"
+                                value={newGrade}
+                                onChange={(e) => setNewGrade(e.target.value)}
+                            />
+                        </Col>
+                    </Row>
+                    <Table
+                        dataSource={steps}
+                        columns={[
+                            {
+                                title: 'Step',
+                                dataIndex: 'step',
+                                key: 'step',
+                            },
+                            {
+                                title: 'Monthly Salary',
+                                dataIndex: 'monthly_salary',
+                                key: 'monthly_salary',
+                                render: (text, record) => (
+                                    <InputNumber
+                                        value={record.monthly_salary}
+                                        onChange={(value) =>
+                                            handleNewSalaryChange(record.step, value)
+                                        }
+                                        formatter={(value) => `₱${value}`}
+                                        parser={(value) => value.replace('₱', '')}
+                                    />
+                                ),
+                            },
+                            {
+                                title: 'Action',
+                                key: 'action',
+                                render: (_, record) => (
+                                    <Button
+                                        danger
+                                        onClick={() => removeRow(record.step)}
+                                        disabled={steps.length <= 1}
+                                    >
+                                        Remove
+                                    </Button>
+                                ),
+                            },
+                        ]}
+                        rowKey="step"
+                        pagination={false}
+                    />
+                    <PrimaryButton type="dashed" onClick={addRow} className="mt-4">
+                        Add Step
+                    </PrimaryButton>
+                </Modal>
             </div>
         </AuthenticatedLayout>
     );
 };
 
-export default BulkEdit;
+export default SalaryGradeManager;

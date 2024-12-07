@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
+import PrimaryButton from '@/Components/PrimaryButton';
 import { Divider, Card, Button, Empty, message, Modal, Form, Input, Select, Table } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
@@ -107,9 +108,6 @@ export default function ContributionsIndex({
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>
-                <Button type="primary" onClick={showModal} style={{ marginBottom: '16px' }}>
-                    Add Deduction
-                </Button>
                 <Modal
                     title="Add Deduction"
                     open={isModalVisible}
@@ -117,6 +115,19 @@ export default function ContributionsIndex({
                     onCancel={handleCancel}
                     okText="Save"
                     cancelText="Cancel"
+                    footer={[
+                        <Button key="cancel" onClick={handleCancel} style={{ marginRight: '8px' }}>
+                            Cancel
+                        </Button>,
+                        <PrimaryButton
+                            key="save"
+                            type="primary"
+                            onClick={handleOk}
+                            style={{ marginLeft: '8px' }}
+                        >
+                            Save
+                        </PrimaryButton>,
+                    ]}
                 >
                     <Form
                         form={form}
@@ -217,6 +228,9 @@ export default function ContributionsIndex({
                     />
                 )}
                 <Divider style={{ borderColor: '#F0C519' }}> Employee Deduction</Divider>
+                <PrimaryButton type="primary" onClick={showModal} style={{ marginBottom: '16px' }}>
+                    Add Deduction
+                </PrimaryButton>
 
                 {/* Employee Dedcution/Contribution list */}
                 {employeeContribution && employeeContribution.length > 0 ? (

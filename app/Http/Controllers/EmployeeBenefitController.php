@@ -24,35 +24,33 @@ class EmployeeBenefitController extends Controller
             'employeeBenefits' => $employeeBenefits,
         ]);
     }
-public function bulkUpdate(Request $request)
-{
-    $request->validate([
-        'changes' => 'required|array',
-        'changes.*.employee_id' => 'required|exists:employees,id',
-        'changes.*.benefit_id' => 'required|exists:benefits,id',
-        'changes.*.amount' => 'required|numeric',
-    ]);
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'changes' => 'required|array',
+            'changes.*.employee_id' => 'required|exists:employees,id',
+            'changes.*.benefit_id' => 'required|exists:benefits,id',
+            'changes.*.amount' => 'required|numeric',
+        ]);
 
-    foreach ($request->changes as $change) {
-        $employeeBenefit = EmployeeBenefit::where('employee_id', $change['employee_id'])
-            ->where('benefit_id', $change['benefit_id'])
-            ->first();
+        foreach ($request->changes as $change) {
+            $employeeBenefit = EmployeeBenefit::where('employee_id', $change['employee_id'])
+                ->where('benefit_id', $change['benefit_id'])
+                ->first();
 
-        if ($employeeBenefit) {
-            $employeeBenefit->update(['amount' => $change['amount']]);
-        } else {
-            EmployeeBenefit::create([
-                'employee_id' => $change['employee_id'],
-                'benefit_id' => $change['benefit_id'],
-                'amount' => $change['amount'],
-            ]);
+            if ($employeeBenefit) {
+                $employeeBenefit->update(['amount' => $change['amount']]);
+            } else {
+                EmployeeBenefit::create([
+                    'employee_id' => $change['employee_id'],
+                    'benefit_id' => $change['benefit_id'],
+                    'amount' => $change['amount'],
+                ]);
+            }
         }
+
+        return redirect()->back()->with('success', 'Benefits updated successfully!');
     }
-
-    return redirect()->back()->with('success', 'Benefits updated successfully!');
-}
-
-
 
     public function store(Request $request)
     {

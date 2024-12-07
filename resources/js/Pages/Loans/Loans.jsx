@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { FloatButton as Btn, Divider, Modal, Table } from 'antd';
+import { Inertia } from '@inertiajs/inertia';
+import { FloatButton as Btn, Divider, Modal, Table, Drawer, Button, Form, InputNumber } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -20,37 +21,74 @@ const FloatButton = styled(Btn)`
     right: 100px;
 `;
 
-const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeLoan = [] }) => {
+const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedLoan, setSelectedLoan] = useState(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [activeLoans, setActiveLoans] = useState([]);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Modal for editing loan
 
-    // open the modal for adding employee loan
+    // Open the modal for adding employee loan
     const showModal = () => {
         setIsModalOpen(true);
     };
 
-    //  close the modal for adding employee loan
+    // Close the modal for adding employee loan
     const handleCancel = () => {
         setIsModalOpen(false);
     };
 
-    //  show loan details
+    // Show loan details
     const showLoanDetails = (loan) => {
         setSelectedLoan(loan);
         setIsDetailModalOpen(true);
     };
 
-    // close the loan detail modal
+    // Close loan detail modal
     const handleDetailCancel = () => {
         setIsDetailModalOpen(false);
         setSelectedLoan(null);
     };
 
-    // Date formatting
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
+    // Open Sidebar and show active loans for an employee
+    const openSidebar = (employee) => {
+        const activeLoansForEmployee = employeeLoan.filter(
+            (loan) =>
+                loan.employee?.id === employee.id &&
+                loan.amount >
+                    loan.payments.reduce((acc, payment) => acc + parseFloat(payment.amount), 0)
+        );
+
+        setActiveLoans(activeLoansForEmployee);
+        setIsSidebarOpen(true);
+    };
+
+    // Close Sidebar
+    const closeSidebar = () => {
+        setIsSidebarOpen(false);
+        setActiveLoans([]);
+    };
+
+    // Open Edit Modal
+    const openEditModal = (loan) => {
+        setSelectedLoan(loan);
+        setIsEditModalOpen(true);
+    };
+
+    // Close Edit Modal
+    const closeEditModal = () => {
+        setSelectedLoan(null);
+        setIsEditModalOpen(false);
+    };
+
+    const handleEditSubmit = (values) => {
+        // Send updated loan data to the backend
+        Inertia.put(route('employee_loans.update', selectedLoan.id), values, {
+            onSuccess: () => {
+                closeEditModal();
+            },
+        });
     };
 
     return (
@@ -97,7 +135,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                 />
             </Modal>
 
-            {/* Loan Detail */}
+            {/* Loan Detail Modal */}
             <Modal
                 title="Employee Loan Details"
                 open={isDetailModalOpen}
@@ -108,29 +146,27 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                     <EmployeeLoanDetail
                         employeeLoan={selectedLoan}
                         payments={selectedLoan.payments || []}
+                        s
                     />
                 )}
             </Modal>
 
-            {/*  Unpaid Loans */}
+            {/* Unpaid Loans Table */}
             <Table
                 dataSource={employees
                     .map((employee) => {
-                        // Filter loans for the current employee
                         const loansForEmployee = employeeLoan.filter(
                             (loan) =>
-                                loan.employee?.id === employee.id && // Match the employee
+                                loan.employee?.id === employee.id &&
                                 loan.amount >
                                     loan.payments.reduce(
                                         (acc, payment) => acc + parseFloat(payment.amount),
                                         0
-                                    ) // Exclude fully paid loans
+                                    )
                         );
 
-                        // If the employee has no loans, exclude them
                         if (loansForEmployee.length === 0) return null;
 
-                        // Group loans by type or ID
                         const loansByType = {};
                         loansForEmployee.forEach((loan) => {
                             const totalPaid = loan.payments.reduce(
@@ -139,7 +175,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                             );
                             const remainingBalance = loan.amount - totalPaid;
                             const monthlyAmortization =
-                                loan.monthly_amortization || (loan.amount / 12).toFixed(2); // Example calculation if amortization isn't provided
+                                loan.monthly_amortization || (loan.amount / 12).toFixed(2);
 
                             loansByType[loan.loan_type?.type || `Loan ${loan.id}`] = {
                                 remainingBalance,
@@ -148,10 +184,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                                     <div>
                                         <span className="text-primary font-bold">
                                             ₱{parseFloat(monthlyAmortization).toLocaleString()}
-                                        </span>
-                                        <br />
-                                        <span className="text-gray-500">
-                                            Remaining Balance: ₱{remainingBalance.toLocaleString()}
                                         </span>
                                     </div>
                                 ),
@@ -165,9 +197,10 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                                 acc[loanType] = loansByType[loanType].display;
                                 return acc;
                             }, {}),
+                            employee, // Add employee data for row click
                         };
                     })
-                    .filter((entry) => entry !== null)} // Remove employees without loans
+                    .filter((entry) => entry !== null)}
                 columns={[
                     {
                         title: 'Employee',
@@ -175,7 +208,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                         key: 'employee_name',
                         fixed: 'left',
                     },
-                    // Dynamically generate columns for each loan type
                     ...Array.from(
                         new Set(
                             employeeLoan.map((loan) => loan.loan_type?.type || `Loan ${loan.id}`)
@@ -184,12 +216,138 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, loans = [], employeeL
                         title: loanType,
                         dataIndex: loanType,
                         key: loanType,
-                        render: (value) => value || '----', // Default for no loan
+                        render: (value) => value || '----',
                     })),
                 ]}
                 pagination={false}
                 scroll={{ x: 'max-content' }}
+                onRow={(record) => ({
+                    onClick: () => openSidebar(record.employee),
+                })}
             />
+
+            {/* Sidebar for Active Loans */}
+            <Drawer
+                title="Active Loans"
+                placement="right"
+                width={400}
+                onClose={closeSidebar}
+                open={isSidebarOpen}
+            >
+                {activeLoans.map((loan) => (
+                    <div key={loan.id} className="mb-4">
+                        <h3 className="font-bold">{loan.loan_type?.type || `Loan ${loan.id}`}</h3>
+                        <p>Amount: ₱{loan.amount.toLocaleString()}</p>
+                        <p>
+                            Remaining Balance: ₱
+                            {loan.amount -
+                                loan.payments.reduce((acc, p) => acc + parseFloat(p.amount), 0)}
+                        </p>
+                        <p>Monthly Amortization: ₱{loan.monthly_amortization?.toLocaleString()}</p>
+                        <div className="flex justify-end py-2">
+                            <PrimaryButton type="primary" onClick={() => openEditModal(loan)}>
+                                Edit
+                            </PrimaryButton>
+                        </div>
+                        <Divider />
+                    </div>
+                ))}
+            </Drawer>
+
+            {/* Edit Loan Modal */}
+            <Modal title="Edit Loan" open={isEditModalOpen} onCancel={closeEditModal} footer={null}>
+                {selectedLoan && (
+                    <Form
+                        initialValues={{
+                            amount: selectedLoan.amount,
+                            loan_date: selectedLoan.loan_date,
+                            interest_rate: selectedLoan.interest_rate,
+                            months: selectedLoan.months,
+                            monthly_amortization: selectedLoan.monthly_amortization,
+                        }}
+                        onFinish={handleEditSubmit}
+                    >
+                        {/* Display Total Paid (including Interest) */}
+                        <div style={{ marginBottom: '16px' }}>
+                            <strong>Total Paid: </strong> ₱
+                            {selectedLoan.payments
+                                .reduce((acc, payment) => acc + parseFloat(payment.amount), 0)
+                                .toLocaleString()}
+                        </div>
+
+                        {/* Display Total Loan Amount with Interest */}
+                        <div style={{ marginBottom: '16px' }}>
+                            <strong>Total Loan Amount with Interest: </strong> ₱
+                            {(
+                                selectedLoan.amount +
+                                selectedLoan.amount * (selectedLoan.interest_rate / 100)
+                            ).toLocaleString()}
+                        </div>
+
+                        {/* Display Remaining Balance */}
+                        <div style={{ marginBottom: '16px' }}>
+                            <strong>Remaining Balance: </strong> ₱
+                            {(
+                                selectedLoan.amount +
+                                selectedLoan.amount * (selectedLoan.interest_rate / 100) -
+                                selectedLoan.payments.reduce(
+                                    (acc, payment) => acc + parseFloat(payment.amount),
+                                    0
+                                )
+                            ).toLocaleString()}
+                        </div>
+
+                        {/* Loan Amount Input */}
+                        <Form.Item
+                            name="amount"
+                            label="Amount"
+                            rules={[{ required: true, message: 'Please input the loan amount!' }]}
+                        >
+                            <InputNumber min={0} style={{ width: '100%' }} />
+                        </Form.Item>
+
+                        {/* Interest Rate Input */}
+                        <Form.Item
+                            name="interest_rate"
+                            label="Interest Rate (%)"
+                            rules={[{ required: true, message: 'Please input the interest rate!' }]}
+                        >
+                            <InputNumber min={0} style={{ width: '100%' }} />
+                        </Form.Item>
+
+                        {/* Months Input */}
+                        <Form.Item
+                            name="months"
+                            label="Months"
+                            rules={[
+                                { required: true, message: 'Please input the number of months!' },
+                            ]}
+                        >
+                            <InputNumber min={1} style={{ width: '100%' }} />
+                        </Form.Item>
+
+                        {/* Monthly Amortization Input */}
+                        <Form.Item
+                            name="monthly_amortization"
+                            label="Monthly Amortization"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input the monthly amortization!',
+                                },
+                            ]}
+                        >
+                            <InputNumber min={0} style={{ width: '100%' }} />
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                Save Changes
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                )}
+            </Modal>
         </AuthenticatedLayout>
     );
 };

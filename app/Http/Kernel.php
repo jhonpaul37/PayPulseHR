@@ -47,6 +47,10 @@ class Kernel extends HttpKernel
         // 'role' => \App\Http\Middleware\EmployeeRoleMiddleware::class,
         'role' => EmployeeRoleMiddleware::class,
         'hr' => \App\Http\Middleware\HRMiddleware::class,
+        'employee' => \App\Http\Middleware\EmployeeMiddleware::class,
+        'SuperAdmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+        'cashier' => \App\Http\Middleware\CashierMiddleware::class,
+        'accounting' => \App\Http\Middleware\AccoutingMiddleware::class,
 
 
     ];

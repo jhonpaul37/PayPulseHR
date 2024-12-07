@@ -20,7 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'hr' => \App\Http\Middleware\HRMiddleware::class,
-            // Add any other custom middleware you need
+            'employee' => \App\Http\Middleware\EmployeeMiddleware::class,
+            'SuperAdmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+            'accounting' => \App\Http\Middleware\AccoutingMiddleware::class,
+            'cashier' => \App\Http\Middleware\CashierMiddleware::class,
         ]);
 
         $middleware->web(append: [

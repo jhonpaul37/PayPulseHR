@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class SalaryGradeController extends Controller
 {
-    // Display all salary grades
     public function index()
     {
         $salaryGrades = SalaryGrade::all();
@@ -18,52 +17,25 @@ class SalaryGradeController extends Controller
         ]);
     }
 
-    // Create a new salary grade
-    public function create()
-    {
-        return inertia('SalaryGrade/SalaryGradeCreate');
-    }
-
-    // Store a new salary grade
-    public function store(Request $request)
-    {
-        // Validate the input
-        $request->validate([
-            'grade' => 'required|integer',
-            'step' => 'required|integer',
-            'monthly_salary' => 'required|numeric',
-        ]);
-
-        // Create a new salary grade with only the validated data
-        SalaryGrade::create([
-            'grade' => $request->grade,
-            'step' => $request->step,
-            'monthly_salary' => $request->monthly_salary,
-        ]);
-
-        return redirect()->route('salary_grades.index');
-    }
-
-    // Edit an existing salary grade
-    public function edit(SalaryGrade $salaryGrade)
-    {
-        return inertia('SalaryGrade/SalaryGradeEdit', [
-            'salaryGrade' => $salaryGrade,
-        ]);
-    }
-
-    // Update an existing salary grade
-    public function update(Request $request, SalaryGrade $salaryGrade)
+    public function check_and_add(Request $request)
     {
         $request->validate([
-            'grade' => 'required|integer',
-            'step' => 'required|integer',
-            'monthly_salary' => 'required|numeric',
+            'grade' => 'required|integer|unique:salary_grades,grade',
+            'steps' => 'required|array|min:1',
+            'steps.*.step' => 'required|integer',
+            'steps.*.monthly_salary' => 'required|numeric|min:0',
         ]);
 
-        $salaryGrade->update($request->all());
+        // Create the salary grade and its steps
+        foreach ($request->steps as $stepData) {
+            SalaryGrade::create([
+                'grade' => $request->grade,
+                'step' => $stepData['step'],
+                'monthly_salary' => $stepData['monthly_salary'],
+            ]);
+        }
 
-        return redirect()->route('salary_grades.index');
+        return redirect()->back()->with('success', 'Salary grade added successfully!');
     }
 
     public function bulkUpdate(Request $request)

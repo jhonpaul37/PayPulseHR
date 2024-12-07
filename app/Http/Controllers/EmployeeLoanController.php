@@ -104,4 +104,41 @@ class EmployeeLoanController extends Controller
         ]);
     }
 
+    // Display the edit form
+    public function edit(EmployeeLoan $employeeLoan)
+    {
+        $employeeLoan->load(['employee', 'loanType']);
+        $loanTypes = LoanType::all(); // Assuming you want to allow changing the loan type
+
+        return inertia('Loans/EditEmployeeLoan', [
+            'employeeLoan' => $employeeLoan,
+            'loanTypes' => $loanTypes,
+        ]);
+    }
+
+    // Update the loan details
+    public function update(Request $request, EmployeeLoan $employeeLoan)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'loan_date' => 'required|date',
+            'interest_rate' => 'required|numeric|min:0',
+            'months' => 'required|integer|min:1',
+            'monthly_amortization' => 'required|numeric|min:0',
+        ]);
+
+        $monthlyAmortization = $this->calculateAmortization($request->amount, $request->interest_rate, $request->months);
+
+        $employeeLoan->update([
+            'amount' => $request->amount,
+            'loan_date' => $request->loan_date,
+            'interest_rate' => $request->interest_rate,
+            'months' => $request->months,
+            'monthly_amortization' => $monthlyAmortization,
+        ]);
+
+        return redirect()->route('loan.details', $employeeLoan->id)
+            ->with('success', 'Loan updated successfully.');
+    }
+
 }
