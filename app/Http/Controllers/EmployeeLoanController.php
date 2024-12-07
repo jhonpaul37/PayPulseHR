@@ -22,33 +22,41 @@ class EmployeeLoanController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
+public function store(Request $request)
+{
+    $request->validate([
+        'employee_id' => 'required|exists:employees,id',
+        'loan_type_id' => 'required|exists:loans_types,id',
+        'amount' => 'required|numeric|min:0',
+        'loan_date' => 'required|date',
+        'interest_rate' => 'required|numeric|min:0',
+        'months' => 'required|integer|min:1',
+        'monthly_amortization' => 'required|numeric|min:0',
+    ]);
 
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'loan_type_id' => 'required|exists:loans_types,id',
-            'amount' => 'required|numeric|min:0',
-            'loan_date' => 'required|date',
-            'interest_rate' => 'required|numeric|min:0',
-            'months' => 'required|integer|min:1',
-            'monthly_amortization' => 'required|numeric|min:0',
-        ]);
+    // Calculate total paid using the simple interest formula: A = P(1 + rt)
+    $principal = $request->amount;
+    $rate = $request->interest_rate / 100; // Convert percentage to decimal
+    $time = $request->months / 12; // Convert months to years
+    $totalPaid = $principal * (1 + ($rate * $time));
 
-        $monthlyAmortization = $this->calculateAmortization($request->amount, $request->interest_rate, $request->months);
+    // Calculate monthly amortization (assuming it's recalculated based on total_paid)
+    $monthlyAmortization = $totalPaid / $request->months;
 
-        EmployeeLoan::create([
-            'employee_id' => $request->employee_id,
-            'loan_type_id' => $request->loan_type_id,
-            'amount' => $request->amount,
-            'loan_date' => $request->loan_date,
-            'interest_rate' => $request->interest_rate,
-            'months' => $request->months,
-            'monthly_amortization' => $monthlyAmortization,
-        ]);
+    EmployeeLoan::create([
+        'employee_id' => $request->employee_id,
+        'loan_type_id' => $request->loan_type_id,
+        'amount' => $request->amount,
+        'loan_date' => $request->loan_date,
+        'interest_rate' => $request->interest_rate,
+        'months' => $request->months,
+        'monthly_amortization' => $monthlyAmortization,
+        'total_paid' => $totalPaid,
+    ]);
 
-        return redirect()->route('loans.view');
-    }
+    return redirect()->route('loans.view');
+}
+
 
     public function calculateAmortization($amount, $interestRate, $months)
     {

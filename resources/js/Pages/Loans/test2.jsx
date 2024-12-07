@@ -1,6 +1,16 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useForm } from 'antd/es/form/Form'; // Import useForm hook
 import { Inertia } from '@inertiajs/inertia';
-import { FloatButton as Btn, Divider, Modal, Table, Drawer, Button, Form, InputNumber } from 'antd';
+import {
+    FloatButton as Btn,
+    Divider,
+    Modal,
+    Table,
+    Drawer,
+    Button,
+    Form,
+    InputNumber,
+    Select,
+} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -9,6 +19,7 @@ import LoanTypes from './LoanTypes';
 import PrimaryButton from '@/Components/PrimaryButton';
 import EmployeeLoanForm from './EmployeeLoanForm';
 import EmployeeLoanDetail from './EmployeeLoanDetail';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const FloatButton = styled(Btn)`
     background-color: #f0c519 !important;
@@ -22,6 +33,7 @@ const FloatButton = styled(Btn)`
 `;
 
 const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) => {
+    const [form] = useForm(); // Define form using useForm hook
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedLoan, setSelectedLoan] = useState(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -83,7 +95,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
     };
 
     const handleEditSubmit = (values) => {
-        // Send updated loan data to the backend
+        // Send updated loan data to the backend, including status
         Inertia.put(route('employee_loans.update', selectedLoan.id), values, {
             onSuccess: () => {
                 closeEditModal();
@@ -146,7 +158,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     <EmployeeLoanDetail
                         employeeLoan={selectedLoan}
                         payments={selectedLoan.payments || []}
-                        s
                     />
                 )}
             </Modal>
@@ -193,6 +204,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         return {
                             key: employee.id,
                             employee_name: `${employee.first_name} ${employee.last_name}`,
+                            status: loansForEmployee[0].status, // Add status
                             ...Object.keys(loansByType).reduce((acc, loanType) => {
                                 acc[loanType] = loansByType[loanType].display;
                                 return acc;
@@ -207,6 +219,18 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         dataIndex: 'employee_name',
                         key: 'employee_name',
                         fixed: 'left',
+                    },
+                    {
+                        title: 'Status',
+                        dataIndex: 'status',
+                        key: 'status',
+                        render: (status) => (
+                            <span
+                                className={`text-${status === 'completed' ? 'success' : status === 'defaulted' ? 'danger' : 'warning'}`}
+                            >
+                                {status}
+                            </span>
+                        ),
                     },
                     ...Array.from(
                         new Set(
@@ -237,16 +261,13 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                 {activeLoans.map((loan) => (
                     <div key={loan.id} className="mb-4">
                         <h3 className="font-bold">{loan.loan_type?.type || `Loan ${loan.id}`}</h3>
-                        <p>Total Paid: ₱{loan.total_paid.toLocaleString()}</p>
                         <p>Amount: ₱{loan.amount.toLocaleString()}</p>
-                        <p>Months to pay: {loan.months.toLocaleString()}</p>
                         <p>
                             Remaining Balance: ₱
                             {loan.amount -
                                 loan.payments.reduce((acc, p) => acc + parseFloat(p.amount), 0)}
                         </p>
                         <p>Monthly Amortization: ₱{loan.monthly_amortization?.toLocaleString()}</p>
-                        <p>Status: {loan.status?.toLocaleString()}</p>
                         <div className="flex justify-end py-2">
                             <PrimaryButton type="primary" onClick={() => openEditModal(loan)}>
                                 Edit
@@ -256,101 +277,39 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     </div>
                 ))}
             </Drawer>
-            {console.log(employeeLoan)}
 
             {/* Edit Loan Modal */}
-            <Modal title="Edit Loan" open={isEditModalOpen} onCancel={closeEditModal} footer={null}>
-                {selectedLoan && (
-                    <Form
-                        initialValues={{
-                            amount: selectedLoan.amount,
-                            loan_date: selectedLoan.loan_date,
-                            interest_rate: selectedLoan.interest_rate,
-                            months: selectedLoan.months,
-                            monthly_amortization: selectedLoan.monthly_amortization,
-                        }}
-                        onFinish={handleEditSubmit}
+            <Modal
+                title="Edit Loan"
+                open={isEditModalOpen}
+                onCancel={closeEditModal}
+                onOk={() => {
+                    form.submit(); // Submit the form when "OK" is clicked
+                }}
+            >
+                <Form
+                    layout="vertical"
+                    onFinish={handleEditSubmit}
+                    initialValues={selectedLoan}
+                    form={form} // Pass the form instance here
+                >
+                    <Form.Item
+                        name="status"
+                        label="Loan Status"
+                        rules={[{ required: true, message: 'Please select loan status' }]}
                     >
-                        {/* Display Total Paid (including Interest) */}
-                        <div style={{ marginBottom: '16px' }}>
-                            <strong>Total Paid: </strong> ₱
-                            {selectedLoan.payments
-                                .reduce((acc, payment) => acc + parseFloat(payment.amount), 0)
-                                .toLocaleString()}
-                        </div>
-
-                        {/* Display Total Loan Amount with Interest */}
-                        <div style={{ marginBottom: '16px' }}>
-                            <strong>Total Loan Amount with Interest: </strong> ₱
-                            {(
-                                selectedLoan.amount +
-                                selectedLoan.amount * (selectedLoan.interest_rate / 100)
-                            ).toLocaleString()}
-                        </div>
-
-                        {/* Display Remaining Balance */}
-                        <div style={{ marginBottom: '16px' }}>
-                            <strong>Remaining Balance: </strong> ₱
-                            {(
-                                selectedLoan.amount +
-                                selectedLoan.amount * (selectedLoan.interest_rate / 100) -
-                                selectedLoan.payments.reduce(
-                                    (acc, payment) => acc + parseFloat(payment.amount),
-                                    0
-                                )
-                            ).toLocaleString()}
-                        </div>
-
-                        {/* Loan Amount Input */}
-                        <Form.Item
-                            name="amount"
-                            label="Amount"
-                            rules={[{ required: true, message: 'Please input the loan amount!' }]}
-                        >
-                            <InputNumber min={0} style={{ width: '100%' }} />
-                        </Form.Item>
-
-                        {/* Interest Rate Input */}
-                        <Form.Item
-                            name="interest_rate"
-                            label="Interest Rate (%)"
-                            rules={[{ required: true, message: 'Please input the interest rate!' }]}
-                        >
-                            <InputNumber min={0} style={{ width: '100%' }} />
-                        </Form.Item>
-
-                        {/* Months Input */}
-                        <Form.Item
-                            name="months"
-                            label="Months"
-                            rules={[
-                                { required: true, message: 'Please input the number of months!' },
-                            ]}
-                        >
-                            <InputNumber min={1} style={{ width: '100%' }} />
-                        </Form.Item>
-
-                        {/* Monthly Amortization Input */}
-                        <Form.Item
-                            name="monthly_amortization"
-                            label="Monthly Amortization"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input the monthly amortization!',
-                                },
-                            ]}
-                        >
-                            <InputNumber min={0} style={{ width: '100%' }} />
-                        </Form.Item>
-
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Save Changes
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                )}
+                        <Select>
+                            <Select.Option value="active">Active</Select.Option>
+                            <Select.Option value="completed">Completed</Select.Option>
+                            <Select.Option value="defaulted">Defaulted</Select.Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                            Save Changes
+                        </Button>
+                    </Form.Item>
+                </Form>
             </Modal>
         </AuthenticatedLayout>
     );

@@ -19,6 +19,8 @@ class EmployeeLoan extends Model
         'interest_rate',
         'months',
         'monthly_amortization',
+        'status',
+        'total_paid'
     ];
 
     public function employee()
