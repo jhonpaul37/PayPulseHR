@@ -6,6 +6,7 @@ import { FloatButton as Btn, Empty, Table, Drawer, Button, Input, Modal } from '
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 const FloatButton = styled(Btn)`
     background-color: #f0c519 !important;
@@ -205,9 +206,13 @@ export default function Voucher({ vouchers, auth }) {
                                 <Button className="mr-2" onClick={onClose}>
                                     Close
                                 </Button>
-                                <Button className="mr-2" type="primary" onClick={handleComplete}>
+                                <PrimaryButton
+                                    className="mr-2"
+                                    type="primary"
+                                    onClick={handleComplete}
+                                >
                                     Complete
-                                </Button>
+                                </PrimaryButton>
                             </div>
 
                             {/* Conditionally show Input for div_num */}
@@ -218,13 +223,13 @@ export default function Voucher({ vouchers, auth }) {
                                         onChange={(e) => setDivNum(e.target.value)} // Update state on change
                                         placeholder="Enter div_num"
                                     />
-                                    <Button
+                                    <PrimaryButton
                                         className="mt-2"
                                         type="primary"
                                         onClick={() => setConfirmModalVisible(true)}
                                     >
                                         Submit
-                                    </Button>
+                                    </PrimaryButton>
                                 </div>
                             )}
                         </div>

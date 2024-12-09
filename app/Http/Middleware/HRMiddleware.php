@@ -10,7 +10,7 @@ class HRMiddleware
     {
         $employee = $request->user()->employee;
 
-        if (!$employee || $employee->role !== 'HR') {
+        if (!$employee || ($employee->role !== 'HR' && $employee->role !== 'employee')) {
             abort(403, 'Unauthorized access.');
         }
 

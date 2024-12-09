@@ -95,22 +95,43 @@ public function store(Request $request)
         ]);
     }
 
-    public function myLoans()
-    {
-        $user = Auth::user();
+public function myLoans()
+{
+    $user = Auth::user();
+    $employeeId = $user->employee->id;
 
-        // employee related to this user (employee_id == 'id' in employee table)
-        $employeeId = $user->employee->id;
+    // Fetch loans and include relationships
+    $loans = EmployeeLoan::with(['loanType', 'payments'])
+        ->where('employee_id', $employeeId)
+        ->get();
 
-        $loans = EmployeeLoan::with(['loanType', 'payments'])
-                            ->where('employee_id', $employeeId)
-                            ->get();
+    // Filter based on the `status` field
+    $activeLoans = $loans->where('status', 'active');
+    $fullyPaidLoans = $loans->where('status', 'completed');
 
-        return inertia('Loans/MyLoans', [
-            'auth' => ['user' => $user],
-            'loans' => $loans,
-        ]);
-    }
+    $remainingBalance = $activeLoans->sum(function ($loan) {
+        $totalPaid = $loan->payments->sum('amount'); // Sum all payments
+        return $loan->total_paid - $totalPaid; // Subtract payments from total loan amount
+    });
+    // Calculate summary statistics
+    $totalActiveLoanAmount = $activeLoans->sum('total_paid');
+
+    $totalPaidLoanAmount = $fullyPaidLoans->sum('total_paid');
+    $totalLoanAmount = $totalActiveLoanAmount + $totalPaidLoanAmount;
+
+    return inertia('Loans/MyLoans', [
+        'auth' => ['user' => $user],
+        'loans' => $loans,
+        'activeLoans' => $activeLoans->values(),
+        'fullyPaidLoans' => $fullyPaidLoans->values(),
+        'totalLoanAmount' => $totalLoanAmount,
+        'totalPaidLoanAmount' => $totalPaidLoanAmount,
+        'totalActiveLoanAmount' => $totalActiveLoanAmount,
+        'remainingBalance' => $remainingBalance,
+    ]);
+}
+
+
 
     // Display the edit form
     public function edit(EmployeeLoan $employeeLoan)

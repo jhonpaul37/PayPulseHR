@@ -111,25 +111,6 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: '8',
             icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
             label: <Link href="/loans">Loans</Link>,
-            // label: 'Deduction',
-            // children: [
-            //     // {
-            //     //     key: '8-1',
-            //     //     label: <Link href="/my_loans">My Loans (Employee)</Link>,
-            //     // },
-            //     {
-            //         key: '8-2',
-            //         label: <Link href="/loans">Loans</Link>,
-            //     },
-            //     {
-            //         key: '8-3',
-            //         label: <Link href="/contributions">Deduction</Link>,
-            //     },
-            //     {
-            //         key: '8-4',
-            //         label: <Link href="/salary_grades">Salary Grade</Link>,
-            //     },
-            // ],
         },
         {
             type: 'divider',
@@ -176,17 +157,6 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: '5',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequest">Leaves Request</Link>,
-            // label: 'Leaves',
-            // children: [
-            //     {
-            //         key: '5-1',
-            //         label: <Link href="/leaveRequestForm">Add Leave (Employee)</Link>,
-            //     },
-            //     {
-            //         key: '5-2',
-            //         label: <Link href="/leaveRequest">Leaves Request</Link>,
-            //     },
-            // ],
         },
         {
             key: '6',

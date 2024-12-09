@@ -32,19 +32,14 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboards', [HomeController::class, 'landingPage'])->name('dashboards');
 
-    Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
-    Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');
-    Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
-
     //Accounting
-    // Route::middleware(['accounting'])->group(function () {
+    Route::middleware(['accounting'])->group(function () {
 
     // Salary Grade
     Route::get('/salary_grades', [SalaryGradeController::class, 'index'])->name('salary_grades.index');
     Route::post('/salary_grades/bulk_add', [SalaryGradeController::class, 'bulkAdd'])->name('salary_grades.bulk_add');
     Route::post('/salary_grades/bulk_update', [SalaryGradeController::class, 'bulkUpdate'])->name('salary_grades.bulk_update');
 
-    // });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -66,15 +61,24 @@ Route::middleware('auth')->group(function () {
     // Route::get('/contributions/{contribution}', [ContributionController::class, 'show'])->name('contributions.show');
     // Route::put('/contributions/{contribution}', [ContributionController::class, 'update'])->name('contributions.update');
 
+    //Benefits / Gross Earning
+    Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
+    Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
+    Route::post('/employee_benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
+
+    Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
+
+    });
 
     //Cashier
+
     Route::middleware(['cashier'])->group(function () {
     //Payroll
         Route::post('/transactions', [TransactionController::class, 'store'])->name('PayrollSaved');
+        Route::get('/transactions/{reference_number}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::get('/payroll/data', [PayrollController::class, 'payrollData'])->name('payrollData');
 
         // Route::get('/payroll/general', [PayrollController::class, 'generalPayroll'])->name('generalPayroll');
-        // Route::get('/payroll/computation', [PayrollController::class, 'computation'])->name('computation');
         // Route::get('/payroll', [PayrollController::class, 'payroll'])->name('payroll');
 
     //Loans
@@ -98,16 +102,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee_loans/{employeeLoan}/edit', [EmployeeLoanController::class, 'edit'])->name('employee_loans.edit');
         Route::put('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'update'])->name('employee_loans.update');
 
-    //Loan Details
-        // Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');
     });
 
-    //Benefits / Gross Earning
-    Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
-    Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
-    Route::post('/employee_benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
-
-    Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
+    //Cashier end
 
         // HR Access
     Route::middleware(['hr'])->group(function () {
@@ -128,6 +125,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+
+        Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
+        Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');
+        Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
     });
 
     // Employee Access
@@ -136,6 +137,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
           //Employee Loans
         Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');
+        //Loan Details
+        Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');
     });
 
     Route::middleware(['accounting'])->group(function () {

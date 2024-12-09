@@ -14,7 +14,7 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
     const isFullyPaid = remainingBalance <= 0;
     const percentPaid =
         employeeLoan.amount > 0
-            ? Math.min((totalPaid / employeeLoan.amount) * 100, 100).toFixed(0)
+            ? Math.min((totalPaid / employeeLoan.total_paid) * 100, 100).toFixed(0)
             : 0;
 
     // Calculate breakdown components
@@ -28,16 +28,6 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
             dataIndex: 'payment_date',
             render: (text) => new Date(text).toLocaleDateString(),
         },
-        // {
-        //     title: 'Monthly Amount',
-        //     dataIndex: 'amount',
-        //     render: (amount) => `₱${(amount - monthlyInterest).toLocaleString()}`,
-        // },
-        // {
-        //     title: 'Monthly Interest',
-        //     dataIndex: 'amount',
-        //     render: () => `₱${monthlyInterest.toFixed(2)}`,
-        // },
         {
             title: 'Amount',
             dataIndex: 'amount',
@@ -111,7 +101,7 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
                     )}
                     <Modal
                         title="Make a Payment"
-                        visible={isModalVisible}
+                        open={isModalVisible}
                         onOk={handlePaymentSubmit}
                         onCancel={handleCancel}
                         okText="Submit Payment"
@@ -161,6 +151,10 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
                     <p>{employeeLoan.months} Months</p>
                 </div>
                 <div className="grid grid-cols-2">
+                    <p className="font-semibold">Total Paid:</p>
+                    <p>₱{employeeLoan.total_paid} </p>
+                </div>
+                <div className="grid grid-cols-2">
                     <p className="font-semibold">Monthly Amortization:</p>
                     <p>₱{employeeLoan.monthly_amortization.toLocaleString()}</p>
                 </div>
@@ -175,7 +169,8 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
                 </div>
                 <p className="mt-1 text-sm text-gray-500">
                     {isFullyPaid ? 'Loan is fully paid' : `${percentPaid}% of the loan is paid `}
-                    (₱{totalPaid.toLocaleString()} out of ₱{employeeLoan.amount.toLocaleString()})
+                    (₱{totalPaid.toLocaleString()} out of ₱
+                    {employeeLoan.total_paid.toLocaleString()})
                 </p>
             </div>
 

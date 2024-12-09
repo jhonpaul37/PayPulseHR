@@ -197,7 +197,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                                 acc[loanType] = loansByType[loanType].display;
                                 return acc;
                             }, {}),
-                            employee, // Add employee data for row click
+                            employee,
                         };
                     })
                     .filter((entry) => entry !== null)}
