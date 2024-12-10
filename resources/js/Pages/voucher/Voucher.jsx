@@ -19,6 +19,18 @@ const FloatButton = styled(Btn)`
     right: 100px;
 `;
 
+const StyledTable = styled(Table)`
+    .table-row-hover {
+        background-color: #f5f5f5 !important; /* Light gray for hover effect */
+        cursor: pointer; /* Change cursor to pointer */
+    }
+
+    .table-row-selected {
+        background-color: #ffe58f !important; /* Highlight selected row */
+        font-weight: bold; /* Optional: Make text bold */
+    }
+`;
+
 export default function Voucher({ vouchers, auth }) {
     const route = useRoute();
 

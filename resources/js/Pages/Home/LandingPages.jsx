@@ -25,7 +25,7 @@ const LandingPage = ({ auth, user, date }) => {
             case 'Employee':
                 return 'Check your records and requests here.';
             default:
-                return 'Welcome to your dashboard!';
+                return 'Welcome to PayPulseHR!';
         }
     };
 

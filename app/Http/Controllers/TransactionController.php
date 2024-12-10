@@ -14,6 +14,7 @@ class TransactionController extends Controller
 public function store(Request $request)
 {
     $data = $request->input('data');
+    $processedEmployees = []; // Array to store processed employee data
 
     foreach ($data as $employeeData) {
         $employee = Employee::where('id', $employeeData['id'])->first();
@@ -46,7 +47,7 @@ public function store(Request $request)
                 }
             }
 
-            // Process contributions (e.g., PATVE, GSIS, TAX, etc.)
+            // PATVE, GSIS, TAX,
             foreach ($employeeData['contributions'] as $contributionData) {
                 // Save contribution data
                 $employee->contributions()->updateOrCreate(
@@ -55,7 +56,7 @@ public function store(Request $request)
                 );
             }
 
-            // Process benefits (e.g., PERA, LWOP-PERA, RATA, etc.)
+            //PERA, LWOP-PERA, RATA,
             foreach ($employeeData['benefits'] as $benefitData) {
                 // Save benefit data
                 $employee->benefits()->updateOrCreate(
@@ -64,26 +65,37 @@ public function store(Request $request)
                 );
             }
 
-            // Process any other data (e.g., total salary, net pay, deductions)
             $employee->update([
                 'total_salary' => $employeeData['total_salary'],
                 'total_deductions' => $employeeData['total_deductions'],
                 'net_amount' => $employeeData['net_amount'],
                 'net_pay' => $employeeData['net_pay'],
             ]);
+
+            // Add employee data to the processed array
+            $processedEmployees[] = [
+                'id' => $employee->id,
+                'name' => $employee->first_name . ' ' . $employee->last_name,
+                'total_salary' => $employeeData['total_salary'],
+                'net_pay' => $employeeData['net_pay'],
+                'contributions' => $employeeData['contributions'],
+                'benefits' => $employeeData['benefits'],
+                'loans' => $employeeData['loans'],
+            ];
         }
     }
 
     // Generate a unique reference number
     $transaction = Transaction::create([
         'reference_number' => 'BSC-' . strtoupper(uniqid()),
-        'data' => json_encode($data),
+        'data' => json_encode($processedEmployees), // Store all processed data, including names
     ]);
 
-    // Return a response with success message and reference number
+    // Return a response with success message, reference number, and employee names
     return Inertia::render('Payroll/FinalPayroll', [
         'message' => 'Transaction saved successfully!',
         'reference_number' => $transaction->reference_number,
+        'employees' => $processedEmployees, // Include processed employees with names in response
     ]);
 }
 

@@ -51,7 +51,7 @@ const PayrollData = ({
             },
             width: 150,
         }));
-        // "Loans Total" column
+        // "Loans Total"
         const loansTotalColumn = {
             title: 'LOANS TOTAL',
             render: (_, record) => {
@@ -62,7 +62,7 @@ const PayrollData = ({
                 return <span className="font-semibold">{PhpFormat(totalLoans || 0)}</span>;
             },
             width: 150,
-            className: 'bg-yellow-400',
+            // className: 'bg-yellow-400',
         };
         const PATVEColumn = {
             title: 'PATVE CONT.',
@@ -122,7 +122,7 @@ const PayrollData = ({
                     return <span className="font-semibold">{PhpFormat(monthlySalary)}</span>;
                 },
                 width: 150,
-                className: 'bg-yellow-400',
+                // className: 'bg-yellow-400',
             },
             {
                 title: 'PERA',
@@ -148,7 +148,7 @@ const PayrollData = ({
                     return <span className="font-semibold">{PhpFormat(record.net_pera)}</span>;
                 },
                 width: 150,
-                className: 'bg-yellow-400',
+                // className: 'bg-yellow-400',
             },
             {
                 title: 'RATA',
@@ -172,7 +172,7 @@ const PayrollData = ({
                     <span className="font-semibold">{PhpFormat(record.total_salary || 0)}</span>
                 ),
                 width: 150,
-                className: 'bg-yellow-400',
+                // className: 'bg-yellow-400',
             },
         ];
 
@@ -215,7 +215,7 @@ const PayrollData = ({
                 dataIndex: 'total_contributions',
                 render: PhpFormat,
                 width: 150,
-                className: 'bg-yellow-400',
+                // className: 'bg-yellow-400',
             },
         ];
         // Total Deduction
@@ -227,7 +227,7 @@ const PayrollData = ({
                 );
             },
             width: 200,
-            className: 'bg-orange-400 ',
+            // className: 'bg-orange-400 ',
         };
         // Net Amont
         const NetAmountColumn = {
@@ -238,24 +238,25 @@ const PayrollData = ({
             width: 200,
             // className: 'bg-red-400 ',
         };
-        const NetPay1To15Column = [
-            {
-                title: 'Net Pay 1-15',
-                render: (_, record) => {
-                    return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
-                },
-                width: 200,
-                className: 'bg-green-200',
-            },
-            {
-                title: 'Net Pay 16-30',
-                render: (_, record) => {
-                    return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
-                },
-                width: 200,
-                className: 'bg-green-300',
-            },
-        ];
+        // const NetPay1To15Column = [
+        //     {
+        //         title: 'Net Pay 1-15',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-200',
+        //     },
+        //     {
+        //         title: 'Net Pay 16-30',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-300',
+        //     },
+        // ];
+
         // Combine all columns
         setColumns([
             ...staticColumns,
@@ -266,7 +267,7 @@ const PayrollData = ({
             loansTotalColumn,
             totalDeductionColumn,
             NetAmountColumn,
-            ...NetPay1To15Column,
+            // ...NetPay1To15Column,
         ]);
     }, [loanTypes, employee]);
 
@@ -347,15 +348,6 @@ const PayrollData = ({
                     view
                 </PrimaryButton>
             </div>
-            {/* <Table
-                dataSource={dataSource}
-                columns={columns}
-                rowKey="employee_id"
-                scroll={{
-                    x: 'max-content',
-                    y: 485,
-                }}
-            /> */}
             <Table
                 dataSource={dataSource}
                 columns={columns}
@@ -365,6 +357,15 @@ const PayrollData = ({
                     onClick: () => showEmployeeModal(record),
                 })}
             />
+            {/* <Table
+                dataSource={dataSource}
+                columns={columns}
+                rowKey="employee_id"
+                scroll={{ x: 'max-content', y: 485 }}
+                onRow={(record) => ({
+                    onClick: () => showEmployeeModal(record),
+                })}
+            /> */}
 
             {/* {console.log(transaction)} */}
             <Drawer

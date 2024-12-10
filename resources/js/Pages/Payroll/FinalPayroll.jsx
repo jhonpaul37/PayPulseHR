@@ -13,20 +13,22 @@ const PhpFormat = (value) => {
 
 const FinalPayroll = ({ auth, transaction, data, loanTypes }) => {
     const printPayroll = () => {
+        const printableContent = document.getElementById('printable-area').innerHTML;
+        const originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = printableContent;
         window.print();
+        document.body.innerHTML = originalContent;
+        window.location.reload();
     };
 
-    // Helper function to format the loan data for each loan type
     const getLoanAmount = (loans, loanTypeId) => {
         const loan = loans.find((loan) => loan.loan_id === loanTypeId);
-        return loan ? PhpFormat(loan.remaining_amortization || 0) : ''; // If loan exists, format remaining amortization, else return empty string
+        return loan ? PhpFormat(loan.remaining_amortization || 0) : '';
     };
-    console.log(data);
 
-    // Create loan columns dynamically based on loanTypes
     const loanColumns = loanTypes.map((loanType) => ({
         title: loanType.type.toUpperCase(),
-        // Render the loan data by matching the loan type
         render: (_, record) => getLoanAmount(record.loans, loanType.id),
         width: 150,
     }));
@@ -39,27 +41,12 @@ const FinalPayroll = ({ auth, transaction, data, loanTypes }) => {
         },
         {
             title: 'EMPLOYEE NAME',
-            render: (_, record) => {
-                const { first_name, middle_name, last_name } = record;
-                return `${first_name || ''} ${middle_name || ''} ${last_name || ''}`.trim();
-            },
+            dataIndex: 'name',
             width: 200,
         },
-        // {
-        //     title: 'TOTAL SALARY',
-        //     dataIndex: 'total_salary',
-        //     render: (value) => PhpFormat(value || 0),
-        //     width: 150,
-        // },
-        // {
-        //     title: 'TOTAL DEDUCTIONS',
-        //     dataIndex: 'total_deductions',
-        //     render: (value) => PhpFormat(value || 0),
-        //     width: 150,
-        // },
         {
             title: 'NET PAY',
-            dataIndex: 'net_amount',
+            dataIndex: 'net_pay',
             render: (value) => PhpFormat(value || 0),
             width: 150,
         },
@@ -86,7 +73,7 @@ const FinalPayroll = ({ auth, transaction, data, loanTypes }) => {
         },
         {
             title: 'Loans',
-            dataIndex: 'loans', // Access the loans array
+            dataIndex: 'loans',
             render: (loans) =>
                 loans
                     .map(
@@ -95,22 +82,52 @@ const FinalPayroll = ({ auth, transaction, data, loanTypes }) => {
                     .join(', '),
             width: 200,
         },
-
-        // Include dynamically generated loan columns here
         ...loanColumns,
     ];
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <h2 className="pb-10 text-center text-2xl font-bold">Final Payroll</h2>
-            <div className="pb-4 text-center font-semibold text-blue-600">
-                Reference Number: {transaction.reference_number}
-            </div>
-            <Table dataSource={data} columns={columns} rowKey="id" scroll={{ x: 'max-content' }} />
-            <div className="flex justify-end pt-5">
-                <PrimaryButton onClick={printPayroll} className="rounded px-4 py-2">
-                    Print Payroll
-                </PrimaryButton>
+            <div>
+                <style>{`
+                    @media print {
+                        body * {
+                            visibility: hidden;
+                        }
+                        #printable-area, #printable-area * {
+                            visibility: visible;
+                        }
+                        #printable-area {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                        }
+                        .ant-pagination {
+                            display: none !important;
+                        }
+                        .ant-table-body {
+                            overflow: visible !important;
+                        }
+                    }
+                `}</style>
+                <div id="printable-area">
+                    <h2 className="pb-10 text-center text-2xl font-bold">Final Payroll</h2>
+                    <div className="pb-4 text-center font-semibold text-blue-600">
+                        Reference Number: {transaction.reference_number}
+                    </div>
+                    <Table
+                        dataSource={data}
+                        columns={columns}
+                        rowKey="id"
+                        pagination={false}
+                        scroll={false}
+                    />
+                </div>
+                <div className="flex justify-end pt-5">
+                    <PrimaryButton onClick={printPayroll} className="rounded px-4 py-2">
+                        Print Payroll
+                    </PrimaryButton>
+                </div>
             </div>
         </AuthenticatedLayout>
     );

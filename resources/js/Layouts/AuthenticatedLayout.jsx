@@ -62,7 +62,7 @@ const ScrollableContent = styled(Content)`
 `;
 
 const AuthenticatedLayout = ({ user, children }) => {
-    const [collapsed, setCollapsed] = useState(false); //true is  close by default sidebar
+    const [collapsed, setCollapsed] = useState(true); //true is  close by default sidebar
     const { url, props } = usePage();
     const { auth } = props;
 
@@ -80,13 +80,16 @@ const AuthenticatedLayout = ({ user, children }) => {
     //     if (url.startsWith('/my_loans')) return '11';
     //     return '1';
     // };
+    console.log(user.employee?.role);
+
     const selectedKey = () => {
-        if (url === '/dashboard') return '2';
+        if (url.startsWith('/dashboard')) return '1';
+        if (url === '/dashboards') return '2';
         if (url === '/voucher') return '3';
         if (url === '/settings') return '4';
         if (url === '/leaveRequest') return '5';
         if (url === '/employees') return '6';
-        if (url.startsWith('/payroll/data')) return '7';
+        if (url === '/payroll/data') return '7';
         if (url === '/loans') return '8';
         if (url === '/employee_benefits') return '9';
         if (url === '/leaveRequestForm') return '10';
@@ -97,6 +100,11 @@ const AuthenticatedLayout = ({ user, children }) => {
     };
 
     const menuItems = [
+        // {
+        //     key: '2',
+        //     icon: <FontAwesomeIcon icon={faHouse} />,
+        //     label: <Link href="/dashboards">Dashboard</Link>,
+        // },
         {
             key: 'payrollTitle',
             label: !collapsed ? 'Cashier' : null,
@@ -123,7 +131,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '2',
             icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/dashboard">Dashboard</Link>,
+            label: <Link href="/dashboards">Dashboard</Link>,
         },
         {
             key: '3',

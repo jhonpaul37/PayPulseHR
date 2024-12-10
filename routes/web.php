@@ -30,7 +30,7 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboards', [HomeController::class, 'landingPage'])->name('dashboards');
+    Route::get('/dashboard', [HomeController::class, 'landingPage'])->name('dashboard');
 
     //Accounting
     Route::middleware(['accounting'])->group(function () {
@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/salary_grades/bulk_update', [SalaryGradeController::class, 'bulkUpdate'])->name('salary_grades.bulk_update');
 
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboards', [DashboardController::class, 'index'])->name('dashboards');
 
     Route::resource('/voucher',VoucherController::class);
     Route::get('/voucher/{voucher}', [VoucherController::class, 'show'])->name('voucher.show');

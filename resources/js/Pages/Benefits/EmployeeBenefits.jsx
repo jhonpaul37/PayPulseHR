@@ -128,7 +128,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
 
             {/* assigning employee benefit */}
             <Modal
-                title="Assign Benefit to Employees"
+                title="Gross income"
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={[

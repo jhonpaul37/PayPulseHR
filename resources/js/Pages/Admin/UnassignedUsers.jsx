@@ -2,6 +2,7 @@ import React from 'react';
 import { Table, Button } from 'antd';
 import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 const UnassignedUsers = ({ auth, users }) => {
     const columns = [
@@ -19,9 +20,9 @@ const UnassignedUsers = ({ auth, users }) => {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
-                <Button type="primary" onClick={() => handleAssignDetails(record.id)}>
+                <PrimaryButton type="primary" onClick={() => handleAssignDetails(record.id)}>
                     Assign Employee Info
-                </Button>
+                </PrimaryButton>
             ),
         },
     ];

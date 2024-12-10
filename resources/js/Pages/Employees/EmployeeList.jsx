@@ -6,6 +6,7 @@ import EmployeeInfo from './EmployeeInfo';
 import { FloatButton as Btn, Empty, Input, Pagination, Table, Tag, Button } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 const FloatButton = styled(Btn)`
     background-color: #f0c519 !important;
@@ -145,12 +146,12 @@ export default function EmployeeList({ employees, auth }) {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{ maxWidth: 300 }}
                         />
-                        <Button
+                        <PrimaryButton
                             type="primary"
                             onClick={() => Inertia.visit(route('users.unassigned'))}
                         >
                             Request
-                        </Button>
+                        </PrimaryButton>
                     </div>
                 </div>
 
