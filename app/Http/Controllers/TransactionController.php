@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Models\Transaction;
 use App\Models\EmployeeLoanPayment;
 use App\Models\Employee;
+use App\Models\LoanType;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -45,16 +46,31 @@ public function store(Request $request)
                 }
             }
 
-            // Process contributions, benefits, etc.
+            // Process contributions (e.g., PATVE, GSIS, TAX, etc.)
             foreach ($employeeData['contributions'] as $contributionData) {
-                // Handle saving contributions
+                // Save contribution data
+                $employee->contributions()->updateOrCreate(
+                    ['contribution_id' => $contributionData['contribution_id']],
+                    ['amount' => $contributionData['amount']]
+                );
             }
 
+            // Process benefits (e.g., PERA, LWOP-PERA, RATA, etc.)
             foreach ($employeeData['benefits'] as $benefitData) {
-                // Handle saving benefits
+                // Save benefit data
+                $employee->benefits()->updateOrCreate(
+                    ['benefit_id' => $benefitData['benefit_id']],
+                    ['amount' => $benefitData['amount']]
+                );
             }
 
-            // Add any other data processing (e.g., total salary, net pay)
+            // Process any other data (e.g., total salary, net pay, deductions)
+            $employee->update([
+                'total_salary' => $employeeData['total_salary'],
+                'total_deductions' => $employeeData['total_deductions'],
+                'net_amount' => $employeeData['net_amount'],
+                'net_pay' => $employeeData['net_pay'],
+            ]);
         }
     }
 
@@ -64,6 +80,7 @@ public function store(Request $request)
         'data' => json_encode($data),
     ]);
 
+    // Return a response with success message and reference number
     return Inertia::render('Payroll/FinalPayroll', [
         'message' => 'Transaction saved successfully!',
         'reference_number' => $transaction->reference_number,
@@ -71,8 +88,10 @@ public function store(Request $request)
 }
 
 
+
     public function show($referenceNumber)
     {
+        $loanTypes = LoanType::all();
         $transaction = Transaction::where('reference_number', $referenceNumber)->first();
 
         if (!$transaction) {
@@ -83,6 +102,7 @@ public function store(Request $request)
         return Inertia::render('Payroll/FinalPayroll', [
             'transaction' => $transaction,
             'data' => $data,
+            'loanTypes' => $loanTypes,
         ]);
     }
 

@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
         Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');
         Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
+
     });
 
     // Employee Access

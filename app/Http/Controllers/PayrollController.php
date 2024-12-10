@@ -8,27 +8,13 @@ use App\Models\Employee;
 use App\Models\LoanType;
 use App\Models\Benefit;
 use App\Models\Loan;
-use App\Models\Contribution;
+use App\Models\Transaction;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PayrollController extends Controller
 {
-
-
-    // public function generalPayroll()
-    // {
-    //     $payrolls = Payroll::with('employee')->get();
-    //     $employees = Employee::all();
-    //     $loanTypes = LoanType::all();
-
-    //     return Inertia::render('Payroll/GeneralPayroll', [
-    //         'payrolls' => $payrolls,
-    //         'employee' => $employees,
-    //         'loanTypes' => $loanTypes,
-    //     ]);
-    // }
 
 public function payrollData()
 {
@@ -43,6 +29,7 @@ public function payrollData()
 
     $loanTypes = LoanType::all();
     $benefits = Benefit::all();
+    $transaction = Transaction::all();
 
     foreach ($employees as $employee) {
         // Calculate remaining loan amortization
@@ -129,6 +116,7 @@ public function payrollData()
         'employee' => $employees,
         'loanTypes' => $loanTypes,
         'benefits' => $benefits,
+        'transaction' => $transaction,
     ]);
 }
 
@@ -163,23 +151,5 @@ public function payrollData()
             'loanTypes' => $loanTypes,
         ]);
     }
-
-    // public function computation()
-    // {
-    //     $employee = Employee::all();
-
-    //     return Inertia::render('Payroll/Computation', [
-    //         'employee' => $employee
-    //     ]);
-    // }
-    // public function payroll()
-    // {
-    //     $payrolls = Payroll::with('employee')->get();
-    //     $employee = Employee::get();
-
-    //     return Inertia::render('Payroll/Payroll', [
-    //         'payrolls' => $payrolls, 'employee' => $employee
-    //     ]);
-    // }
 
 }

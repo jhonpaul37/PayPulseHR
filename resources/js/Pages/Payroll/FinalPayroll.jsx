@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 // Helper function for PHP-style formatting
 const PhpFormat = (value) => {
@@ -10,27 +11,25 @@ const PhpFormat = (value) => {
     }).format(value);
 };
 
-const FinalPayroll = ({ transaction, data }) => {
+const FinalPayroll = ({ auth, transaction, data, loanTypes }) => {
     const printPayroll = () => {
         window.print();
     };
 
-    // Helper function to format the loan data
-    const formatLoans = (loans) => {
-        return loans.map((loan) => `${loan.loan_id}: ₱${loan.remaining_amortization}`).join(', ');
+    // Helper function to format the loan data for each loan type
+    const getLoanAmount = (loans, loanTypeId) => {
+        const loan = loans.find((loan) => loan.loan_id === loanTypeId);
+        return loan ? PhpFormat(loan.remaining_amortization || 0) : ''; // If loan exists, format remaining amortization, else return empty string
     };
+    console.log(data);
 
-    // Helper function to format the contributions data
-    const formatContributions = (contributions) => {
-        return contributions
-            .map((contribution) => `${contribution.contribution_id}: ₱${contribution.amount}`)
-            .join(', ');
-    };
-
-    // Helper function to format the benefits data
-    const formatBenefits = (benefits) => {
-        return benefits.map((benefit) => `${benefit.benefit_id}: ₱${benefit.amount}`).join(', ');
-    };
+    // Create loan columns dynamically based on loanTypes
+    const loanColumns = loanTypes.map((loanType) => ({
+        title: loanType.type.toUpperCase(),
+        // Render the loan data by matching the loan type
+        render: (_, record) => getLoanAmount(record.loans, loanType.id),
+        width: 150,
+    }));
 
     const columns = [
         {
@@ -46,18 +45,18 @@ const FinalPayroll = ({ transaction, data }) => {
             },
             width: 200,
         },
-        {
-            title: 'TOTAL SALARY',
-            dataIndex: 'total_salary',
-            render: (value) => PhpFormat(value || 0),
-            width: 150,
-        },
-        {
-            title: 'TOTAL DEDUCTIONS',
-            dataIndex: 'total_deductions',
-            render: (value) => PhpFormat(value || 0),
-            width: 150,
-        },
+        // {
+        //     title: 'TOTAL SALARY',
+        //     dataIndex: 'total_salary',
+        //     render: (value) => PhpFormat(value || 0),
+        //     width: 150,
+        // },
+        // {
+        //     title: 'TOTAL DEDUCTIONS',
+        //     dataIndex: 'total_deductions',
+        //     render: (value) => PhpFormat(value || 0),
+        //     width: 150,
+        // },
         {
             title: 'NET PAY',
             dataIndex: 'net_amount',
@@ -65,27 +64,44 @@ const FinalPayroll = ({ transaction, data }) => {
             width: 150,
         },
         {
-            title: 'LOANS',
-            dataIndex: 'loans',
-            render: (value) => formatLoans(value),
-            width: 200,
-        },
-        {
-            title: 'CONTRIBUTIONS',
+            title: 'Deductions',
             dataIndex: 'contributions',
-            render: (value) => formatContributions(value),
+            render: (value) =>
+                value
+                    .map(
+                        (contribution) =>
+                            `ID: ${contribution.contribution_id} - ₱${PhpFormat(contribution.amount)}`
+                    )
+                    .join(', '),
             width: 200,
         },
         {
-            title: 'BENEFITS',
+            title: 'Gross Income',
             dataIndex: 'benefits',
-            render: (value) => formatBenefits(value),
+            render: (value) =>
+                value
+                    .map((benefit) => `ID: ${benefit.benefit_id} - ₱${PhpFormat(benefit.amount)}`)
+                    .join(', '),
             width: 200,
         },
+        {
+            title: 'Loans',
+            dataIndex: 'loans', // Access the loans array
+            render: (loans) =>
+                loans
+                    .map(
+                        (loan) => `ID: ${loan.loan_id} - ₱${PhpFormat(loan.remaining_amortization)}`
+                    )
+                    .join(', '),
+            width: 200,
+        },
+
+        // Include dynamically generated loan columns here
+        ...loanColumns,
     ];
 
     return (
-        <div>
+        <AuthenticatedLayout user={auth.user}>
             <h2 className="pb-10 text-center text-2xl font-bold">Final Payroll</h2>
             <div className="pb-4 text-center font-semibold text-blue-600">
                 Reference Number: {transaction.reference_number}
@@ -96,7 +112,7 @@ const FinalPayroll = ({ transaction, data }) => {
                     Print Payroll
                 </PrimaryButton>
             </div>
-        </div>
+        </AuthenticatedLayout>
     );
 };
 

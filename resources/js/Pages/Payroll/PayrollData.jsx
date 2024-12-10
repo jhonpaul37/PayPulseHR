@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { Table } from 'antd';
+import { Table, Drawer, Modal } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
 
@@ -12,9 +12,29 @@ const PhpFormat = (value) => {
         : `₱${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) => {
+const PayrollData = ({
+    auth,
+    employee,
+    loanTypes,
+    message,
+    reference_number,
+    transaction,
+    benefits,
+}) => {
     const [dataSource, setDataSource] = useState(employee);
     const [columns, setColumns] = useState([]);
+    const [visible, setVisible] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const showEmployeeModal = (employee) => {
+        setSelectedEmployee(employee);
+        setModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
 
     useEffect(() => {
         // loan columns for all loan types
@@ -31,7 +51,6 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
             },
             width: 150,
         }));
-
         // "Loans Total" column
         const loansTotalColumn = {
             title: 'LOANS TOTAL',
@@ -264,6 +283,14 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
     //         data: dataToSend,
     //     });
     // };
+
+    const showDrawer = () => {
+        setVisible(true);
+    };
+
+    const onClose = () => {
+        setVisible(false);
+    };
     const saveTransaction = () => {
         const dataToSend = dataSource.map((employee) => ({
             id: employee.id,
@@ -311,12 +338,16 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                     Transaction Reference: {reference_number}
                 </div>
             )}
-            <div className="flex justify-end pb-5">
+            <div className="flex justify-end gap-5 pb-5">
                 <PrimaryButton onClick={saveTransaction} className="rounded px-4 py-2">
                     Save Transaction
                 </PrimaryButton>
+
+                <PrimaryButton onClick={showDrawer} className="rounded px-4 py-2">
+                    view
+                </PrimaryButton>
             </div>
-            <Table
+            {/* <Table
                 dataSource={dataSource}
                 columns={columns}
                 rowKey="employee_id"
@@ -324,7 +355,150 @@ const PayrollData = ({ auth, employee, loanTypes, message, reference_number }) =
                     x: 'max-content',
                     y: 485,
                 }}
+            /> */}
+            <Table
+                dataSource={dataSource}
+                columns={columns}
+                rowKey="employee_id"
+                scroll={{ x: 'max-content', y: 485 }}
+                onRow={(record) => ({
+                    onClick: () => showEmployeeModal(record),
+                })}
             />
+
+            {/* {console.log(transaction)} */}
+            <Drawer
+                title="Saved Payrolls"
+                width={500}
+                open={visible}
+                onClose={onClose}
+                styles={{
+                    body: { paddingBottom: 80 },
+                }}
+            >
+                <Table
+                    dataSource={transaction
+                        .filter(
+                            (t) => new Date(t.created_at).getFullYear() === new Date().getFullYear()
+                        )
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))}
+                    columns={[
+                        {
+                            title: 'Reference Number',
+                            dataIndex: 'reference_number',
+                            key: 'reference_number',
+                        },
+                        {
+                            title: 'Date',
+                            dataIndex: 'created_at',
+                            key: 'created_at',
+                            render: (created_at) => new Date(created_at).toLocaleDateString(),
+                        },
+                    ]}
+                    rowKey="reference_number"
+                    pagination={false}
+                    onRow={(record) => ({
+                        onClick: () => {
+                            if (record.reference_number) {
+                                Inertia.visit(`/transactions/${record.reference_number}`);
+                            } else {
+                                console.error('Missing reference number:', record);
+                            }
+                        },
+                    })}
+                />
+            </Drawer>
+            <Modal open={modalVisible} onCancel={handleCloseModal} footer={null} width={800}>
+                <div className="flex justify-center py-5 text-xl font-bold">Employee Details</div>
+                {selectedEmployee && (
+                    <div>
+                        <div className="grid grid-cols-2">
+                            <span className="font-bold">DEPARTMENT:</span>
+                            <span>{selectedEmployee.department}</span>
+
+                            <span className="font-bold">EMPLOYEE NO:</span>
+                            <span>{selectedEmployee.employee_id}</span>
+
+                            <span className="font-bold">EMPLOYEE NAME:</span>
+                            <span>{`${selectedEmployee.first_name} ${selectedEmployee.last_name}`}</span>
+
+                            <span className="font-bold">POSITION:</span>
+                            <span>{selectedEmployee.position}</span>
+
+                            {selectedEmployee.salary_grade && (
+                                <>
+                                    <span className="font-bold">SG-STEP:</span>
+                                    <span>{`${selectedEmployee.salary_grade.grade}-${selectedEmployee.salary_grade.step}`}</span>
+                                </>
+                            )}
+
+                            <span className="font-bold">BASIC SALARY:</span>
+                            <span>{PhpFormat(selectedEmployee.salary_grade?.monthly_salary)}</span>
+                        </div>
+
+                        <div className="my-4 border-b-4 border-t-4 border-black bg-slate-300 px-2">
+                            <span className="font-bold">GROSS EARNINGS</span>
+                        </div>
+
+                        <div className="grid grid-cols-2">
+                            {benefits.map((benefit) => {
+                                const employeeBenefit = selectedEmployee?.benefits?.find(
+                                    (b) => b.id === benefit.id
+                                );
+                                return (
+                                    <>
+                                        <span className="font-bold">{benefit.name}:</span>
+                                        <span>
+                                            {PhpFormat(employeeBenefit?.pivot?.amount || 0)}
+                                        </span>
+                                    </>
+                                );
+                            })}
+
+                            <span className="font-bold">TOTAL:</span>
+                            <span>{PhpFormat(selectedEmployee.total_salary || 0)}</span>
+                        </div>
+
+                        <div className="my-4 border-b-4 border-t-4 border-black bg-slate-300 px-2">
+                            <span className="font-bold">LESS: DEDUCTIONS</span>
+                        </div>
+
+                        <div className="grid grid-cols-2">
+                            {loanTypes.map((loanType) => {
+                                const employeeLoan = selectedEmployee?.loans?.find(
+                                    (loan) => loan.loan_type_id === loanType.id
+                                );
+                                return (
+                                    <>
+                                        <span className="font-bold">{loanType.type}:</span>
+                                        <span>
+                                            {PhpFormat(employeeLoan?.remainingAmortization || 0)}
+                                        </span>
+                                    </>
+                                );
+                            })}
+
+                            {selectedEmployee.contributions?.map((contribution) => (
+                                <>
+                                    <span className="font-bold">{contribution.name}:</span>
+                                    <span>{PhpFormat(contribution.pivot.amount)}</span>
+                                </>
+                            ))}
+
+                            <span className="font-bold">TOTAL DEDUCTION:</span>
+                            <span>{PhpFormat(selectedEmployee.total_deductions || 0)}</span>
+                        </div>
+
+                        <div className="grid grid-cols-2">
+                            <span className="font-bold">NET AMOUNT:</span>
+                            <span>{PhpFormat(selectedEmployee.total_payable || 0)}</span>
+                        </div>
+                        {/* <div className="my-4 border-b-4 border-t-4 border-black bg-slate-300 px-2">
+                            <span className="font-bold">NET PAY</span>
+                        </div> */}
+                    </div>
+                )}
+            </Modal>
         </AuthenticatedLayout>
     );
 };
