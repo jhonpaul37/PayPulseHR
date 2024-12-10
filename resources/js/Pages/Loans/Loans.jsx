@@ -150,6 +150,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     />
                 )}
             </Modal>
+            {/* {console.log(employeeLoan)} */}
 
             {/* Unpaid Loans Table */}
             <Table
@@ -158,7 +159,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         const loansForEmployee = employeeLoan.filter(
                             (loan) =>
                                 loan.employee?.id === employee.id &&
-                                loan.amount >
+                                loan.total_paid >
                                     loan.payments.reduce(
                                         (acc, payment) => acc + parseFloat(payment.amount),
                                         0
@@ -242,7 +243,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         <p>Months to pay: {loan.months.toLocaleString()}</p>
                         <p>
                             Remaining Balance: ₱
-                            {loan.amount -
+                            {loan.total_paid -
                                 loan.payments.reduce((acc, p) => acc + parseFloat(p.amount), 0)}
                         </p>
                         <p>Monthly Amortization: ₱{loan.monthly_amortization?.toLocaleString()}</p>
@@ -256,7 +257,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     </div>
                 ))}
             </Drawer>
-            {console.log(employeeLoan)}
+            {/* {console.log(employeeLoan)} */}
 
             {/* Edit Loan Modal */}
             <Modal title="Edit Loan" open={isEditModalOpen} onCancel={closeEditModal} footer={null}>

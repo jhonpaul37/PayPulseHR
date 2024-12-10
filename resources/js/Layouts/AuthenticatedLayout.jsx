@@ -80,7 +80,7 @@ const AuthenticatedLayout = ({ user, children }) => {
     //     if (url.startsWith('/my_loans')) return '11';
     //     return '1';
     // };
-    console.log(user.employee?.role);
+    // console.log(user.employee?.role);
 
     const selectedKey = () => {
         if (url.startsWith('/dashboard')) return '1';

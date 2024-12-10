@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
@@ -13,21 +13,11 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
         interest_rate: employeeLoan.interest_rate || '',
         months: employeeLoan.months || '',
         monthly_amortization: employeeLoan.monthly_amortization || '',
-        total_paid: employeeLoan.total_paid || '',
     });
 
     const [employeeSuggestions, setEmployeeSuggestions] = useState([]);
 
-    // Handle changes for all input fields
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    // Handle employee auto-suggestion logic (unchanged)
+    // employee name (auto-suggest)
     const handleEmployeeInputChange = (e) => {
         const value = e.target.value;
         setFormData((prevData) => ({
@@ -47,6 +37,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
         }
     };
 
+    // suggestion Employee
     const handleSuggestionClick = (employee) => {
         setFormData((prevData) => ({
             ...prevData,
@@ -56,8 +47,52 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
         setEmployeeSuggestions([]);
     };
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    // Cal amortization
+    const calculateAmortization = () => {
+        const { amount, interest_rate, months } = formData;
+
+        if (amount && interest_rate && months) {
+            const P = parseFloat(amount); // Principal
+            const r = parseFloat(interest_rate) / 100 / 12; // Monthly interest rate
+            const n = parseInt(months, 10); // Number of months
+
+            if (r === 0) {
+                return (P / n).toFixed(2);
+            }
+
+            const M = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            return M.toFixed(2);
+        }
+        return '';
+    };
+
+    useEffect(() => {
+        const amortization = calculateAmortization();
+        setFormData((prevData) => ({
+            ...prevData,
+            monthly_amortization: amortization,
+        }));
+    }, [formData.amount, formData.interest_rate, formData.months]);
+
+    const formattedAmortization = formData.monthly_amortization
+        ? parseFloat(formData.monthly_amortization).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '';
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log(formData); // Log the form data to ensure loan_type_id is present
+
         if (employeeLoan.id) {
             Inertia.put(`/employee_loans/${employeeLoan.id}`, formData);
         } else {
@@ -67,7 +102,6 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Employee Name Input with Suggestions */}
             <div>
                 <label htmlFor="employee_name" className="block text-sm font-medium text-gray-700">
                     Employee
@@ -95,7 +129,6 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 )}
             </div>
 
-            {/* Loan Type Dropdown */}
             <select
                 name="loan_type_id"
                 value={formData.loan_type_id}
@@ -112,7 +145,6 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 ))}
             </select>
 
-            {/* Other Fields */}
             <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
                     Loan Amount
@@ -123,6 +155,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     value={formData.amount}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -136,6 +169,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     value={formData.loan_date}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -150,6 +184,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     onChange={handleChange}
                     className="mt-1 block w-full"
                     step="0.01"
+                    autoComplete="off"
                 />
             </div>
 
@@ -163,6 +198,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     value={formData.months}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -174,28 +210,12 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     Monthly Amortization
                 </label>
                 <TextInput
-                    type="number"
+                    type="text"
                     name="monthly_amortization"
-                    value={formData.monthly_amortization}
-                    onChange={handleChange}
+                    value={formattedAmortization}
                     className="mt-1 block w-full"
-                    step="0.01"
-                />
-            </div>
-            <div>
-                <label
-                    htmlFor="monthly_amortization"
-                    className="block text-sm font-medium text-gray-700"
-                >
-                    Total Paid
-                </label>
-                <TextInput
-                    type="number"
-                    name="total_paid"
-                    value={formData.total_paid}
-                    onChange={handleChange}
-                    className="mt-1 block w-full"
-                    step="0.01"
+                    readOnly
+                    autoComplete="off"
                 />
             </div>
 

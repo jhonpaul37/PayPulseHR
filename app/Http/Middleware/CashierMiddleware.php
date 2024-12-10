@@ -12,7 +12,7 @@ class CashierMiddleware
     {
         $employee = $request->user()->employee;
 
-        if (!$employee || $employee->role !== 'Cashier') {
+        if (!$employee || ($employee->role !== 'Cashier' && $employee->role !== 'SuperAdmin')) {
             abort(403, 'Unauthorized access.');
         }
 

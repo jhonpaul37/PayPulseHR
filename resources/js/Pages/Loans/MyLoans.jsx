@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Col, Row, Statistic, Divider, Tabs } from 'antd';
+import { Card, Col, Row, Statistic, Divider, Tabs, Badge } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
@@ -14,6 +14,7 @@ const MyLoans = ({
     totalPaidLoanAmount,
     totalActiveLoanAmount,
     remainingBalance,
+    transaction,
 }) => {
     const [selectedLoanType, setSelectedLoanType] = useState('active');
 
@@ -40,40 +41,41 @@ const MyLoans = ({
                 <Col span={6}>
                     <Card bordered={false} className="bg-gray-100 shadow-lg">
                         <Statistic
-                            title="Balance"
+                            title="Loan Balance"
                             value={`₱${(remainingBalance ?? 0).toLocaleString()}`}
                         />
-                    </Card>
-                </Col>
-
-                <Col span={6}>
-                    <Card bordered={false} className="bg-gray-100 shadow-lg">
-                        <Statistic title="Active Loans" value={activeLoans.length} suffix="Loans" />
                     </Card>
                 </Col>
                 <Col span={6}>
                     <Card bordered={false} className="bg-gray-100 shadow-lg">
                         <Statistic
-                            title="Fully Paid Loans"
+                            title="Leave Balance"
                             value={fullyPaidLoans.length}
-                            suffix="Loans"
+                            // suffix="Leave"
+                        />
+                    </Card>
+                </Col>
+                <Col span={6}>
+                    <Card bordered={false} className="bg-gray-100 shadow-lg">
+                        <Statistic
+                            title="Payslip"
+                            value={fullyPaidLoans.length}
+                            // suffix="Payslip"
                         />
                     </Card>
                 </Col>
             </Row>
-
-            {/* Loan Tabs */}
-            <Divider style={{ borderColor: '#F0C519' }}>
-                <span className="text-xl font-bold">Loans</span>
-            </Divider>
-
             <Tabs
                 defaultActiveKey="active"
                 onChange={(key) => setSelectedLoanType(key)}
                 items={[
                     {
                         key: 'active',
-                        label: 'Active Loans',
+                        label: (
+                            <Badge count={activeLoans.length} offset={[10, 0]} color="maroon">
+                                <span>Active Loans</span>
+                            </Badge>
+                        ),
                         children:
                             activeLoans.length > 0 ? (
                                 activeLoans.map((loan) => <LoanItem key={loan.id} loan={loan} />)
@@ -83,7 +85,11 @@ const MyLoans = ({
                     },
                     {
                         key: 'fullyPaid',
-                        label: 'Fully Paid Loans',
+                        label: (
+                            <Badge count={fullyPaidLoans.length} offset={[10, 0]} color="maroon">
+                                <span>Paid Loans</span>
+                            </Badge>
+                        ),
                         children:
                             fullyPaidLoans.length > 0 ? (
                                 fullyPaidLoans.map((loan) => <LoanItem key={loan.id} loan={loan} />)

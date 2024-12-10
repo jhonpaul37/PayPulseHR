@@ -129,9 +129,9 @@ export default function Voucher({ vouchers, auth }) {
                 <div className="my-10">
                     <div className="mb-2 flex justify-between">
                         <div className="mb-2 text-lg font-bold">Recent</div>
-                        <div>
-                            {/* Pagination */}
-                            <div className="bg-white py-5">
+
+                        {/* Pagination */}
+                        {/* <div className="bg-white py-5">
                                 {vouchers.links.map((link) =>
                                     link.url ? (
                                         <Link
@@ -155,8 +155,7 @@ export default function Voucher({ vouchers, auth }) {
                                         ></span>
                                     )
                                 )}
-                            </div>
-                        </div>
+                            </div> */}
                     </div>
 
                     {/* Conditional rendering for vouchers */}
@@ -168,11 +167,11 @@ export default function Voucher({ vouchers, auth }) {
                             columns={columns}
                             dataSource={vouchers.data.filter(
                                 (voucher) => !voucher.div_num || voucher.div_num === '0000'
-                            )} // Filtered data
+                            )}
                             rowKey="id"
-                            pagination={false} // You can manage pagination separately
+                            pagination={true}
                             onRow={(record) => ({
-                                onClick: () => showDrawer(record), // Show drawer on row click
+                                onClick: () => showDrawer(record),
                             })}
                         />
                     ) : (

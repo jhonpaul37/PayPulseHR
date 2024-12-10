@@ -9,7 +9,6 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\SalaryGradeController;
-
 use App\Http\Controllers\LoanProgramController;
 use App\Http\Controllers\LoanTypeController;
 use App\Http\Controllers\EmployeeLoanController;

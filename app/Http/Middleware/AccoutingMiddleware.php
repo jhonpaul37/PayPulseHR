@@ -12,7 +12,7 @@ class AccoutingMiddleware
     {
         $employee = $request->user()->employee;
 
-        if (!$employee || $employee->role !== 'Accounting') {
+        if (!$employee || ($employee->role !== 'Accounting' && $employee->role !== 'SuperAdmin')) {
             abort(403, 'Unauthorized access.');
         }
 
