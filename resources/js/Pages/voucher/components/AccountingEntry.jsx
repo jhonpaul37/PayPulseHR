@@ -87,7 +87,7 @@ const AccountingEntry = ({
                     </div>
                     <div className="flex flex-col items-center justify-center border-l border-black">
                         <div>Debit </div>
-                        {balanceError && (
+                        {/* {balanceError && (
                             <div className="text-red-500">
                                 Total Debit:{' '}
                                 {entries.reduce(
@@ -95,11 +95,11 @@ const AccountingEntry = ({
                                     0
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </div>
                     <div className="flex flex-col items-center justify-center border-l border-black">
                         <span>Credit</span>
-                        {balanceError && (
+                        {/* {balanceError && (
                             <div className="text-red-500">
                                 Total Credits:{' '}
                                 {entries.reduce(
@@ -107,7 +107,7 @@ const AccountingEntry = ({
                                     0
                                 )}
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
                 <div className="flex flex-col justify-center border-b border-black">
@@ -173,6 +173,12 @@ const AccountingEntry = ({
                                     type="number"
                                     value={entry.debit || ''}
                                     onChange={(e) => handleDebitChange(e, index)}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none`}
+                                />
+                                {/* <input
+                                    type="number"
+                                    value={entry.debit || ''}
+                                    onChange={(e) => handleDebitChange(e, index)}
                                     className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none ${
                                         !entry.credit
                                             ? 'border-high'
@@ -180,10 +186,16 @@ const AccountingEntry = ({
                                               ? 'border-red-500'
                                               : 'border-gray-300'
                                     }`}
-                                />
+                                /> */}
                             </div>
                             <div className="flex items-center justify-center border-l border-black p-2">
                                 <input
+                                    type="number"
+                                    value={entry.credit || ''}
+                                    onChange={(e) => handleCreditChange(e, index)}
+                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none`}
+                                />
+                                {/* <input
                                     type="number"
                                     value={entry.credit || ''}
                                     onChange={(e) => handleCreditChange(e, index)}
@@ -194,7 +206,7 @@ const AccountingEntry = ({
                                               ? 'border-red-500'
                                               : 'border-gray-300'
                                     }`}
-                                />
+                                /> */}
                                 <div className="ml-2">
                                     <button
                                         type="button"

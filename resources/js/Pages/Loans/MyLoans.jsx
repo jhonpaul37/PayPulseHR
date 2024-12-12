@@ -50,7 +50,7 @@ const MyLoans = ({
                     <Card bordered={false} className="bg-gray-100 shadow-lg">
                         <Statistic
                             title="Leave Balance"
-                            value={fullyPaidLoans.length}
+                            // value={fullyPaidLoans.length}
                             // suffix="Leave"
                         />
                     </Card>
@@ -59,7 +59,7 @@ const MyLoans = ({
                     <Card bordered={false} className="bg-gray-100 shadow-lg">
                         <Statistic
                             title="Payslip"
-                            value={fullyPaidLoans.length}
+                            // value={fullyPaidLoans.length}
                             // suffix="Payslip"
                         />
                     </Card>

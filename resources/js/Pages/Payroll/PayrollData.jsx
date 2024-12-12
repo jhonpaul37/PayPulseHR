@@ -71,7 +71,7 @@ const PayrollData = ({
                 return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
             },
             width: 150,
-            className: 'bg-yellow-300',
+            // className: 'bg-yellow-300',
         };
         // Static columns
         const staticColumns = [
@@ -490,7 +490,7 @@ const PayrollData = ({
                             <span>{PhpFormat(selectedEmployee.total_deductions || 0)}</span>
                         </div>
 
-                        <div className="grid grid-cols-2">
+                        <div className="grid grid-cols-2 bg-high p-2 font-bold">
                             <span className="font-bold">NET AMOUNT:</span>
                             <span>{PhpFormat(selectedEmployee.total_payable || 0)}</span>
                         </div>

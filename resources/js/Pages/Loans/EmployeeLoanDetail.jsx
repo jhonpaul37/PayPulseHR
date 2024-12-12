@@ -96,9 +96,9 @@ function EmployeeLoanDetail({ auth, employeeLoan = [], payments }) {
                     <h2 className="text-xl font-semibold text-gray-700">Loan Details</h2>
                 </div>
                 <div>
-                    {!isFullyPaid && (
+                    {/* {!isFullyPaid && (
                         <PrimaryButton onClick={showPaymentModal}>Make Payment</PrimaryButton>
-                    )}
+                    )} */}
                     <Modal
                         title="Make a Payment"
                         open={isModalVisible}

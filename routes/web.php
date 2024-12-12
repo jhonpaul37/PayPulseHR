@@ -50,9 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/fClusters', [VoucherController::class, 'fCluster']);
     Route::post('/voucher/{id}/complete', [VoucherController::class, 'complete'])->name('voucher.complete');
 
-
-
-
     //Contribution / Deduction
     Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
     Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
@@ -109,9 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['hr'])->group(function () {
         //Leave Management
         // Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm'); // employee access
-        Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
-
+        // Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
         Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
+
         Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
         Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
@@ -135,6 +132,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['employee'])->group(function () {
         // Leave Request // HR
         Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
+        Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
           //Employee Loans
         Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');
         //Loan Details

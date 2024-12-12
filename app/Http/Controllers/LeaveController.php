@@ -42,7 +42,7 @@ class LeaveController extends Controller
 
         $leaveRequest->save();
 
-        return redirect()->route('LeaveRequest')->with('success', 'Leave request submitted successfully.');
+        return redirect()->route('my.loans')->with('success', 'Leave request submitted successfully.');
     }
 
 
