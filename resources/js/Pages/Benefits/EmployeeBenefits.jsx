@@ -1,17 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import {
-    Button,
-    Table,
-    Modal,
-    Form,
-    InputNumber,
-    Select,
-    Card,
-    Empty,
-    message,
-    Divider,
-} from 'antd';
+import { Table, Modal, Form, InputNumber, Select, Card, Empty, message, Divider } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
 
@@ -26,94 +15,77 @@ const getGridStyle = (totalItems) => {
     };
 };
 
-const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, customMessage }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
-    const [editingBenefit, setEditingBenefit] = useState(null);
+// Format numbers as Philippine Peso
+const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined) return '₱0.00';
+    return new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+    }).format(amount);
+};
+
+const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits }) => {
     const [isEditing, setIsEditing] = useState(false); // Toggle edit mode
     const [editedBenefits, setEditedBenefits] = useState([]); // Track changes during edit mode
-    const [form] = Form.useForm();
-    const [benefitForm] = Form.useForm();
+    const [selectedEmployees, setSelectedEmployees] = useState([]); // Track selected employees
+    const [selectedBenefit, setSelectedBenefit] = useState(null); // Track the selected benefit for bulk editing
+    const [bulkAmount, setBulkAmount] = useState(null); // Amount to apply to selected employees
 
-    const showModal = () => setIsModalOpen(true);
-    const handleCancel = () => setIsModalOpen(false);
+    // Filter out the LWOP-PERA benefit
+    const filteredBenefits = benefits.filter((benefit) => benefit.name !== 'LWOP-PERA');
 
-    const handleEditBenefit = (benefit) => {
-        benefitForm.setFieldsValue(benefit);
-        setEditingBenefit(benefit);
-        setIsBenefitModalOpen(true);
+    const handleEmployeeSelection = (selectedRowKeys) => {
+        setSelectedEmployees(selectedRowKeys);
     };
 
-    // LWOP-PERA change value
-    const handleLWOPChange = (employeeId, benefitId, value) => {
-        setEditedBenefits((prev) => {
-            const updated = [...prev];
-            const index = updated.findIndex(
-                (item) => item.employee_id === employeeId && item.benefit_id === benefitId
-            );
-            if (index > -1) {
-                updated[index].amount = value;
-            } else {
-                updated.push({ employee_id: employeeId, benefit_id: benefitId, amount: value });
-            }
-            return updated;
-        });
-    };
+    const handleBulkUpdate = () => {
+        if (!selectedBenefit) {
+            message.warning('Please select a benefit to update.');
+            return;
+        }
 
-    const handleSubmit = (values) => {
-        Inertia.post(route('employee_benefits.store'), values, {
-            onSuccess: (page) => {
-                if (page.props.flash.warning) {
-                    message.warning(page.props.flash.warning); // Display warning message if exists
-                }
-                if (page.props.flash.success) {
-                    message.success(page.props.flash.success); // Display success message if exists
-                }
-                form.resetFields();
-            },
-            onError: () => {
-                message.error('Failed to assign benefits.'); // Display error message on failure
-            },
-        });
-        setIsModalOpen(false);
-    };
+        if (bulkAmount === null) {
+            message.warning('Please enter an amount.');
+            return;
+        }
 
-    const handleSave = () => {
-        const flatChanges = editedBenefits;
+        const changes = selectedEmployees.map((employeeId) => ({
+            employee_id: employeeId,
+            benefit_id: selectedBenefit,
+            amount: bulkAmount,
+        }));
 
         Inertia.post(
             route('employee_benefits.bulkUpdate'),
-            { changes: flatChanges },
+            { changes },
             {
                 onSuccess: () => {
-                    message.success('Bulk benefits updated successfully!'); // Success notification
+                    message.success('Bulk benefits updated successfully!');
                     setEditedBenefits([]);
-                    setIsEditing(false); // Exit edit mode
+                    setIsEditing(false);
+                    setSelectedEmployees([]);
+                    setBulkAmount(null);
+                    setSelectedBenefit(null);
                 },
                 onError: () => {
-                    message.error('Failed to update benefits.'); // Error notification
+                    message.error('Failed to update benefits.');
                 },
             }
         );
     };
 
-    const handleCancelEdit = () => {
-        setEditedBenefits([]); // Discard changes
-        setIsEditing(false); // Exit edit mode
+    const rowSelection = {
+        selectedRowKeys: selectedEmployees,
+        onChange: handleEmployeeSelection,
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            {/* available benefits */}
-
-            {benefits && benefits.length > 0 ? (
-                <Card title="Gross Earings" className="mb-6">
-                    {benefits.map((benefit) => (
-                        <Grid
-                            key={benefit.id}
-                            style={getGridStyle(benefits.length)}
-                            onClick={() => handleEditBenefit(benefit)}
-                        >
+            {/* Available Benefits */}
+            {filteredBenefits && filteredBenefits.length > 0 ? (
+                <Card title="Gross Earnings" className="mb-6">
+                    {filteredBenefits.map((benefit) => (
+                        <Grid key={benefit.id} style={getGridStyle(filteredBenefits.length)}>
                             <div className="text-lg font-bold">{benefit.name}</div>
                         </Grid>
                     ))}
@@ -126,83 +98,38 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                 />
             )}
 
-            {/* assigning employee benefit */}
-            <Modal
-                title="Gross income"
-                open={isModalOpen}
-                onCancel={handleCancel}
-                footer={[
-                    <Button key="cancel" onClick={handleCancel} style={{ marginRight: 8 }}>
-                        Cancel
-                    </Button>,
-                    <PrimaryButton key="submit" type="primary" onClick={() => form.submit()}>
-                        Submit
-                    </PrimaryButton>,
-                ]}
-            >
-                <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                        name="employee_ids"
-                        label="Employees"
-                        rules={[
-                            { required: true, message: 'Please select at least one employee.' },
-                        ]}
-                    >
-                        <Select
-                            mode="multiple"
-                            placeholder="Select Employees"
-                            allowClear
-                            optionFilterProp="children"
-                        >
-                            {employees.map((employee) => (
-                                <Select.Option key={employee.id} value={employee.id}>
-                                    {employee.first_name} {employee.last_name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="benefit_id" label="Benefit" rules={[{ required: true }]}>
-                        <Select placeholder="Select Benefit">
-                            {benefits.map((benefit) => (
-                                <Select.Option key={benefit.id} value={benefit.id}>
-                                    {benefit.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="amount" label="Amount" rules={[{ required: true }]}>
-                        <InputNumber className="w-full" placeholder="Amount" />
-                    </Form.Item>
-                </Form>
-            </Modal>
-
-            <div className="mb-6 flex">
-                <PrimaryButton type="primary" onClick={showModal}>
-                    Add
-                </PrimaryButton>
-            </div>
             <Divider style={{ borderColor: '#F0C519' }} className="pt-5" />
 
             <div>
                 <h2 className="mb-5 text-lg font-semibold">Gross Earnings Management</h2>
-                <div className="mt-6 flex gap-2">
-                    {isEditing ? (
-                        <>
-                            <PrimaryButton type="primary" onClick={handleSave}>
-                                Save
-                            </PrimaryButton>
-                            <Button onClick={handleCancelEdit}>Cancel</Button>
-                        </>
-                    ) : (
-                        <PrimaryButton type="primary" onClick={() => setIsEditing(true)}>
-                            Edit
-                        </PrimaryButton>
-                    )}
+                <div className="mb-4 flex gap-2">
+                    <Select
+                        placeholder="Select Benefit"
+                        value={selectedBenefit}
+                        onChange={(value) => setSelectedBenefit(value)}
+                        style={{ width: 200 }}
+                    >
+                        {filteredBenefits.map((benefit) => (
+                            <Select.Option key={benefit.id} value={benefit.id}>
+                                {benefit.name}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                    <InputNumber
+                        placeholder="Enter Amount"
+                        value={bulkAmount}
+                        onChange={(value) => setBulkAmount(value)}
+                        style={{ width: 200 }}
+                    />
+                    <PrimaryButton type="primary" onClick={handleBulkUpdate}>
+                        Apply to Selected
+                    </PrimaryButton>
                 </div>
+
                 <Table
                     dataSource={employees}
                     rowKey="id"
-                    className="mt-4"
+                    rowSelection={rowSelection}
                     pagination={{ pageSize: 10 }}
                 >
                     <Table.Column
@@ -213,7 +140,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                             </span>
                         )}
                     />
-                    {benefits.map((benefit) => (
+                    {filteredBenefits.map((benefit) => (
                         <Table.Column
                             key={benefit.id}
                             title={benefit.name}
@@ -222,17 +149,7 @@ const BenefitsDashboard = ({ auth, employees, benefits, employeeBenefits, custom
                                     (eb) =>
                                         eb.employee_id === record.id && eb.benefit_id === benefit.id
                                 );
-
-                                return isEditing ? (
-                                    <InputNumber
-                                        defaultValue={employeeBenefit?.amount || 0}
-                                        onChange={(value) =>
-                                            handleLWOPChange(record.id, benefit.id, value)
-                                        }
-                                    />
-                                ) : (
-                                    <span>{employeeBenefit?.amount || 0}</span>
-                                );
+                                return <span>{formatCurrency(employeeBenefit?.amount || 0)}</span>;
                             }}
                         />
                     ))}

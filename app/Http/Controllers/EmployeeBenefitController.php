@@ -26,31 +26,18 @@ class EmployeeBenefitController extends Controller
     }
     public function bulkUpdate(Request $request)
     {
-        $request->validate([
-            'changes' => 'required|array',
-            'changes.*.employee_id' => 'required|exists:employees,id',
-            'changes.*.benefit_id' => 'required|exists:benefits,id',
-            'changes.*.amount' => 'required|numeric',
-        ]);
+        $changes = $request->input('changes', []);
 
-        foreach ($request->changes as $change) {
-            $employeeBenefit = EmployeeBenefit::where('employee_id', $change['employee_id'])
-                ->where('benefit_id', $change['benefit_id'])
-                ->first();
-
-            if ($employeeBenefit) {
-                $employeeBenefit->update(['amount' => $change['amount']]);
-            } else {
-                EmployeeBenefit::create([
-                    'employee_id' => $change['employee_id'],
-                    'benefit_id' => $change['benefit_id'],
-                    'amount' => $change['amount'],
-                ]);
-            }
+        foreach ($changes as $change) {
+            EmployeeBenefit::updateOrCreate(
+                ['employee_id' => $change['employee_id'], 'benefit_id' => $change['benefit_id']],
+                ['amount' => $change['amount']]
+            );
         }
 
-        return redirect()->back()->with('success', 'Benefits updated successfully!');
+        return redirect()->back()->with('success', 'Bulk benefits updated successfully!');
     }
+
 
     public function store(Request $request)
     {
@@ -59,8 +46,6 @@ class EmployeeBenefitController extends Controller
             'benefit_id' => 'required|exists:benefits,id',
             'amount' => 'required|numeric',
         ]);
-
-
 
         $existing = [];
         $created = [];
@@ -71,14 +56,14 @@ class EmployeeBenefitController extends Controller
                 ->exists();
 
             if ($exists) {
-                $existing[] = $employeeId; // Track employees with existing benefits
+                $existing[] = $employeeId;
             } else {
                 EmployeeBenefit::create([
                     'employee_id' => $employeeId,
                     'benefit_id' => $request->benefit_id,
                     'amount' => $request->amount,
                 ]);
-                $created[] = $employeeId; // successfully created benefits
+                $created[] = $employeeId;
             }
         }
 

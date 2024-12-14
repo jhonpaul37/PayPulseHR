@@ -9,8 +9,10 @@ const { Option } = Select;
 export default function ContributionsIndex({
     employees,
     contributions,
+    lwopPera,
     auth,
     employeeContribution,
+    employeeBenefits,
 }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isAmountDisabled, setIsAmountDisabled] = useState(false); // Control amount field editability
@@ -29,14 +31,16 @@ export default function ContributionsIndex({
     const handleOk = () => {
         form.validateFields()
             .then((values) => {
-                // Calculate the final amount to send
-                const calculatedAmount = form.getFieldValue('amount');
+                const isLwopPera = values.contribution_id === lwopPera?.id; // Check if LWOP-PERA is selected
+
+                const calculatedAmount = form.getFieldValue('amount'); // Get the calculated or manually entered amount
                 Inertia.post(
                     route('contributions.store'),
                     {
                         employee_id: values.employee_id,
                         contribution_id: values.contribution_id,
                         amount: calculatedAmount,
+                        type: isLwopPera ? 'benefit' : 'contribution', // Mark as benefit if LWOP-PERA
                     },
                     {
                         onSuccess: () => {
@@ -104,6 +108,15 @@ export default function ContributionsIndex({
             render: (amount) => `₱${parseFloat(amount).toFixed(2)}`,
         },
     ];
+    const data = employeeBenefits.map((item) => {
+        const lwopPeraAmount = item.benefit.name === 'LWOP-PERA' ? item.amount : null;
+
+        return {
+            key: item.id,
+            employee_name: `${item.employee.first_name} ${item.employee.last_name}`,
+            lwopPera: lwopPeraAmount ? `₱${parseFloat(lwopPeraAmount).toFixed(2)}` : '----',
+        };
+    });
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -115,19 +128,6 @@ export default function ContributionsIndex({
                     onCancel={handleCancel}
                     okText="Save"
                     cancelText="Cancel"
-                    footer={[
-                        <Button key="cancel" onClick={handleCancel} style={{ marginRight: '8px' }}>
-                            Cancel
-                        </Button>,
-                        <PrimaryButton
-                            key="save"
-                            type="primary"
-                            onClick={handleOk}
-                            style={{ marginLeft: '8px' }}
-                        >
-                            Save
-                        </PrimaryButton>,
-                    ]}
                 >
                     <Form
                         form={form}
@@ -160,40 +160,22 @@ export default function ContributionsIndex({
                                         {contribution.name}
                                     </Option>
                                 ))}
+                                {lwopPera && (
+                                    <Option key={lwopPera.id} value={lwopPera.id}>
+                                        {lwopPera.name}
+                                    </Option>
+                                )}
                             </Select>
                         </Form.Item>
-                        {/* {console.log(employees.map((employee) => employee.salary_grade_id))} */}
+
                         <Form.Item
                             name="amount"
                             label="Amount"
                             rules={[
-                                ({ getFieldValue }) => ({
-                                    validator(_, value) {
-                                        const contributionId = getFieldValue('contribution_id');
-                                        const selectedContribution = contributions.find(
-                                            (contribution) => contribution.id === contributionId
-                                        );
-
-                                        // Skip validation for auto-calculated contributions
-                                        if (
-                                            selectedContribution &&
-                                            ['GSIS PREM', 'HDMF PREM1'].includes(
-                                                selectedContribution.name
-                                            )
-                                        ) {
-                                            return Promise.resolve(); // Auto-calculated, no manual validation needed
-                                        }
-
-                                        // For manual input, ensure a value is provided
-                                        if (!value && !isAmountDisabled) {
-                                            return Promise.reject(
-                                                new Error('Please input the amount!')
-                                            );
-                                        }
-
-                                        return Promise.resolve();
-                                    },
-                                }),
+                                {
+                                    required: !isAmountDisabled,
+                                    message: 'Please input the amount!',
+                                },
                             ]}
                         >
                             <Input
@@ -219,6 +201,14 @@ export default function ContributionsIndex({
                                 </div>
                             </Card.Grid>
                         ))}
+
+                        {/* Display LWAP-PERA */}
+                        {lwopPera && (
+                            <Card.Grid key="lwopPera" style={{ width: '33%', textAlign: 'center' }}>
+                                <div className="text-lg font-bold">{lwopPera.name}</div>
+                                <div className="text-sm text-gray-500">{lwopPera.description}</div>
+                            </Card.Grid>
+                        )}
                     </Card>
                 ) : (
                     <Empty
@@ -227,21 +217,31 @@ export default function ContributionsIndex({
                         className="mb-6"
                     />
                 )}
-                <Divider style={{ borderColor: '#F0C519' }}> Employee Deduction</Divider>
+
                 <PrimaryButton type="primary" onClick={showModal} style={{ marginBottom: '16px' }}>
                     Add Deduction
                 </PrimaryButton>
 
-                {/* Employee Dedcution/Contribution list */}
-                {employeeContribution && employeeContribution.length > 0 ? (
+                {/* Employee Deduction list */}
+
+                {employeeBenefits.length > 0 || employeeContribution.length > 0 ? (
                     <Table
                         dataSource={employees.map((employee) => {
-                            // deduction employee
+                            // Find LWOP-PERA amount from employeeBenefits
+                            const lwopPeraAmount =
+                                employeeBenefits
+                                    .filter(
+                                        (item) =>
+                                            item.benefit.name === 'LWOP-PERA' &&
+                                            item.employee.id === employee.id
+                                    )
+                                    .map((item) => item.amount)[0] || '----'; // Default to '----' if not found
+
+                            // Map contributions for the employee
                             const contributionsForEmployee = employeeContribution.filter(
                                 (item) => item.employee.id === employee.id
                             );
 
-                            // contributions are grouped by name
                             const contributionsByName = {};
                             contributionsForEmployee.forEach((item) => {
                                 contributionsByName[item.contribution.name] =
@@ -251,7 +251,11 @@ export default function ContributionsIndex({
                             return {
                                 key: employee.id,
                                 employee_name: `${employee.first_name} ${employee.last_name}`,
-                                ...contributionsByName,
+                                ...contributionsByName, // Add contributions dynamically
+                                lwopPera:
+                                    lwopPeraAmount === '----'
+                                        ? lwopPeraAmount
+                                        : `₱${parseFloat(lwopPeraAmount).toFixed(2)}`,
                             };
                         })}
                         columns={[
@@ -261,13 +265,19 @@ export default function ContributionsIndex({
                                 key: 'employee_name',
                                 fixed: 'left',
                             },
-                            // columns for each Deduction
+                            // Dynamically add columns for each contribution
                             ...contributions.map((contribution) => ({
                                 title: contribution.name,
                                 dataIndex: contribution.name,
                                 key: contribution.name,
-                                render: (amount) => amount || '----', // Default
+                                render: (amount) => amount || '----',
                             })),
+                            {
+                                title: 'LWOP-PERA', // New column for LWOP-PERA
+                                dataIndex: 'lwopPera',
+                                key: 'lwopPera',
+                                render: (amount) => amount || '----', // Display lwopPera amount
+                            },
                         ]}
                         pagination={false}
                         scroll={{ x: 'max-content' }}
@@ -275,7 +285,7 @@ export default function ContributionsIndex({
                 ) : (
                     <Empty
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        description="No employee contributions available"
+                        description="No employee benefits or contributions available"
                         className="mt-6"
                     />
                 )}
