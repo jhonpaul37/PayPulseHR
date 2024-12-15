@@ -35,50 +35,22 @@ class ContributionController extends Controller
         return inertia('Contribution/ContributionCreate');
     }
 
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'employee_id' => 'required|exists:employees,id',
-    //         'contribution_id' => 'required|exists:contributions,id',
-    //         'amount' => 'required|numeric',
-    //     ]);
-
-    //     EmployeeContribution::create([
-    //         'employee_id' => $request->employee_id,
-    //         'contribution_id' => $request->contribution_id,
-    //         'amount' => $request->amount,
-    //     ]);
-
-    //     return redirect()->route('contributions.index')->with('success', 'Contribution created successfully');
-    // }
-
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'employee_id' => 'required|exists:employees,id',
-        'contribution_id' => 'required|exists:contributions,id',
-        'amount' => 'required|numeric|min:0',
-        'type' => 'required|string|in:benefit,contribution', // Validate the type field
-    ]);
-
-    if ($validated['type'] === 'benefit') {
-        // Save as a benefit
-        Benefit::create([
-            'employee_id' => $validated['employee_id'],
-            'benefit_id' => $validated['contribution_id'],
-            'amount' => $validated['amount'],
+    public function store(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'contribution_id' => 'required|exists:contributions,id',
+            'amount' => 'required|numeric',
         ]);
-    } else {
-        // Save as a regular contribution
+
         EmployeeContribution::create([
-            'employee_id' => $validated['employee_id'],
-            'contribution_id' => $validated['contribution_id'],
-            'amount' => $validated['amount'],
+            'employee_id' => $request->employee_id,
+            'contribution_id' => $request->contribution_id,
+            'amount' => $request->amount,
         ]);
-    }
 
-    return back()->with('success', 'Contribution added successfully!');
-}
+        return redirect()->route('contributions.index')->with('success', 'Contribution created successfully');
+    }
 
 
     public function edit(Contribution $contribution)

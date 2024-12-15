@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add');
     // Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add')->middleware('permission:Voucher');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
+
+    Route::post('/fund-cluster/upload', [FundClusterController::class, 'uploadCsv'])->name('fund-cluster.upload');
     Route::get('/fClusters', [VoucherController::class, 'fCluster']);
     Route::post('/voucher/{id}/complete', [VoucherController::class, 'complete'])->name('voucher.complete');
 

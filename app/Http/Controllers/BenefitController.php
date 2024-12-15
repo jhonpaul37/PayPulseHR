@@ -18,9 +18,6 @@ public function store(Request $request)
         'amount' => 'required|numeric',
     ]);
 
-    // Log to check the request data
-    Log::info($request->all());
-
     Benefit::create($request->all());
 
     return redirect()->route('employee_benefits.index');

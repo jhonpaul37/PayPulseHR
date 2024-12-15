@@ -46,6 +46,7 @@ class EmployeeBenefitController extends Controller
             'benefit_id' => 'required|exists:benefits,id',
             'amount' => 'required|numeric',
         ]);
+        // dd($request->all());
 
         $existing = [];
         $created = [];

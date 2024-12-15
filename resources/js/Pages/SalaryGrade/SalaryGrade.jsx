@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import { Inertia } from '@inertiajs/inertia';
 import PrimaryButton from '@/Components/PrimaryButton';
+import DangerButton from '@/Components/DangerButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const SalaryGradeManager = ({ salaryGrades, auth }) => {
@@ -155,7 +156,7 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                                 <PrimaryButton type="primary" onClick={handleSave}>
                                     Save Changes
                                 </PrimaryButton>
-                                <Button onClick={handleCancel}>Cancel</Button>
+                                <DangerButton onClick={handleCancel}>Cancel</DangerButton>
                             </>
                         ) : (
                             <>
@@ -204,16 +205,14 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                     open={isAddModalVisible}
                     onOk={handleNewGradeSave}
                     onCancel={() => setIsAddModalVisible(false)}
-                    okText="Save"
-                    cancelText="Cancel"
                     footer={[
-                        <Button
+                        <DangerButton
                             key="cancel"
                             onClick={() => setIsAddModalVisible(false)}
                             style={{ marginRight: '8px' }}
                         >
                             Cancel
-                        </Button>,
+                        </DangerButton>,
                         <PrimaryButton
                             key="save"
                             type="primary"

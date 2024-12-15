@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Input, Select, Form, Card, Empty, message } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
-import CancelButton from '@/Components/CancelButton';
+import DangerButton from '@/Components/DangerButton';
 import { useForm } from '@inertiajs/react';
 
 const { Option } = Select;
@@ -130,9 +130,9 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
                 onCancel={() => setIsCreateModalVisible(false)}
                 footer={
                     <div className="flex justify-end space-x-4">
-                        <CancelButton key="cancel" onClick={() => setIsCreateModalVisible(false)}>
+                        <DangerButton key="cancel" onClick={() => setIsCreateModalVisible(false)}>
                             Cancel
-                        </CancelButton>
+                        </DangerButton>
                         <PrimaryButton key="submit" type="primary" onClick={handleCreateSubmit}>
                             Add
                         </PrimaryButton>
@@ -187,9 +187,9 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
                 onCancel={handleCancel}
                 footer={
                     <div className="flex justify-end space-x-4">
-                        <CancelButton key="cancel" onClick={handleCancel}>
+                        <DangerButton key="cancel" onClick={handleCancel}>
                             Cancel
-                        </CancelButton>
+                        </DangerButton>
                         <PrimaryButton key="submit" type="primary" onClick={handleEditSubmit}>
                             Update
                         </PrimaryButton>

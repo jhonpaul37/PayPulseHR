@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import { message } from 'antd'; // Import message
 import PrimaryButton from '@/Components/PrimaryButton';
-import CancelButton from '@/Components/CancelButton';
+import DangerButton from '@/Components/DangerButton';
 import TextInput from '@/Components/TextInput';
 import { Card, Empty, Modal } from 'antd';
 
@@ -107,7 +107,7 @@ export default function LoanPrograms({ programs }) {
                     </div>
 
                     <div className="flex justify-end gap-4 pt-4">
-                        <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+                        <DangerButton onClick={handleCancel}>Cancel</DangerButton>
                         <PrimaryButton type="submit">
                             {editingProgram ? 'Update' : 'Add'}
                         </PrimaryButton>

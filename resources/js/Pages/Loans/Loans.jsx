@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import LoanPrograms from './LoanPrograms';
 import LoanTypes from './LoanTypes';
 import PrimaryButton from '@/Components/PrimaryButton';
+import DangerButton from '@/Components/DangerButton';
 import EmployeeLoanForm from './EmployeeLoanForm';
 import EmployeeLoanDetail from './EmployeeLoanDetail';
 
@@ -260,7 +261,23 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
             {/* {console.log(employeeLoan)} */}
 
             {/* Edit Loan Modal */}
-            <Modal title="Edit Loan" open={isEditModalOpen} onCancel={closeEditModal} footer={null}>
+            <Modal
+                title="Edit Loan"
+                open={isEditModalOpen}
+                onCancel={closeEditModal} // This will close the modal when clicked
+                footer={[
+                    <DangerButton
+                        key="cancel"
+                        onClick={closeEditModal}
+                        style={{ marginRight: '8px' }}
+                    >
+                        Cancel
+                    </DangerButton>,
+                    <PrimaryButton key="save" type="primary" htmlType="submit">
+                        Save Changes
+                    </PrimaryButton>,
+                ]}
+            >
                 {selectedLoan && (
                     <Form
                         initialValues={{
@@ -272,7 +289,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         }}
                         onFinish={handleEditSubmit}
                     >
-                        {/* Display Total Paid (including Interest) */}
                         <div style={{ marginBottom: '16px' }}>
                             <strong>Total Paid: </strong> ₱
                             {selectedLoan.payments
@@ -280,7 +296,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                                 .toLocaleString()}
                         </div>
 
-                        {/* Display Total Loan Amount with Interest */}
                         <div style={{ marginBottom: '16px' }}>
                             <strong>Total Loan Amount with Interest: </strong> ₱
                             {(
@@ -289,7 +304,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             ).toLocaleString()}
                         </div>
 
-                        {/* Display Remaining Balance */}
                         <div style={{ marginBottom: '16px' }}>
                             <strong>Remaining Balance: </strong> ₱
                             {(
@@ -302,7 +316,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             ).toLocaleString()}
                         </div>
 
-                        {/* Loan Amount Input */}
                         <Form.Item
                             name="amount"
                             label="Amount"
@@ -311,7 +324,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             <InputNumber min={0} style={{ width: '100%' }} />
                         </Form.Item>
 
-                        {/* Interest Rate Input */}
                         <Form.Item
                             name="interest_rate"
                             label="Interest Rate (%)"
@@ -320,7 +332,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             <InputNumber min={0} style={{ width: '100%' }} />
                         </Form.Item>
 
-                        {/* Months Input */}
                         <Form.Item
                             name="months"
                             label="Months"
@@ -331,7 +342,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             <InputNumber min={1} style={{ width: '100%' }} />
                         </Form.Item>
 
-                        {/* Monthly Amortization Input */}
                         <Form.Item
                             name="monthly_amortization"
                             label="Monthly Amortization"
@@ -345,11 +355,11 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             <InputNumber min={0} style={{ width: '100%' }} />
                         </Form.Item>
 
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
+                        {/* <Form.Item>
+                            <PrimaryButton type="primary" htmlType="submit">
                                 Save Changes
-                            </Button>
-                        </Form.Item>
+                            </PrimaryButton>
+                        </Form.Item> */}
                     </Form>
                 )}
             </Modal>
