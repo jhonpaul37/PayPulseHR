@@ -91,12 +91,12 @@ public function store(Request $request)
         'data' => json_encode($processedEmployees), // Store all processed data, including names
     ]);
 
-    // Return a response with success message, reference number, and employee names
-    return Inertia::render('Payroll/FinalPayroll', [
-        'message' => 'Transaction saved successfully!',
-        'reference_number' => $transaction->reference_number,
-        'employees' => $processedEmployees, // Include processed employees with names in response
-    ]);
+return redirect()->route('payrollData')->with([
+    'message' => 'Transaction saved successfully!',
+    'reference_number' => $transaction->reference_number,
+    'employees' => $processedEmployees, // Include processed employees with names in the session
+]);
+
 }
 
 

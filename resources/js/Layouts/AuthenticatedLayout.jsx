@@ -62,25 +62,9 @@ const ScrollableContent = styled(Content)`
 `;
 
 const AuthenticatedLayout = ({ user, children }) => {
-    const [collapsed, setCollapsed] = useState(true); //true is  close by default sidebar
+    const [collapsed, setCollapsed] = useState(false); //true is  close by default sidebar
     const { url, props } = usePage();
     const { auth } = props;
-
-    // const selectedKey = () => {
-    //     // if (url.startsWith('/dashboard')) return '1';
-    //     if (url.startsWith('/dashboard')) return '2';
-    //     if (url.startsWith('/voucher')) return '3';
-    //     if (url.startsWith('/settings')) return '4';
-    //     if (url.startsWith('/leaveRequest')) return '5';
-    //     if (url.startsWith('/employees')) return '6';
-    //     if (url.startsWith('/payroll/data')) return '7';
-    //     if (url.startsWith('/loans')) return '8';
-    //     if (url.startsWith('/employee_benefits')) return '9';
-    //     if (url.startsWith('/leaveRequestForm')) return '10';
-    //     if (url.startsWith('/my_loans')) return '11';
-    //     return '1';
-    // };
-    // console.log(user.employee?.role);
 
     const selectedKey = () => {
         if (url.startsWith('/dashboard')) return '1';
@@ -96,15 +80,16 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url === '/my_loans') return '11';
         if (url === '/contributions') return '12';
         if (url === '/salary_grades') return '13';
+        if (url === '/AsignRoles') return '14';
         return '1'; // Default case
     };
 
     const menuItems = [
-        // {
-        //     key: '2',
-        //     icon: <FontAwesomeIcon icon={faHouse} />,
-        //     label: <Link href="/dashboards">Dashboard</Link>,
-        // },
+        {
+            key: '14',
+            icon: <FontAwesomeIcon icon={faHouse} />,
+            label: <Link href="/AsignRoles">Roles</Link>,
+        },
         {
             key: 'payrollTitle',
             label: !collapsed ? 'Cashier' : null,
@@ -189,11 +174,6 @@ const AuthenticatedLayout = ({ user, children }) => {
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequestForm">Leave</Link>,
         },
-        // {
-        //     key: 'dashboardLanding',
-        //     icon: <FontAwesomeIcon icon={faHouse} />,
-        //     label: <Link href="/dashboards">Dashboard</Link>,
-        // },
 
         // {
         //     type: 'divider',

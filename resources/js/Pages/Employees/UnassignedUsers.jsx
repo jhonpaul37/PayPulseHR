@@ -12,7 +12,6 @@ const UnassignedUsers = ({ auth, users }) => {
             key: 'name',
         },
         {
-            title: 'Email',
             dataIndex: 'email',
             key: 'email',
         },

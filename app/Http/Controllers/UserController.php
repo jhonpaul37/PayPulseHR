@@ -16,7 +16,7 @@ class UserController extends Controller
         $users = User::whereDoesntHave('employee')->get();
 
         // Return the data to the Inertia page
-        return Inertia::render('Admin/UnassignedUsers', [
+        return Inertia::render('Employees/UnassignedUsers', [
             'users' => $users,
         ]);
     }

@@ -18,6 +18,7 @@ use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RolesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -30,6 +31,12 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'landingPage'])->name('dashboard');
+
+    Route::middleware(['SuperAdmin'])->group(function () {
+        Route::get('/AsignRoles', [RolesController::class, 'asignRoles'])->name('asignRoles');
+        Route::post('/assign-roles', [RolesController::class, 'updateRoles'])->name('assign.roles');
+
+    });
 
     //Accounting
     Route::middleware(['accounting'])->group(function () {
