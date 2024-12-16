@@ -14,6 +14,7 @@ class Employee extends Model
         'last_name',
         'middle_name',
         'birthdate',
+        'birthPlace',
         'sex',
         'civil_status',
         'nationality',

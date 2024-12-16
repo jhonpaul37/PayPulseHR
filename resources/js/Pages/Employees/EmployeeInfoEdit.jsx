@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Upload, message } from 'antd';
+import { Upload, message, Form, Input, DatePicker, Select, Button, Radio } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 // Components
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -25,6 +25,7 @@ const beforeUpload = (file) => {
     }
     return isJpgOrPng && isLt2M;
 };
+const { Option } = Select;
 
 export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
     const { data, setData, put, errors } = useForm({
@@ -59,6 +60,11 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState(employee.photo);
 
+    // Set imageUrl when employee data is available
+    useEffect(() => {
+        setImageUrl(employee.photo);
+    }, [employee]);
+
     const handleChange = (info) => {
         if (info.file.status === 'uploading') {
             setLoading(true);
@@ -73,14 +79,9 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
         }
     };
 
-    const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // console.log(data);
+    const handleSubmit = () => {
         put(route('employees.update', employee.id), {
+            data: data,
             onSuccess: (response) => {
                 console.log('Update successful', response);
             },
@@ -101,7 +102,13 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
         <AuthenticatedLayout user={auth.user}>
             <div className="container mx-auto">
                 <h1 className="pb-10 text-center text-xl font-bold">Edit Employee</h1>
-                <form onSubmit={handleSubmit} className="flex justify-center gap-20">
+                <Form
+                    onFinish={handleSubmit}
+                    initialValues={data}
+                    layout="vertical"
+                    className="flex justify-center gap-20"
+                    encType="multipart/form-data"
+                >
                     {/* Profile Picture */}
                     <div className="flex flex-col items-center justify-center">
                         <Upload
@@ -129,7 +136,7 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
 
                         <div className="flex gap-5 p-2">
                             {/* First Name */}
-                            <div className="flex flex-col">
+                            {/* <div className="flex flex-col">
                                 <label>First Name</label>
                                 <TextInput
                                     type="text"
@@ -137,29 +144,49 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                                     onChange={(e) => setData('first_name', e.target.value)}
                                 />
                                 {errors.first_name && <div>{errors.first_name}</div>}
-                            </div>
+                            </div> */}
+                            <Form.Item
+                                label="First Name"
+                                name="first_name"
+                                validateStatus={errors.first_name ? 'error' : ''}
+                                help={errors.first_name}
+                                rules={[{ required: true, message: 'First name is required' }]}
+                            >
+                                <TextInput
+                                    autoComplete="off"
+                                    value={data.first_name || ''} // Ensure a fallback if the value is empty or undefined
+                                    onChange={(e) => setData('first_name', e.target.value)}
+                                />
+                            </Form.Item>
 
                             {/* Last Name */}
-                            <div className="flex flex-col">
-                                <label>Last Name</label>
+                            <Form.Item
+                                label="Last Name"
+                                name="last_name"
+                                validateStatus={errors.last_name ? 'error' : ''}
+                                help={errors.last_name}
+                                rules={[{ required: true, message: 'Last name is required' }]}
+                            >
                                 <TextInput
-                                    type="text"
-                                    value={data.last_name}
+                                    autoComplete="off"
+                                    value={data.last_name || ''} // Ensure a fallback if the value is empty or undefined
                                     onChange={(e) => setData('last_name', e.target.value)}
                                 />
-                                {errors.last_name && <div>{errors.last_name}</div>}
-                            </div>
+                            </Form.Item>
 
                             {/* Middle Name */}
-                            <div className="flex flex-col">
-                                <label>Middle Name</label>
+                            <Form.Item
+                                label="Middle Name"
+                                name="middle_name"
+                                validateStatus={errors.middle_name ? 'error' : ''}
+                                help={errors.middle_name}
+                            >
                                 <TextInput
-                                    type="text"
-                                    value={data.middle_name}
+                                    autoComplete="off"
+                                    value={data.middle_name || ''} // Ensure a fallback if the value is empty or undefined
                                     onChange={(e) => setData('middle_name', e.target.value)}
                                 />
-                                {errors.middle_name && <div>{errors.middle_name}</div>}
-                            </div>
+                            </Form.Item>
                         </div>
 
                         <div className="flex gap-5 p-2">
@@ -175,138 +202,195 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                             </div>
 
                             {/* Birth Place */}
-                            <div className="flex flex-col">
-                                <label>Birth Place</label>
+                            <Form.Item
+                                label="Birth Place"
+                                name="birthPlace"
+                                validateStatus={errors.birthPlace ? 'error' : ''}
+                                help={errors.birthPlace}
+                                rules={[{ required: true, message: 'Birth Place is required' }]}
+                            >
                                 <TextInput
-                                    type="text"
+                                    autoComplete="off"
                                     value={data.birthPlace}
                                     onChange={(e) => setData('birthPlace', e.target.value)}
                                 />
-                                {errors.birthPlace && <div>{errors.birthPlace}</div>}
-                            </div>
+                            </Form.Item>
                         </div>
 
                         <div className="flex gap-5 p-2">
                             {/* Sex */}
-                            <div className="flex flex-col">
-                                <label>Sex</label>
-                                <div className="flex space-x-4">
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            value="male"
-                                            checked={data.sex === 'male'}
-                                            onChange={(e) => setData('sex', e.target.value)}
-                                        />
-                                        Male
-                                    </label>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            value="female"
-                                            checked={data.sex === 'female'}
-                                            onChange={(e) => setData('sex', e.target.value)}
-                                        />
-                                        Female
-                                    </label>
-                                </div>
-                                {errors.sex && <div>{errors.sex}</div>}
-                            </div>
+                            <Form.Item
+                                label="Sex"
+                                name="sex"
+                                validateStatus={errors.sex ? 'error' : ''}
+                                help={errors.sex}
+                                rules={[{ required: true, message: 'Sex is required' }]}
+                            >
+                                <Radio.Group
+                                    onChange={(e) => setData('sex', e.target.value)}
+                                    value={data.sex}
+                                >
+                                    <Radio value="male">Male</Radio>
+                                    <Radio value="female">Female</Radio>
+                                </Radio.Group>
+                            </Form.Item>
 
                             {/* Civil Status */}
-                            <div className="flex flex-col">
-                                <label>Civil Status</label>
-                                <select
+                            <Form.Item
+                                label="Civil Status"
+                                name="civil_status"
+                                validateStatus={errors.civil_status ? 'error' : ''}
+                                help={errors.civil_status}
+                                rules={[{ required: true, message: 'Civil Status is required' }]}
+                            >
+                                <Select
                                     value={data.civil_status}
-                                    onChange={(e) => setData('civil_status', e.target.value)}
+                                    onChange={(value) => setData('civil_status', value)}
+                                    placeholder="Select Civil Status"
                                 >
-                                    <option value="">Select</option>
-                                    <option value="single">Single</option>
-                                    <option value="married">Married</option>
-                                </select>
-                                {errors.civil_status && <div>{errors.civil_status}</div>}
-                            </div>
+                                    <Select.Option value="single">Single</Select.Option>
+                                    <Select.Option value="married">Married</Select.Option>
+                                </Select>
+                            </Form.Item>
 
                             {/* Nationality */}
-                            <div className="flex flex-col">
-                                <label>Nationality</label>
+                            <Form.Item
+                                label="Nationality"
+                                name="nationality"
+                                validateStatus={errors.nationality ? 'error' : ''}
+                                help={errors.nationality}
+                                rules={[{ required: true, message: 'Nationality is required' }]}
+                            >
                                 <TextInput
-                                    type="text"
+                                    autoComplete="off"
                                     value={data.nationality}
                                     onChange={(e) => setData('nationality', e.target.value)}
                                 />
-                                {errors.nationality && <div>{errors.nationality}</div>}
-                            </div>
+                            </Form.Item>
                         </div>
 
                         {/* Address */}
-                        <div className="flex flex-col p-2">
-                            <label>Address</label>
-                            <TextInput
-                                type="text"
-                                value={data.address}
-                                onChange={(e) => setData('address', e.target.value)}
-                            />
-                            {errors.address && <div>{errors.address}</div>}
-                        </div>
+                        <div>
+                            <Form.Item
+                                label="Address"
+                                name="address"
+                                validateStatus={errors.address ? 'error' : ''}
+                                help={errors.address}
+                                rules={[{ required: true, message: 'Address is required' }]}
+                            >
+                                <TextInput
+                                    value={data.address}
+                                    onChange={(e) => setData('address', e.target.value)}
+                                    className="w-full"
+                                    autoComplete="off"
+                                />
+                            </Form.Item>
 
-                        {/* Phone */}
-                        <div className="flex flex-col p-2">
-                            <label>Phone</label>
-                            <TextInput
-                                type="text"
-                                value={data.phone}
-                                onChange={(e) => setData('phone', e.target.value)}
-                            />
-                            {errors.phone && <div>{errors.phone}</div>}
+                            <div className="grid grid-cols-2 gap-8">
+                                {/* Phone */}
+                                <Form.Item
+                                    label="Phone"
+                                    name="phone"
+                                    validateStatus={errors.phone ? 'error' : ''}
+                                    help={errors.phone}
+                                    rules={[
+                                        { required: true, message: 'Phone Number is required' },
+                                    ]}
+                                >
+                                    <TextInput
+                                        value={data.phone}
+                                        onChange={(e) => setData('phone', e.target.value)}
+                                        className="w-full"
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+                                {/* Email */}
+                                <Form.Item
+                                    label="Email"
+                                    name="email"
+                                    validateStatus={errors.email ? 'error' : ''}
+                                    help={errors.email}
+                                    rules={[{ required: true, message: 'Email is required' }]}
+                                >
+                                    <TextInput
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="w-full"
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+                            </div>
                         </div>
                         <div>
-                            <div className="flex gap-5 p-2">
+                            {/* First Row: GSIS No and HDMF No */}
+                            <div className="flex gap-5">
                                 {/* GSIS No */}
-                                <div className="flex flex-col">
-                                    <label>GSIS No</label>
+                                <Form.Item
+                                    label="GSIS No"
+                                    name="gsis_no"
+                                    validateStatus={errors.gsis_no ? 'error' : ''}
+                                    help={errors.gsis_no}
+                                >
                                     <TextInput
-                                        type="text"
+                                        type="number"
                                         value={data.gsis_no}
                                         onChange={(e) => setData('gsis_no', e.target.value)}
+                                        className="w-full"
+                                        autoComplete="off"
                                     />
-                                    {errors.gsis_no && <div>{errors.gsis_no}</div>}
-                                </div>
+                                </Form.Item>
 
                                 {/* HDMF No */}
-                                <div className="flex flex-col">
-                                    <label>HDMF No</label>
+                                <Form.Item
+                                    label="HDMF No"
+                                    name="hdmf_no"
+                                    validateStatus={errors.hdmf_no ? 'error' : ''}
+                                    help={errors.hdmf_no}
+                                >
                                     <TextInput
-                                        type="text"
+                                        type="number"
                                         value={data.hdmf_no}
                                         onChange={(e) => setData('hdmf_no', e.target.value)}
+                                        className="w-full"
+                                        autoComplete="off"
                                     />
-                                    {errors.hdmf_no && <div>{errors.hdmf_no}</div>}
-                                </div>
+                                </Form.Item>
                             </div>
 
-                            <div className="flex gap-5 p-2">
+                            {/* Second Row: PHIC No and BIR TIN No */}
+                            <div className="flex gap-5">
                                 {/* PHIC No */}
-                                <div className="flex flex-col">
-                                    <label>PHIC No</label>
+                                <Form.Item
+                                    label="PHIC No"
+                                    name="phic_no"
+                                    validateStatus={errors.phic_no ? 'error' : ''}
+                                    help={errors.phic_no}
+                                >
                                     <TextInput
-                                        type="text"
+                                        type="number"
                                         value={data.phic_no}
                                         onChange={(e) => setData('phic_no', e.target.value)}
+                                        className="w-full"
+                                        autoComplete="off"
                                     />
-                                    {errors.phic_no && <div>{errors.phic_no}</div>}
-                                </div>
+                                </Form.Item>
 
                                 {/* BIR TIN No */}
-                                <div className="flex flex-col">
-                                    <label>BIR TIN No</label>
+                                <Form.Item
+                                    label="BIR TIN No"
+                                    name="bir_tin_no"
+                                    validateStatus={errors.bir_tin_no ? 'error' : ''}
+                                    help={errors.bir_tin_no}
+                                >
                                     <TextInput
-                                        type="text"
+                                        type="number"
                                         value={data.bir_tin_no}
                                         onChange={(e) => setData('bir_tin_no', e.target.value)}
+                                        className="w-full"
+                                        autoComplete="off"
                                     />
-                                    {errors.bir_tin_no && <div>{errors.bir_tin_no}</div>}
-                                </div>
+                                </Form.Item>
                             </div>
                         </div>
                     </div>
@@ -318,15 +402,19 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
 
                         <div className="flex gap-5 p-2">
                             {/* Employee ID */}
-                            <div className="flex flex-col">
-                                <label>Employee ID</label>
+                            <Form.Item
+                                label="Employee No."
+                                name="employee_id"
+                                validateStatus={errors.employee_id ? 'error' : ''}
+                                help={errors.employee_id}
+                                rules={[{ required: true, message: 'Employee No. is required' }]}
+                            >
                                 <TextInput
-                                    type="text"
+                                    autoComplete="off"
                                     value={data.employee_id}
                                     onChange={(e) => setData('employee_id', e.target.value)}
                                 />
-                                {errors.employee_id && <div>{errors.employee_id}</div>}
-                            </div>
+                            </Form.Item>
 
                             {/* Start Date */}
                             <div className="flex flex-col">
@@ -342,84 +430,100 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
 
                         <div className="flex gap-5 p-2">
                             {/* Position */}
-                            <div className="flex flex-col">
-                                <label>Position</label>
+                            <Form.Item
+                                label="Position"
+                                name="position"
+                                validateStatus={errors.position ? 'error' : ''}
+                                help={errors.position}
+                                rules={[{ required: true, message: 'Position is required' }]}
+                                className="flex-1"
+                            >
                                 <TextInput
-                                    type="text"
                                     value={data.position}
                                     onChange={(e) => setData('position', e.target.value)}
                                 />
-                                {errors.position && <div>{errors.position}</div>}
-                            </div>
+                            </Form.Item>
 
                             {/* Department */}
-                            <div className="flex flex-col">
-                                <label>Department</label>
+                            <Form.Item
+                                label="Department"
+                                name="department"
+                                validateStatus={errors.department ? 'error' : ''}
+                                help={errors.department}
+                                rules={[{ required: true, message: 'Department is required' }]}
+                                className="flex-1"
+                            >
                                 <TextInput
-                                    type="text"
                                     value={data.department}
                                     onChange={(e) => setData('department', e.target.value)}
                                 />
-                                {errors.department && <div>{errors.department}</div>}
-                            </div>
+                            </Form.Item>
                         </div>
 
                         <div className="flex gap-5 p-2">
-                            <div className="">
-                                {/* Classification */}
-                                <div className="flex flex-col">
-                                    <label>Classification</label>
-                                    <select
-                                        value={data.classification}
-                                        onChange={(e) => setData('classification', e.target.value)}
-                                    >
-                                        <option value="">Select Classification</option>
-                                        <option value="Regular">Regular</option>
-                                        <option value="Casual">Casual</option>
-                                        <option value="OJ/Job Order">OJ/Job Order</option>
-                                        <option value="COS/Contract of Service">
-                                            COS/Contract of Service
-                                        </option>
-                                    </select>
-                                    {errors.classification && <div>{errors.classification}</div>}
-                                </div>
-                            </div>
+                            <Form.Item
+                                label="Classification"
+                                name="classification"
+                                validateStatus={errors.classification ? 'error' : ''}
+                                help={errors.classification}
+                                rules={[{ required: true, message: 'Classification is required' }]}
+                            >
+                                <Select
+                                    value={data.classification}
+                                    onChange={(value) => setData('classification', value)}
+                                    placeholder="Select Classification"
+                                >
+                                    <Option value="Regular">Regular</Option>
+                                    <Option value="Casual">Casual</Option>
+                                    <Option value="OJ/Job Order">OJ/Job Order</Option>
+                                    <Option value="COS/Contract of Service">
+                                        COS/Contract of Service
+                                    </Option>
+                                </Select>
+                            </Form.Item>
 
                             {/* Employment Type */}
-                            <div className="flex flex-col">
-                                <label>Employment Type</label>
-                                <select
+                            <Form.Item
+                                label="Employment Type"
+                                name="employment_type"
+                                validateStatus={errors.employment_type ? 'error' : ''}
+                                help={errors.employment_type}
+                                rules={[{ required: true, message: 'Employee Type is required' }]}
+                            >
+                                <Select
                                     value={data.employment_type}
-                                    onChange={(e) => setData('employment_type', e.target.value)}
+                                    onChange={(value) => setData('employment_type', value)}
+                                    placeholder="Select Employment Type"
                                 >
-                                    <option value="">Select</option>
-                                    <option value="full-time">Full-Time</option>
-                                    <option value="part-time">Part-Time</option>
-                                    <option value="contract">Contract</option>
-                                </select>
-                                {errors.employment_type && <div>{errors.employment_type}</div>}
-                            </div>
+                                    <Option value="full-time">Full-time</Option>
+                                    <Option value="part-time">Part-time</Option>
+                                    <Option value="contract">Contract</Option>
+                                </Select>
+                            </Form.Item>
 
                             {/* Salary */}
-                            <div className="flex flex-col">
-                                <label>Salary Grade</label>
-                                <select
+                            <Form.Item
+                                label="Salary Grade"
+                                name="salary_grade_id"
+                                validateStatus={errors.salary_grade_id ? 'error' : ''}
+                                help={errors.salary_grade_id}
+                                rules={[{ required: true, message: 'Salary Grade is required' }]}
+                            >
+                                <Select
                                     value={data.salary_grade_id}
-                                    onChange={(e) =>
-                                        setData({ ...data, salary_grade_id: e.target.value })
+                                    onChange={(value) =>
+                                        setData({ ...data, salary_grade_id: value })
                                     }
+                                    placeholder="Select Salary Grade"
                                 >
-                                    <option value="">Select Salary Grade</option>
-                                    {salaryGrades &&
-                                        salaryGrades.map((grade) => (
-                                            <option key={grade.id} value={grade.id}>
-                                                {grade.grade} - Step {grade.step} (₱
-                                                {grade.monthly_salary})
-                                            </option>
-                                        ))}
-                                </select>
-                                {errors.salary_grade_id && <div>{errors.salary_grade_id}</div>}
-                            </div>
+                                    {salaryGrades?.map((grade) => (
+                                        <Option key={grade.id} value={grade.id}>
+                                            {grade.grade} - Step {grade.step} (₱
+                                            {grade.monthly_salary})
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
                         </div>
 
                         {/* Submit PrimaryButton */}
@@ -432,7 +536,7 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                             </PrimaryButton>
                         </div>
                     </div>
-                </form>
+                </Form>
             </div>
         </AuthenticatedLayout>
     );

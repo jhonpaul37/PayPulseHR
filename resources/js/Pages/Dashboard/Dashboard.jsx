@@ -10,13 +10,12 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Form, Modal, Input } from 'antd'; // Correct import
+import { Form, Modal, Input } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { usePage, useForm } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 
-// Register the required components for Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ChartComponent = ({ chartData }) => {
@@ -54,6 +53,7 @@ ChartComponent.propTypes = {
         data: PropTypes.array.isRequired,
     }).isRequired,
 };
+
 const FundCluster = ({ fundClusters = [] }) => {
     const { post, processing, errors } = useForm({
         csv_file: null,

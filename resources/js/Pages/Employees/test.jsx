@@ -299,7 +299,6 @@ export default function NewEmployee({ auth, salaryGrades }) {
                                 </Form.Item>
 
                                 <div className="grid grid-cols-2 gap-8">
-                                    {/* Phone */}
                                     <Form.Item
                                         label="Phone"
                                         name="phone"
@@ -537,8 +536,76 @@ export default function NewEmployee({ auth, salaryGrades }) {
                                     onChange={(e) => setData('department', e.target.value)}
                                 />
                             </Form.Item>
+                            {/* <Form.Item
+                                label="Role"
+                                name="role"
+                                validateStatus={errors.role ? 'error' : ''}
+                                help={errors.role}
+                            >
+                                <Select
+                                    placeholder="Select Role"
+                                    value={data.role} // Bind the value from your state
+                                    onChange={(value) => setData('role', value)} // Update the state when selection changes
+                                >
+                                    <Select.Option value="employee">Employee</Select.Option>
+                                    <Select.Option value="Accounting">Accounting</Select.Option>
+                                    <Select.Option value="Cashier">Cashier</Select.Option>
+                                    <Select.Option value="HR">HR</Select.Option>
+                                    <Select.Option value="SuperAdmin">SuperAdmin</Select.Option>
+                                </Select>
+                            </Form.Item> */}
                         </div>
+                        {/* Account Details */}
+                        {/* <div className="pt-10">
+                            <div className="pb-2">
+                                <label className="text-lg font-bold"> Account Details</label>
+                            </div>
+                            <Form.Item
+                                label="Email"
+                                name="email"
+                                validateStatus={errors.email ? 'error' : ''}
+                                help={errors.email}
+                                rules={[{ required: true, message: 'Email is required' }]}
+                            >
+                                <TextInput
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                />
+                            </Form.Item>
 
+                            <div className="flex gap-5">
+                                <Form.Item
+                                    label="Password"
+                                    name="password"
+                                    validateStatus={errors.password ? 'error' : ''}
+                                    help={errors.password}
+                                >
+                                    <Input.Password
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        autoComplete="new-password"
+                                        required
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="Confirm Password"
+                                    name="confirm_password"
+                                    validateStatus={errors.confirm_password ? 'error' : ''}
+                                    help={errors.confirm_password}
+                                >
+                                    <Input.Password
+                                        value={data.confirm_password}
+                                        onChange={(e) =>
+                                            setData('confirm_password', e.target.value)
+                                        }
+                                        autoComplete="new-password"
+                                        required
+                                    />
+                                </Form.Item>
+                            </div>
+                        </div> */}
                         <div className="flex justify-end p-2">
                             <PrimaryButton
                                 type="submit"
