@@ -45,15 +45,11 @@ export default function EmployeeList({ employees, auth }) {
     const filteredEmployees = activeEmployees.filter((employee) => {
         const fullName =
             `${employee.first_name} ${employee.middle_name} ${employee.last_name}`.toLowerCase();
-        const position = employee.position ? employee.position.name.toLowerCase() : '';
-        const department = employee.department ? employee.department.name.toLowerCase() : '';
+        const position = employee.position.toLowerCase();
         const searchQuery = searchTerm.toLowerCase();
 
-        return (
-            fullName.includes(searchQuery) ||
-            position.includes(searchQuery) ||
-            department.includes(searchQuery)
-        );
+        // Apply search filtering
+        return fullName.includes(searchQuery) || position.includes(searchQuery);
     });
 
     // Calculate paginated employees
@@ -88,16 +84,14 @@ export default function EmployeeList({ employees, auth }) {
             key: 'phone',
         },
         {
-            title: 'Department',
-            dataIndex: 'department',
-            key: 'department',
-            render: (_, employee) => (employee.department ? employee.department.name : 'N/A'),
-        },
-        {
             title: 'Position',
             dataIndex: 'position',
             key: 'position',
-            render: (_, employee) => (employee.position ? employee.position.name : 'N/A'),
+        },
+        {
+            title: 'Department',
+            dataIndex: 'department',
+            key: 'department',
         },
     ];
     console.log(employees);

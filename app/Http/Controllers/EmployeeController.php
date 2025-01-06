@@ -15,16 +15,11 @@ use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
-public function EmployeeList()
-{
-
-    $employees = Employee::with(['department', 'position'])->get();
-    dd($employees);
-
-    return Inertia::render('Employees/EmployeeList', [
-        'employees' => $employees
-    ]);
-}
+    public function EmployeeList()
+    {
+        $employees = Employee::all();
+        return Inertia::render('Employees/EmployeeList', ['employees' => $employees]);
+    }
 
     public function terminate(Request $request, $id)
     {
