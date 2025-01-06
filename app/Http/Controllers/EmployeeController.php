@@ -5,18 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\User;
 use App\Models\SalaryGrade;
+use App\Models\EmployeeContribution;
+use App\Models\Contribution;
+use App\Models\Department;
 use Illuminate\Http\Request;
+use App\Models\Position;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
-    public function EmployeeList()
-    {
-        $employees = Employee::all();
-        return Inertia::render('Employees/EmployeeList', ['employees' => $employees]);
-    }
+public function EmployeeList()
+{
+
+    $employees = Employee::with(['department', 'position'])->get();
+    dd($employees);
+
+    return Inertia::render('Employees/EmployeeList', [
+        'employees' => $employees
+    ]);
+}
 
     public function terminate(Request $request, $id)
     {
@@ -47,6 +55,7 @@ class EmployeeController extends Controller
 
 public function update(Request $request, Employee $employee)
 {
+    // Validate request data
     $validated = $request->validate([
         'employee_id' => 'required|string',
         'first_name' => 'required|string',
@@ -76,18 +85,56 @@ public function update(Request $request, Employee $employee)
         'hdmf_no' => 'nullable|string',
         'phic_no' => 'nullable|string',
         'bir_tin_no' => 'nullable|string',
-
     ]);
 
-    // Check new photo was uploaded
+    // Check if a new photo was uploaded
     if ($request->hasFile('photo')) {
         $path = $request->file('photo')->store('employee_photos', 'public');
         $validated['photo_url'] = $path;
     }
 
+    // Update the employee with validated data
     $employee->update($validated);
 
+    // Recalculate and update contributions
+    $this->updateEmployeeContributions($employee);
+
     return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+}
+
+/**
+ * Update contributions for an employee based on their updated salary grade.
+ */
+private function updateEmployeeContributions(Employee $employee)
+{
+    // Get the updated monthly salary for the employee's salary grade
+    $salaryGrade = $employee->salaryGrade; // Assuming relationship is `salaryGrade()`
+    $monthlySalary = $salaryGrade ? $salaryGrade->monthly_salary : 0;
+
+    // Contribution calculations
+    $contributions = [
+        'GSIS PREM' => $monthlySalary * 0.09,
+        'HDMF PREM1' => $monthlySalary * 0.02,
+        'PHIC' => $monthlySalary * 0.025,
+    ];
+
+    // Loop through contributions and update if they exist
+    foreach ($contributions as $contributionName => $calculatedAmount) {
+        // Find the corresponding contribution
+        $contribution = Contribution::where('name', $contributionName)->first();
+
+        if ($contribution) {
+            // Check if employee has this contribution
+            $employeeContribution = EmployeeContribution::where('employee_id', $employee->id)
+                ->where('contribution_id', $contribution->id)
+                ->first();
+
+            if ($employeeContribution) {
+                // Update the amount if contribution exists
+                $employeeContribution->update(['amount' => $calculatedAmount]);
+            }
+        }
+    }
 }
 
 
@@ -150,8 +197,12 @@ public function update(Request $request, Employee $employee)
     public function create()
     {
         $salaryGrades = SalaryGrade::all();
+        $department = Department::all();
+        $positions = Position::all();
         return Inertia::render('Employees/NewEmployee', [
             'salaryGrades' => $salaryGrades,
+            'positions' => $positions,
+            'department' => $department,
         ]);
     }
 

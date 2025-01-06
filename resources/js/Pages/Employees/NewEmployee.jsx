@@ -28,7 +28,7 @@ const beforeUpload = (file) => {
     }
     return isJpgOrPng && isLt2M;
 };
-export default function NewEmployee({ auth, salaryGrades }) {
+export default function NewEmployee({ auth, salaryGrades, positions, department }) {
     const { data, setData, post, errors } = useForm({
         name: '',
         salary_grade_id: '',
@@ -519,10 +519,17 @@ export default function NewEmployee({ auth, salaryGrades }) {
                                 help={errors.position}
                                 rules={[{ required: true, message: 'Position is required' }]}
                             >
-                                <TextInput
+                                <Select
                                     value={data.position}
-                                    onChange={(e) => setData('position', e.target.value)}
-                                />
+                                    onChange={(value) => setData('position', value)}
+                                    placeholder="Select a position"
+                                >
+                                    {positions.map((position) => (
+                                        <Select.Option key={position.id} value={position.id}>
+                                            {position.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
 
                             <Form.Item
@@ -532,11 +539,25 @@ export default function NewEmployee({ auth, salaryGrades }) {
                                 help={errors.department}
                                 rules={[{ required: true, message: 'Department is required' }]}
                             >
-                                <TextInput
+                                <Select
                                     value={data.department}
-                                    onChange={(e) => setData('department', e.target.value)}
-                                />
+                                    onChange={(value) => setData('department', value)}
+                                    placeholder="Select a Department"
+                                >
+                                    {department.map((departments) => (
+                                        <Select.Option key={departments.id} value={departments.id}>
+                                            {departments.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
+                        </div>
+                        <div className="flex gap-5 p-2">
+                            The password will automatically be generated using your last name and
+                            birth year. The first letter will be capitalized, and all other letters
+                            will be in lowercase. The year from your birthdate. For example, last
+                            name is dOe and your birthdate is March 15, 1995, your generated
+                            password would be: Doe1995
                         </div>
 
                         <div className="flex justify-end p-2">

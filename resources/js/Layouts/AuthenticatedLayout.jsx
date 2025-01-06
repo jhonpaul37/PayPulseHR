@@ -81,6 +81,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url === '/contributions') return '12';
         if (url === '/salary_grades') return '13';
         if (url === '/AsignRoles') return '14';
+        if (url === '/positions') return '15';
         return '1'; // Default case
     };
 
@@ -88,7 +89,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '14',
             icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/AsignRoles">Roles</Link>,
+            label: <Link href="/AsignRoles">Asign Roles</Link>,
         },
         {
             key: 'payrollTitle',
@@ -155,6 +156,11 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: '6',
             icon: <FontAwesomeIcon icon={faUsers} />,
             label: <Link href="/employees">Employees</Link>,
+        },
+        {
+            key: '15',
+            icon: <FontAwesomeIcon icon={faUsers} />,
+            label: <Link href="/positions">Position</Link>,
         },
         {
             type: 'divider',

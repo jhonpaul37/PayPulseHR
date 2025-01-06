@@ -28,8 +28,8 @@ export default function ContributionsIndex({
     employeeBenefits,
 }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isAmountDisabled, setIsAmountDisabled] = useState(false); // Control amount field editability
-    const [lwopPeraModalVisible, setLwopPeraModalVisible] = useState(false); // Control LWOP-PERA modal visibility
+    const [isAmountDisabled, setIsAmountDisabled] = useState(false);
+    const [lwopPeraModalVisible, setLwopPeraModalVisible] = useState(false);
     const [form] = Form.useForm();
     const [isLwopPeraModalVisible, setLwopPeraModalEditVisible] = useState(false);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState([]);
@@ -42,16 +42,10 @@ export default function ContributionsIndex({
         setIsModalVisible(true);
     };
 
-    const showLwopPeraModal = () => {
-        setLwopPeraModalVisible(true);
-    };
-
-    // Show modal for LWOP-PERA update
     const showLwopPeraEditModal = () => {
         setLwopPeraModalEditVisible(true);
     };
 
-    // Cancel LWOP-PERA modal
     const handleLwopPeraEditCancel = () => {
         setLwopPeraModalEditVisible(false);
         form.resetFields();
@@ -63,29 +57,20 @@ export default function ContributionsIndex({
         setIsAmountDisabled(false);
     };
 
-    const handleLwopPeraCancel = () => {
-        setLwopPeraModalVisible(false);
-        form.resetFields();
-    };
-
     const handleOk = () => {
         form.validateFields()
             .then((values) => {
-                const isLwopPera = values.contribution_id === lwopPera?.id;
-                const employeeIds = [values.employee_id]; // Ensure it's an array
-
-                const calculatedAmount = form.getFieldValue('amount');
                 Inertia.post(
-                    route('employee_benefits.store'),
+                    route('contributions.store'),
                     {
-                        employee_ids: employeeIds, // Pass array of employee_ids
-                        benefit_id: lwopPera.id, // Assuming this is how the benefit is set
-                        amount: calculatedAmount,
+                        employee_id: values.employee_id,
+                        contribution_id: values.contribution_id,
+                        amount: values.amount,
                     },
                     {
                         onSuccess: () => {
-                            message.success('Benefit added successfully');
-                            setLwopPeraModalVisible(false);
+                            message.success('Contribution added successfully');
+                            setIsModalVisible(false);
                             form.resetFields();
                         },
                     }
@@ -95,6 +80,7 @@ export default function ContributionsIndex({
                 console.log('Validate Failed:', info);
             });
     };
+
     const handleLwopPeraEditOk = () => {
         form.validateFields()
             .then((values) => {
@@ -104,7 +90,7 @@ export default function ContributionsIndex({
                 }
 
                 Inertia.post(
-                    route('employee_benefits.bulkUpdate'), // Assuming the bulkUpdate route
+                    route('employee_benefits.bulkUpdate'),
                     {
                         changes: selectedEmployeeIds.map((employee_id) => ({
                             employee_id,
@@ -115,37 +101,6 @@ export default function ContributionsIndex({
                     {
                         onSuccess: () => {
                             message.success('Bulk LWOP-PERA updated successfully!');
-                            setLwopPeraModalVisible(false);
-                            form.resetFields();
-                        },
-                    }
-                );
-            })
-            .catch((info) => {
-                console.log('Validate Failed:', info);
-            });
-    };
-
-    const handleLwopPeraOk = () => {
-        form.validateFields()
-            .then((values) => {
-                const employeeIds = values.employee_ids || []; // Fallback to an empty array
-
-                if (employeeIds.length === 0) {
-                    message.error('Please select at least one employee!');
-                    return;
-                }
-
-                Inertia.post(
-                    route('employee_benefits.store'),
-                    {
-                        employee_ids: employeeIds,
-                        benefit_id: lwopPera.id,
-                        amount: values.amount,
-                    },
-                    {
-                        onSuccess: () => {
-                            message.success('LWOP-PERA added successfully');
                             setLwopPeraModalVisible(false);
                             form.resetFields();
                         },
@@ -175,16 +130,14 @@ export default function ContributionsIndex({
                 form.setFieldsValue({ amount: calculatedAmount });
                 setIsAmountDisabled(true); // Disable amount field
             } else if (selectedContribution.name === 'PHIC') {
-                const netBasic = monthlySalary; // Assuming net basic is monthly salary for this calculation
+                const netBasic = monthlySalary;
                 const calculatedAmount = (netBasic * 0.025).toFixed(2);
                 form.setFieldsValue({ amount: calculatedAmount });
                 setIsAmountDisabled(true); // Disable amount field
             } else {
-                // Allow manual entry
                 setIsAmountDisabled(false);
             }
         } else {
-            // Reset when no valid employee or contribution is selected
             setIsAmountDisabled(false);
             form.setFieldsValue({ amount: '' });
         }
@@ -342,57 +295,6 @@ export default function ContributionsIndex({
                             </Form.Item>
                         </Form>
                     </Modal>
-
-                    {/* Add LWOP-PERA Modal */}
-
-                    {/* <PrimaryButton
-                        type="primary"
-                        onClick={showLwopPeraModal}
-                        style={{ marginBottom: '16px' }}
-                    >
-                        Add LWOP
-                    </PrimaryButton>
-                    <Modal
-                        title="Add LWOP-PERA"
-                        open={lwopPeraModalVisible}
-                        onOk={handleLwopPeraOk}
-                        onCancel={handleLwopPeraCancel}
-                        okText="Save"
-                        cancelText="Cancel"
-                    >
-                        <Form form={form} layout="vertical" name="add_lwop_pera_form">
-                            <Form.Item
-                                name="employee_ids"
-                                label="Employees"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please select at least one employee!',
-                                    },
-                                ]}
-                            >
-                                <Select
-                                    mode="multiple"
-                                    placeholder="Select employees"
-                                    defaultValue={[]}
-                                >
-                                    {employees.map((employee) => (
-                                        <Option key={employee.id} value={employee.id}>
-                                            {employee.first_name} {employee.last_name}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-
-                            <Form.Item
-                                name="amount"
-                                label="Amount"
-                                rules={[{ required: true, message: 'Please enter the amount!' }]}
-                            >
-                                <Input type="number" placeholder="Enter amount" />
-                            </Form.Item>
-                        </Form>
-                    </Modal> */}
 
                     {/* Bulk Edit */}
                     <PrimaryButton

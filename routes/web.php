@@ -19,6 +19,8 @@ use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\DepartmentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -120,6 +122,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
         Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
+
+        //Assign Position
+        Route::resource('positions', PositionController::class);
+        Route::resource('departments', DepartmentController::class);
 
         //Employee Records
         Route::get('/employees', [EmployeeController::class, 'EmployeeList'])->name('employees.index');

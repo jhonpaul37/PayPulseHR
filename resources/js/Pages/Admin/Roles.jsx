@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Select, Button, message, Table, Divider } from 'antd';
+import { Select, Input, message, Table, Divider } from 'antd';
+import { SearchOutlined } from '@ant-design/icons'; // Importing the Search icon
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Inertia } from '@inertiajs/inertia';
+import PrimaryButton from '@/Components/PrimaryButton';
+import SearchInput from '@/Components/SearchInput';
+
+const { Search } = Input;
 
 const Roles = ({ auth, employees, success }) => {
     const [selectedRoles, setSelectedRoles] = useState({});
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleRoleChange = (employeeId, role) => {
         setSelectedRoles({
@@ -14,21 +20,27 @@ const Roles = ({ auth, employees, success }) => {
     };
 
     const handleAssignRoles = () => {
-        // Send the selected roles to the backend via Inertia
         Inertia.post('/assign-roles', { roles: selectedRoles });
     };
 
-    // If there's a success message, show it
     if (success) {
         message.success(success);
     }
 
-    // Check if employees exist
-    if (!employees || employees.length === 0) {
-        return <div>No employees found.</div>;
-    }
+    const roleAccess = {
+        Accounting: ['Voucher', 'Gross Earnings', 'Salary Grade', 'Deduction'],
+        Cashier: ['Payroll', 'Loans'],
+        HR: ['Employee Management', 'Leave Requests', 'Positions'],
+        SuperAdmin: ['All Pages', 'Settings', 'Roles Management'],
+        Employee: ['My Profile', 'Leave Application', 'Payslips'],
+    };
 
-    // Columns for the table
+    const filteredEmployees = employees.filter((employee) =>
+        `${employee.first_name} ${employee.last_name}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+    );
+
     const columns = [
         {
             title: 'Employee Name',
@@ -48,9 +60,9 @@ const Roles = ({ auth, employees, success }) => {
             key: 'assign_role',
             render: (text, record) => (
                 <Select
-                    value={selectedRoles[record.id] || record.role} // Default to current role
+                    value={selectedRoles[record.id] || record.role}
                     onChange={(role) => handleRoleChange(record.id, role)}
-                    style={{ width: 120 }}
+                    style={{ width: 150 }}
                 >
                     <Select.Option value="employee">Employee</Select.Option>
                     <Select.Option value="Accounting">Accounting</Select.Option>
@@ -63,7 +75,7 @@ const Roles = ({ auth, employees, success }) => {
     ];
 
     // Data for the table
-    const data = employees.map((employee) => ({
+    const data = filteredEmployees.map((employee) => ({
         key: employee.id,
         first_name: employee.first_name,
         last_name: employee.last_name,
@@ -73,17 +85,46 @@ const Roles = ({ auth, employees, success }) => {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div className="container mx-auto p-4">
-                <div className="pb-5 text-center text-xl font-bold">Assign Roles</div>
+            <div className="container mx-auto flex p-4">
+                <div className="w-2/3 pr-4">
+                    <div className="pb-5 text-center text-xl font-bold">Assign Roles</div>
 
-                <Divider />
+                    <Divider />
 
-                <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
+                    <div className="mb-4 flex justify-end">
+                        <SearchInput
+                            placeholder="Search employees"
+                            prefix={<SearchOutlined />}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ maxWidth: 300 }}
+                        />
+                    </div>
 
-                <div className="mt-5 text-center">
-                    <Button type="primary" size="large" onClick={handleAssignRoles}>
-                        Assign Roles
-                    </Button>
+                    <Table columns={columns} dataSource={data} pagination={false} rowKey="id" />
+
+                    <div className="mt-5 flex justify-end pr-10">
+                        <PrimaryButton type="primary" size="large" onClick={handleAssignRoles}>
+                            Assign Roles
+                        </PrimaryButton>
+                    </div>
+                </div>
+
+                <div className="w-1/4 border-l pl-4">
+                    <div className="pb-5 text-center text-xl font-bold">Role Access</div>
+
+                    <Divider />
+
+                    {Object.entries(roleAccess).map(([role, pages]) => (
+                        <div key={role} className="mb-5">
+                            <div className="font-bold">{role}</div>
+                            <ul className="list-disc pl-5">
+                                {pages.map((page, index) => (
+                                    <li key={index}>{page}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
                 </div>
             </div>
         </AuthenticatedLayout>

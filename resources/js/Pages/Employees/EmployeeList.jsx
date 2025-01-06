@@ -7,6 +7,7 @@ import { FloatButton as Btn, Empty, Input, Pagination, Table, Tag, Button } from
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SearchInput from '@/Components/SearchInput';
 
 const FloatButton = styled(Btn)`
     background-color: #f0c519 !important;
@@ -44,11 +45,15 @@ export default function EmployeeList({ employees, auth }) {
     const filteredEmployees = activeEmployees.filter((employee) => {
         const fullName =
             `${employee.first_name} ${employee.middle_name} ${employee.last_name}`.toLowerCase();
-        const position = employee.position.toLowerCase();
+        const position = employee.position ? employee.position.name.toLowerCase() : '';
+        const department = employee.department ? employee.department.name.toLowerCase() : '';
         const searchQuery = searchTerm.toLowerCase();
 
-        // Apply search filtering
-        return fullName.includes(searchQuery) || position.includes(searchQuery);
+        return (
+            fullName.includes(searchQuery) ||
+            position.includes(searchQuery) ||
+            department.includes(searchQuery)
+        );
     });
 
     // Calculate paginated employees
@@ -83,37 +88,19 @@ export default function EmployeeList({ employees, auth }) {
             key: 'phone',
         },
         {
-            title: 'Position',
-            dataIndex: 'position',
-            key: 'position',
-        },
-        {
             title: 'Department',
             dataIndex: 'department',
             key: 'department',
+            render: (_, employee) => (employee.department ? employee.department.name : 'N/A'),
         },
         {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
-            render: (_, employee) => {
-                const status = employee.termination_date ? 'Inactive' : 'Active';
-
-                return (
-                    <Tag
-                        color={status === 'Active' ? 'green' : 'volcano'}
-                        style={{
-                            fontWeight: 'bold',
-                            fontSize: '14px',
-                        }}
-                    >
-                        {status}
-                    </Tag>
-                );
-            },
+            title: 'Position',
+            dataIndex: 'position',
+            key: 'position',
+            render: (_, employee) => (employee.position ? employee.position.name : 'N/A'),
         },
     ];
-
+    console.log(employees);
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
@@ -139,7 +126,7 @@ export default function EmployeeList({ employees, auth }) {
                     />
                     <div className="flex items-center gap-5">
                         {/* Search Bar */}
-                        <Input
+                        <SearchInput
                             placeholder="Search employees"
                             prefix={<SearchOutlined />}
                             value={searchTerm}

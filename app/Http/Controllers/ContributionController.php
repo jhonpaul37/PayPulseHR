@@ -35,39 +35,27 @@ class ContributionController extends Controller
         return inertia('Contribution/ContributionCreate');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'contribution_id' => 'required|exists:contributions,id',
-            'amount' => 'required|numeric',
-        ]);
+        public function store(Request $request)
+        {
+            $request->validate([
+                'employee_id' => 'required|exists:employees,id',
+                'contribution_id' => 'required|exists:contributions,id',
+                'amount' => 'required|numeric',
+            ]);
 
-        EmployeeContribution::create([
-            'employee_id' => $request->employee_id,
-            'contribution_id' => $request->contribution_id,
-            'amount' => $request->amount,
-        ]);
+            EmployeeContribution::create([
+                'employee_id' => $request->employee_id,
+                'contribution_id' => $request->contribution_id,
+                'amount' => $request->amount,
+            ]);
 
-        return redirect()->route('contributions.index')->with('success', 'Contribution created successfully');
-    }
+
+            return redirect()->route('contributions.index')->with('success', 'Contribution created successfully');
+        }
 
 
     public function edit(Contribution $contribution)
     {
         return inertia('Contribution/ContributionEdit', compact('contribution'));
     }
-
-    // public function update(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //     ]);
-
-    //     $contribution = Contribution::findOrFail($id);
-    //     $contribution->update($request->all());
-
-    //     return back()->with('success', 'Contribution updated successfully');
-    // }
 }
