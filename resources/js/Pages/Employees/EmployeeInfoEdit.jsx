@@ -27,7 +27,7 @@ const beforeUpload = (file) => {
 };
 const { Option } = Select;
 
-export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
+export default function EmployeeInfoEdit({ auth, employee, salaryGrades, departments, positions }) {
     const { data, setData, put, errors } = useForm({
         employee_id: employee.employee_id || '',
         first_name: employee.first_name || '',
@@ -41,8 +41,8 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
         address: employee.address || '',
         phone: employee.phone || '',
         email: employee.email || '',
-        position: employee.position || '',
-        department: employee.department || '',
+        position: employee.position_id || '',
+        department: employee.department_id || '',
         start_date: employee.start_date || '',
         employment_type: employee.employment_type || '',
         salary_grade_id: employee.salary_grade_id || '',
@@ -438,12 +438,18 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                                 rules={[{ required: true, message: 'Position is required' }]}
                                 className="flex-1"
                             >
-                                <TextInput
+                                <Select
                                     value={data.position}
-                                    onChange={(e) => setData('position', e.target.value)}
-                                />
-                            </Form.Item>
-
+                                    onChange={(value) => setData('position', value)}
+                                    placeholder="Select a position"
+                                >
+                                    {positions.map((position) => (
+                                        <Select.Option key={position.id} value={position.id}>
+                                            {position.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>{' '}
                             {/* Department */}
                             <Form.Item
                                 label="Department"
@@ -453,10 +459,17 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades }) {
                                 rules={[{ required: true, message: 'Department is required' }]}
                                 className="flex-1"
                             >
-                                <TextInput
-                                    value={data.department}
-                                    onChange={(e) => setData('department', e.target.value)}
-                                />
+                                <Select
+                                    value={data.department_id}
+                                    onChange={(value) => setData('department', value)} // Set selected department
+                                    placeholder="Select a Department"
+                                >
+                                    {departments.map((department) => (
+                                        <Select.Option key={department.id} value={department.id}>
+                                            {department.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
                         </div>
 

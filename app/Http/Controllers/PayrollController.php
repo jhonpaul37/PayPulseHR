@@ -25,6 +25,8 @@ public function payrollData()
         'salaryGrade',
         'benefits',
         'contributions',
+        'position',
+        'department',
     ])->whereIn('classification', ['Regular', 'Casual'])->get();
 
     $loanTypes = LoanType::all();

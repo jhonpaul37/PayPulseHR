@@ -9,19 +9,6 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    // public function index()
-    // {
-    //     // return Inertia::render('Dashboard');
-    //     $fundClusters = FundCluster::all();
-    //     $chartData = [
-    //         'labels' => ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    //         'data' => [65],
-    //     ];
-
-    //     return Inertia::render('Dashboard/Dashboard', [
-    //         'chartData' => $chartData,'fundClusters' => $fundClusters
-    //     ]);
-    // }
 public function index()
 {
     // Retrieve all vouchers with a valid div_num (excluding "0000")

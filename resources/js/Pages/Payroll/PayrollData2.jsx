@@ -63,6 +63,7 @@ const PayrollData = ({
                 return <span className="font-semibold">{PhpFormat(totalLoans || 0)}</span>;
             },
             width: 150,
+            // className: 'bg-yellow-400',
         };
         const PATVEColumn = {
             title: 'PATVE CONT.',
@@ -71,6 +72,7 @@ const PayrollData = ({
                 return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
             },
             width: 150,
+            // className: 'bg-yellow-300',
         };
         // Static columns
         const staticColumns = [
@@ -87,6 +89,14 @@ const PayrollData = ({
                 },
                 width: 200,
             },
+            // {
+            //     title: 'DEPARTMENT',
+            //     render: (_, record) => {
+            //         const { department } = record;
+            //         return `${department || ''}`.trim();
+            //     },
+            //     width: 150,
+            // },
             {
                 title: 'DEPARTMENT',
                 dataIndex: 'department',
@@ -122,6 +132,7 @@ const PayrollData = ({
                     return <span className="font-semibold">{PhpFormat(monthlySalary)}</span>;
                 },
                 width: 150,
+                // className: 'bg-yellow-400',
             },
             {
                 title: 'PERA',
@@ -147,6 +158,7 @@ const PayrollData = ({
                     return <span className="font-semibold">{PhpFormat(record.net_pera)}</span>;
                 },
                 width: 150,
+                // className: 'bg-yellow-400',
             },
             {
                 title: 'RATA',
@@ -170,6 +182,7 @@ const PayrollData = ({
                     <span className="font-semibold">{PhpFormat(record.total_salary || 0)}</span>
                 ),
                 width: 150,
+                // className: 'bg-yellow-400',
             },
         ];
 
@@ -212,6 +225,7 @@ const PayrollData = ({
                 dataIndex: 'total_contributions',
                 render: PhpFormat,
                 width: 150,
+                // className: 'bg-yellow-400',
             },
         ];
         // Total Deduction
@@ -223,6 +237,7 @@ const PayrollData = ({
                 );
             },
             width: 200,
+            // className: 'bg-orange-400 ',
         };
         // Net Amont
         const NetAmountColumn = {
@@ -231,8 +246,28 @@ const PayrollData = ({
                 return <span className="font-semibold">{PhpFormat(record.net_amount || 0)}</span>;
             },
             width: 200,
+            // className: 'bg-red-400 ',
         };
+        // const NetPay1To15Column = [
+        //     {
+        //         title: 'Net Pay 1-15',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-200',
+        //     },
+        //     {
+        //         title: 'Net Pay 16-30',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-300',
+        //     },
+        // ];
 
+        // Combine all columns
         setColumns([
             ...staticColumns,
             ...BenefitColumns,
@@ -242,8 +277,23 @@ const PayrollData = ({
             loansTotalColumn,
             totalDeductionColumn,
             NetAmountColumn,
+            // ...NetPay1To15Column,
         ]);
     }, [loanTypes, employee]);
+
+    // const saveTransaction = () => {
+    //     const dataToSend = dataSource.map((employee) => ({
+    //         id: employee.id,v
+    //         loans: employee.loans.map((loan) => ({
+    //             loan_id: loan.id,
+    //             remaining_amortization: loan.remainingAmortization,
+    //         })),
+    //     }));
+
+    //     Inertia.post('/transactions', {
+    //         data: dataToSend,
+    //     });
+    // };
 
     const showDrawer = () => {
         setVisible(true);
@@ -324,57 +374,6 @@ const PayrollData = ({
                 onClose={onClose}
                 styles={{
                     body: { paddingBottom: 80 },
-                }}
-                summary={() => {
-                    const totalLoans = dataSource.reduce((sum, record) => {
-                        return (
-                            sum +
-                            (record.loans?.reduce(
-                                (loanSum, loan) => loanSum + (loan.remainingAmortization || 0),
-                                0
-                            ) || 0)
-                        );
-                    }, 0);
-
-                    const totalBasicPay = dataSource.reduce((sum, record) => {
-                        return sum + (record.salary_grade?.monthly_salary || 0);
-                    }, 0);
-
-                    const totalDeductions = dataSource.reduce((sum, record) => {
-                        return sum + (record.total_deductions || 0);
-                    }, 0);
-
-                    const totalNetAmount = dataSource.reduce((sum, record) => {
-                        return sum + (record.net_amount || 0);
-                    }, 0);
-
-                    return (
-                        <Table.Summary.Row>
-                            <Table.Summary.Cell index={0} colSpan={3}>
-                                <strong>Grand Total</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={1}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={2}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={3}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={4}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={5}>
-                                <strong>{PhpFormat(totalBasicPay)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={6}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={7}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={8}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={9}>
-                                <strong>{PhpFormat(totalLoans)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={10}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={11}>
-                                <strong>{PhpFormat(totalDeductions)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={12}>
-                                <strong>{PhpFormat(totalNetAmount)}</strong>
-                            </Table.Summary.Cell>
-                        </Table.Summary.Row>
-                    );
                 }}
             >
                 <Table

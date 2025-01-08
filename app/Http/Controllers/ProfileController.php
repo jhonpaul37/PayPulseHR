@@ -20,7 +20,7 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         // Get the authenticated user's employee information
-        $employee = Employee::with('salaryGrade')->where('user_id', $request->user()->id)->first();
+        $employee = Employee::with('salaryGrade', 'position', 'department')->where('user_id', $request->user()->id)->first();
 
         // Return the Inertia response with employee data
         return Inertia::render('Profile/Edit', [

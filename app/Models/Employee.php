@@ -21,8 +21,8 @@ class Employee extends Model
         'address',
         'phone',
         'email',
-        'position',
-        'department',
+        'position_id',
+        'department_id',
         'start_date',
         'employment_type',
         'salary_grade_id',
@@ -96,5 +96,15 @@ class Employee extends Model
         }
         return $this->hasRole($roles);
     }
+
+public function position()
+{
+    return $this->belongsTo(Position::class);
+}
+
+public function department()
+{
+    return $this->belongsTo(Department::class);
+}
 
 }

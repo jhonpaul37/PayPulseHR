@@ -8,8 +8,8 @@ use App\Models\SalaryGrade;
 use App\Models\EmployeeContribution;
 use App\Models\Contribution;
 use App\Models\Department;
-use Illuminate\Http\Request;
 use App\Models\Position;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,7 +17,8 @@ class EmployeeController extends Controller
 {
     public function EmployeeList()
     {
-        $employees = Employee::all();
+        // $employees = Employee::all();
+        $employees = Employee::with(['position', 'department'])->get();
         return Inertia::render('Employees/EmployeeList', ['employees' => $employees]);
     }
 
@@ -45,7 +46,11 @@ class EmployeeController extends Controller
     public function edit(Employee $employee)
     {
         $salaryGrades = SalaryGrade::all();
-        return Inertia::render('Employees/EmployeeInfoEdit', ['employee' => $employee, 'salaryGrades' => $salaryGrades]);
+        return Inertia::render('Employees/EmployeeInfoEdit', [
+            'departments' => Department::all(),
+            'positions' => Position::all(),
+            'employee' => $employee,
+            'salaryGrades' => $salaryGrades]);
     }
 
 public function update(Request $request, Employee $employee)
@@ -64,8 +69,8 @@ public function update(Request $request, Employee $employee)
         'address' => 'required|string',
         'phone' => 'required|string',
         'email' => 'required|email|unique:employees,email,' . $employee->id,
-        'position' => 'required|string',
-        'department' => 'required|string',
+        'position_id' => 'required|string',
+        'department_id' => 'required|string',
         'start_date' => 'required|date',
         'employment_type' => 'required|string',
         'salary_grade_id' => 'required|exists:salary_grades,id',

@@ -7,6 +7,7 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 const { Title, Text } = Typography;
 
 export default function Edit({ auth, mustVerifyEmail, status, employee }) {
+    console.log(employee);
     return (
         <AuthenticatedLayout user={auth.user} header={<Title level={2}>Profile</Title>}>
             <Head title="Profile" />
@@ -32,11 +33,11 @@ export default function Edit({ auth, mustVerifyEmail, status, employee }) {
                             </Col>
                             <Col span={12}>
                                 <Text strong>Position: </Text>
-                                {employee.position}
+                                {employee.position?.name}
                             </Col>
                             <Col span={12}>
                                 <Text strong>Department: </Text>
-                                {employee.department}
+                                {employee.department?.name}
                             </Col>
                             <Col span={12}>
                                 <Text strong>Employee ID: </Text>

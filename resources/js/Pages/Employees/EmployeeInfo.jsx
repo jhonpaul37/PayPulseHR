@@ -91,10 +91,10 @@ const EmployeeInfo = ({ visible, onClose, employee }) => {
             <p className="font-bold text-main">Employment</p>
             <Row>
                 <Col span={12}>
-                    <DescriptionItem title="Position" content={employee.position} />
+                    <DescriptionItem title="Position" content={employee.position?.name} />
                 </Col>
                 <Col span={12}>
-                    <DescriptionItem title="Department" content={employee.department} />
+                    <DescriptionItem title="Department" content={employee.department?.name} />
                 </Col>
             </Row>
             <Row>

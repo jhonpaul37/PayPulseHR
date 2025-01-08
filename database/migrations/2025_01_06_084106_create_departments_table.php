@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
+    Schema::create('departments', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->unique();
+        $table->text('description')->nullable();
+        $table->timestamps();
+    });
     }
 
     /**
