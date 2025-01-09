@@ -46,8 +46,8 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
         email: '',
         password: '',
         confirm_password: '',
-        position: '',
-        department: '',
+        position_id: '',
+        department_id: '',
         start_date: '',
         employment_type: '',
         salary: '',
@@ -404,19 +404,14 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                         </div>
                         <div className="flex gap-5">
                             {/* Employee No. */}
-                            <Form.Item
+                            {/* <Form.Item
                                 label="Employee No."
                                 name="employee_id"
                                 validateStatus={errors.employee_id ? 'error' : ''}
                                 help={errors.employee_id}
-                                rules={[{ required: true, message: 'Employee No. is required' }]}
                             >
-                                <TextInput
-                                    autoComplete="off"
-                                    value={data.employee_id}
-                                    onChange={(e) => setData('employee_id', e.target.value)}
-                                />
-                            </Form.Item>
+                                <TextInput autoComplete="off" value={data.employee_id} readOnly />
+                            </Form.Item> */}
 
                             {/* Start Date */}
                             <Form.Item
@@ -514,39 +509,45 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                         <div className="flex gap-5 p-2">
                             <Form.Item
                                 label="Position"
-                                name="position"
-                                validateStatus={errors.position ? 'error' : ''}
-                                help={errors.position}
+                                name="position_id" // Match the backend field name
+                                validateStatus={errors.position_id ? 'error' : ''}
+                                help={errors.position_id}
                                 rules={[{ required: true, message: 'Position is required' }]}
                             >
                                 <Select
-                                    value={data.position}
-                                    onChange={(value) => setData('position', value)}
+                                    value={data.position_id} // Ensure it matches the backend field
+                                    onChange={(value) => setData('position_id', value)} // Update the correct field
                                     placeholder="Select a position"
                                 >
-                                    {positions.map((position) => (
-                                        <Select.Option key={position.id} value={position.id}>
-                                            {position.name}
-                                        </Select.Option>
-                                    ))}
+                                    {positions.length > 0 ? (
+                                        positions.map((position) => (
+                                            <Select.Option key={position.id} value={position.id}>
+                                                {position.name}
+                                            </Select.Option>
+                                        ))
+                                    ) : (
+                                        <Select.Option disabled>Loading positions...</Select.Option>
+                                    )}
                                 </Select>
                             </Form.Item>
-
                             <Form.Item
                                 label="Department"
-                                name="department"
-                                validateStatus={errors.department ? 'error' : ''}
-                                help={errors.department}
+                                name="department_id"
+                                validateStatus={errors.department_id ? 'error' : ''}
+                                help={errors.department_id}
                                 rules={[{ required: true, message: 'Department is required' }]}
                             >
                                 <Select
-                                    value={data.department}
-                                    onChange={(value) => setData('department', value)}
+                                    value={data.department_id}
+                                    onChange={(value) => {
+                                        setData('department_id', value);
+                                        // Optionally, trigger a request to get the new employee_id based on department
+                                    }}
                                     placeholder="Select a Department"
                                 >
-                                    {department.map((departments) => (
-                                        <Select.Option key={departments.id} value={departments.id}>
-                                            {departments.name}
+                                    {department.map((dept) => (
+                                        <Select.Option key={dept.id} value={dept.id}>
+                                            {dept.name}
                                         </Select.Option>
                                     ))}
                                 </Select>

@@ -97,14 +97,14 @@ class Employee extends Model
         return $this->hasRole($roles);
     }
 
-public function position()
-{
-    return $this->belongsTo(Position::class);
-}
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
 
-public function department()
-{
-    return $this->belongsTo(Department::class);
-}
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
 }

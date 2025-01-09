@@ -134,6 +134,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/employees/{employee}', [EmployeeController::class, 'EmployeeInfo'])->name('employees.info');
         Route::post('/employees/{id}/terminate', [EmployeeController::class, 'terminate'])->name('employees.terminate');
 
+        Route::get('/employee-id/{department_id}', [EmployeeController::class, 'generateEmployeeId']);
         Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 

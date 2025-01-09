@@ -90,6 +90,7 @@ const AuthenticatedLayout = ({ user, children }) => {
             key: '14',
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/AsignRoles">Asign Roles</Link>,
+            hidden: auth?.employee?.role !== 'SuperAdmin',
         },
         {
             key: 'payrollTitle',
@@ -190,6 +191,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         //     label: <Link href="/settings">Settings</Link>,
         // },
     ];
+    const filteredMenuItems = menuItems.filter((item) => !item.hidden);
 
     return (
         <div>

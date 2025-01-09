@@ -47,7 +47,7 @@ class EmployeeController extends Controller
     {
         $salaryGrades = SalaryGrade::all();
         return Inertia::render('Employees/EmployeeInfoEdit', [
-            'departments' => Department::all(),
+            'department' => Department::all(),
             'positions' => Position::all(),
             'employee' => $employee,
             'salaryGrades' => $salaryGrades]);
@@ -69,8 +69,8 @@ public function update(Request $request, Employee $employee)
         'address' => 'required|string',
         'phone' => 'required|string',
         'email' => 'required|email|unique:employees,email,' . $employee->id,
-        'position_id' => 'required|string',
-        'department_id' => 'required|string',
+        'position_id' => 'nullable|exists:positions,id',
+        'department_id' => 'nullable|exists:departments,id',
         'start_date' => 'required|date',
         'employment_type' => 'required|string',
         'salary_grade_id' => 'required|exists:salary_grades,id',
@@ -162,8 +162,8 @@ private function updateEmployeeContributions(Employee $employee)
             'nationality' => 'required|string',
             'address' => 'required|string',
             'phone' => 'required|string',
-            'position' => 'required|string',
-            'department' => 'required|string',
+            'position_id' => 'required|exists:positions,id',
+            'department_id' => 'required|exists:departments,id',
             'birthPlace' => 'required|string',
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
@@ -206,63 +206,73 @@ private function updateEmployeeContributions(Employee $employee)
         ]);
     }
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'employee_id' => 'required|string',
-        'first_name' => 'required|string',
-        'last_name' => 'required|string',
-        'middle_name' => 'nullable|string',
-        'birthdate' => 'required|date',
-        'birthPlace' => 'required|string',
-        'sex' => 'required|string',
-        'civil_status' => 'required|string',
-        'nationality' => 'required|string',
-        'address' => 'required|string',
-        'phone' => 'required|string',
-        'email' => 'required|email|unique:employees,email',
-        'position' => 'required|string',
-        'department' => 'required|string',
-        'start_date' => 'required|date',
-        'employment_type' => 'required|string',
-        'salary_grade_id' => 'required|exists:salary_grades,id',
-        'role' => 'nullable|in:employee,Accounting,Cashier,HR,SuperAdmin', // nullable to default to 'employee'
-        'termination_date' => 'nullable|date',
-        'termination_reason' => 'nullable|string',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'birthdate' => 'required|date',
+            'birthPlace' => 'required|string',
+            'sex' => 'required|string',
+            'civil_status' => 'required|string',
+            'nationality' => 'required|string',
+            'address' => 'required|string',
+            'phone' => 'required|string',
+            'email' => 'required|email|unique:employees,email',
+            'position_id' => 'nullable|exists:positions,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'start_date' => 'required|date',
+            'employment_type' => 'required|string',
+            'salary_grade_id' => 'required|exists:salary_grades,id',
+            'role' => 'nullable|in:employee,Accounting,Cashier,HR,SuperAdmin', // default 'employee'
+            'termination_date' => 'nullable|date',
+            'termination_reason' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    // Set default role to 'employee' if not provided
-    $validated['role'] = $validated['role'] ?? 'employee';
+        // Set default role to 'employee' if not provided
+        $validated['role'] = $validated['role'] ?? 'employee';
 
-    // Generate default password (LastName + BirthYear with first letter uppercase)
-    $birthYear = date('Y', strtotime($validated['birthdate']));
-    $lastName = ucfirst(strtolower($validated['last_name'])); // First letter uppercase
-    $validated['password'] = $lastName . $birthYear;
+        // Generate default password (LastName + BirthYear with first letter uppercase)
+        $birthYear = date('Y', strtotime($validated['birthdate']));
+        $lastName = ucfirst(strtolower($validated['last_name'])); // First letter uppercase
+        $validated['password'] = $lastName . $birthYear;
 
-    // Photo validation
-    if ($request->hasFile('photo')) {
-        $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
+        // Photo validation
+        if ($request->hasFile('photo')) {
+            $validated['photo_url'] = $request->file('photo')->store('employee_photos', 'public');
+        }
+
+        // Generate employee_id based on department_id
+        if ($validated['department_id']) {
+            $department = Department::find($validated['department_id']);
+            $prefix = strtoupper(substr($department->name, 0, 1)); // First letter of department name
+            $lastEmployee = Employee::where('department_id', $validated['department_id'])
+                ->latest('employee_id') // Get the last employee created
+                ->first();
+
+            $lastEmployeeNumber = $lastEmployee ? (int) substr($lastEmployee->employee_id, 2) : 0;
+            $newEmployeeNumber = str_pad($lastEmployeeNumber + 1, 3, '0', STR_PAD_LEFT);
+            $validated['employee_id'] = $prefix . '-' . $newEmployeeNumber;
+        }
+
+        // Users primary key must exist first, before inserting a new Employee
+
+        // Create user first
+        $user = User::create([
+            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']), // Save the hashed password
+        ]);
+
+        // Assign created user's ID to the Employee record
+        $validated['user_id'] = $user->id;
+
+        // Create employee
+        Employee::create($validated);
+
+        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
-
-    // Users primary key must exist first, before inserting a new Employee
-
-    // Create user first
-    $user = User::create([
-        'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-        'email' => $validated['email'],
-        'password' => Hash::make($validated['password']), // Save the hashed password
-    ]);
-
-    // Assign created user's ID to the Employee record
-    $validated['user_id'] = $user->id;
-
-    // Create employee
-    Employee::create($validated);
-
-    return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
-}
-
-
 
 }

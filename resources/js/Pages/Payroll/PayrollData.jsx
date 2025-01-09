@@ -325,57 +325,6 @@ const PayrollData = ({
                 styles={{
                     body: { paddingBottom: 80 },
                 }}
-                summary={() => {
-                    const totalLoans = dataSource.reduce((sum, record) => {
-                        return (
-                            sum +
-                            (record.loans?.reduce(
-                                (loanSum, loan) => loanSum + (loan.remainingAmortization || 0),
-                                0
-                            ) || 0)
-                        );
-                    }, 0);
-
-                    const totalBasicPay = dataSource.reduce((sum, record) => {
-                        return sum + (record.salary_grade?.monthly_salary || 0);
-                    }, 0);
-
-                    const totalDeductions = dataSource.reduce((sum, record) => {
-                        return sum + (record.total_deductions || 0);
-                    }, 0);
-
-                    const totalNetAmount = dataSource.reduce((sum, record) => {
-                        return sum + (record.net_amount || 0);
-                    }, 0);
-
-                    return (
-                        <Table.Summary.Row>
-                            <Table.Summary.Cell index={0} colSpan={3}>
-                                <strong>Grand Total</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={1}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={2}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={3}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={4}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={5}>
-                                <strong>{PhpFormat(totalBasicPay)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={6}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={7}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={8}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={9}>
-                                <strong>{PhpFormat(totalLoans)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={10}></Table.Summary.Cell>
-                            <Table.Summary.Cell index={11}>
-                                <strong>{PhpFormat(totalDeductions)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={12}>
-                                <strong>{PhpFormat(totalNetAmount)}</strong>
-                            </Table.Summary.Cell>
-                        </Table.Summary.Row>
-                    );
-                }}
             >
                 <Table
                     dataSource={transaction

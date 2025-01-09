@@ -27,7 +27,7 @@ const beforeUpload = (file) => {
 };
 const { Option } = Select;
 
-export default function EmployeeInfoEdit({ auth, employee, salaryGrades, departments, positions }) {
+export default function EmployeeInfoEdit({ auth, employee, salaryGrades, department, positions }) {
     const { data, setData, put, errors } = useForm({
         employee_id: employee.employee_id || '',
         first_name: employee.first_name || '',
@@ -41,8 +41,8 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades, departm
         address: employee.address || '',
         phone: employee.phone || '',
         email: employee.email || '',
-        position: employee.position_id || '',
-        department: employee.department_id || '',
+        position_id: employee.position_id || '',
+        department_id: employee.department_id || '',
         start_date: employee.start_date || '',
         employment_type: employee.employment_type || '',
         salary_grade_id: employee.salary_grade_id || '',
@@ -429,44 +429,47 @@ export default function EmployeeInfoEdit({ auth, employee, salaryGrades, departm
                         </div>
 
                         <div className="flex gap-5 p-2">
-                            {/* Position */}
                             <Form.Item
                                 label="Position"
-                                name="position"
-                                validateStatus={errors.position ? 'error' : ''}
-                                help={errors.position}
+                                name="position_id"
+                                validateStatus={errors.position_id ? 'error' : ''}
+                                help={errors.position_id}
                                 rules={[{ required: true, message: 'Position is required' }]}
                                 className="flex-1"
                             >
                                 <Select
-                                    value={data.position}
-                                    onChange={(value) => setData('position', value)}
+                                    value={data.position_id}
+                                    onChange={(value) => setData('position_id', value)}
                                     placeholder="Select a position"
                                 >
-                                    {positions.map((position) => (
-                                        <Select.Option key={position.id} value={position.id}>
-                                            {position.name}
-                                        </Select.Option>
-                                    ))}
+                                    {positions.length > 0 ? (
+                                        positions.map((position) => (
+                                            <Select.Option key={position.id} value={position.id}>
+                                                {position.name}
+                                            </Select.Option>
+                                        ))
+                                    ) : (
+                                        <Select.Option disabled>Loading positions...</Select.Option>
+                                    )}
                                 </Select>
-                            </Form.Item>{' '}
-                            {/* Department */}
+                            </Form.Item>
+
                             <Form.Item
                                 label="Department"
-                                name="department"
-                                validateStatus={errors.department ? 'error' : ''}
-                                help={errors.department}
+                                name="department_id"
+                                validateStatus={errors.department_id ? 'error' : ''}
+                                help={errors.department_id}
                                 rules={[{ required: true, message: 'Department is required' }]}
                                 className="flex-1"
                             >
                                 <Select
                                     value={data.department_id}
-                                    onChange={(value) => setData('department', value)} // Set selected department
+                                    onChange={(value) => setData('department_id', value)}
                                     placeholder="Select a Department"
                                 >
-                                    {departments.map((department) => (
-                                        <Select.Option key={department.id} value={department.id}>
-                                            {department.name}
+                                    {department.map((departments) => (
+                                        <Select.Option key={departments.id} value={departments.id}>
+                                            {departments.name}
                                         </Select.Option>
                                     ))}
                                 </Select>
