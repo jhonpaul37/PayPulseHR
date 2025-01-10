@@ -9,6 +9,13 @@ import {
     faUsers,
     faHeartPulse,
     faHandHoldingDollar,
+    faSitemap,
+    faBuilding,
+    faStar,
+    faMoneyCheckDollar,
+    faReceipt,
+    faMoneyBillTrendUp,
+    faCashRegister,
 } from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
@@ -82,13 +89,14 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url === '/salary_grades') return '13';
         if (url === '/AsignRoles') return '14';
         if (url === '/positions') return '15';
+        if (url === '/departments') return '16';
         return '1'; // Default case
     };
 
     const menuItems = [
         {
             key: '14',
-            icon: <FontAwesomeIcon icon={faHouse} />,
+            icon: <FontAwesomeIcon icon={faStar} />,
             label: <Link href="/AsignRoles">Asign Roles</Link>,
             hidden: auth?.employee?.role !== 'SuperAdmin',
         },
@@ -99,7 +107,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         },
         {
             key: '7',
-            icon: <FontAwesomeIcon icon={faHouse} />,
+            icon: <FontAwesomeIcon icon={faCashRegister} />,
             label: <Link href="/payroll/data">Payroll</Link>,
         },
         {
@@ -127,17 +135,17 @@ const AuthenticatedLayout = ({ user, children }) => {
         },
         {
             key: '9',
-            icon: <FontAwesomeIcon icon={faHouse} />,
+            icon: <FontAwesomeIcon icon={faMoneyBillTrendUp} />,
             label: <Link href="/employee_benefits">Gross Earnings</Link>,
         },
         {
             key: '12',
-            icon: <FontAwesomeIcon icon={faFolder} />,
+            icon: <FontAwesomeIcon icon={faReceipt} />,
             label: <Link href="/contributions">Deduction</Link>,
         },
         {
             key: '13',
-            icon: <FontAwesomeIcon icon={faFolder} />,
+            icon: <FontAwesomeIcon icon={faMoneyCheckDollar} />,
             label: <Link href="/salary_grades">Salary Grade</Link>,
         },
         {
@@ -160,8 +168,13 @@ const AuthenticatedLayout = ({ user, children }) => {
         },
         {
             key: '15',
-            icon: <FontAwesomeIcon icon={faUsers} />,
+            icon: <FontAwesomeIcon icon={faSitemap} />,
             label: <Link href="/positions">Position</Link>,
+        },
+        {
+            key: '16',
+            icon: <FontAwesomeIcon icon={faBuilding} />,
+            label: <Link href="/departments">Departemnt</Link>,
         },
         {
             type: 'divider',

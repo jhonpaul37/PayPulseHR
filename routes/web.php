@@ -124,8 +124,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
 
         //Assign Position
-        Route::resource('positions', PositionController::class);
-        Route::resource('departments', DepartmentController::class);
+        Route::resource('/positions', PositionController::class);
+        Route::resource('/departments', DepartmentController::class);
 
         //Employee Records
         Route::get('/employees', [EmployeeController::class, 'EmployeeList'])->name('employees.index');
