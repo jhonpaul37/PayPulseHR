@@ -9,4 +9,6 @@ class FundCluster extends Model
 {
     use HasFactory;
     protected $table = 'fund_cluster';
+
+    protected $fillable = ['cluster_code', 'amount'];
 }

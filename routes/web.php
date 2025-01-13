@@ -49,14 +49,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/salary_grades/bulk_update', [SalaryGradeController::class, 'bulkUpdate'])->name('salary_grades.bulk_update');
 
 
-    Route::get('/dashboards', [DashboardController::class, 'index'])->name('dashboards');
-
     Route::resource('/voucher',VoucherController::class);
     Route::get('/voucher/{voucher}', [VoucherController::class, 'show'])->name('voucher.show');
     Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add');
     // Route::get('/voucher/create',[VoucherController::class, 'create'])->name('voucher.add')->middleware('permission:Voucher');
     Route::get('autoIncrement', [VoucherController::class, 'getAutoIncrement']);
 
+
+    Route::get('/dashboards', [DashboardController::class, 'index'])->name('dashboards');
+    // Route::post('/fund-cluster/upload', [FundClusterController::class, 'uploadCSV']);
     Route::post('/fund-cluster/upload', [FundClusterController::class, 'uploadCsv'])->name('fund-cluster.upload');
     Route::get('/fClusters', [VoucherController::class, 'fCluster']);
     Route::post('/voucher/{id}/complete', [VoucherController::class, 'complete'])->name('voucher.complete');

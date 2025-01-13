@@ -47,20 +47,18 @@ public function index()
         $totalAmount += $voucher->amount;
     }
 
-    // Prepare the data for the chart (labels and expenses data)
     $chartData = [
         'labels' => array_keys($monthlyExpenses),
         'data' => array_values($monthlyExpenses),
     ];
 
-    // Retrieve fund clusters
     $fundClusters = FundCluster::all();
 
-    // Pass the data to the view, including the total amount
     return Inertia::render('Dashboard/Dashboard', [
         'chartData' => $chartData,
         'fundClusters' => $fundClusters,
-        'totalAmount' => $totalAmount, // Pass the total amount to the view
+        'totalAmount' => $totalAmount,
+        'csrfToken' => csrf_token(),
     ]);
 }
 

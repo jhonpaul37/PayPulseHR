@@ -55,27 +55,28 @@ ChartComponent.propTypes = {
 };
 
 const FundCluster = ({ fundClusters = [] }) => {
-    const { post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         csv_file: null,
     });
+    const { flash } = usePage().props;
 
     const [fileName, setFileName] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
             setFileName(file.name);
-            post.setData('csv_file', file);
+            setData('csv_file', file); // Use `setData` here
         }
     };
 
-    const handleSubmit = (values) => {
+    const handleSubmit = () => {
         post('/fund-cluster/upload', {
             onSuccess: () => {
                 setFileName('');
                 alert('Fund Clusters updated successfully!');
-                setIsModalOpen(false); // Close modal after successful upload
+                setIsModalOpen(false);
             },
         });
     };
@@ -106,14 +107,20 @@ const FundCluster = ({ fundClusters = [] }) => {
                     >
                         Cancel
                     </DangerButton>,
-                    <PrimaryButton key="upload" type="submit" disabled={processing}>
+                    <PrimaryButton
+                        key="upload"
+                        type="submit"
+                        onClick={handleSubmit}
+                        disabled={processing}
+                    >
                         Upload CSV
                     </PrimaryButton>,
                 ]}
             >
                 <Form
                     onFinish={handleSubmit}
-                    className="flex flex-col gap-2"
+                    method="post"
+                    action="/fund-cluster/upload"
                     encType="multipart/form-data"
                 >
                     <Form.Item
@@ -127,10 +134,6 @@ const FundCluster = ({ fundClusters = [] }) => {
                             className="block w-full rounded border p-2"
                         />
                     </Form.Item>
-
-                    {errors.csv_file && (
-                        <div className="text-sm text-red-500">{errors.csv_file}</div>
-                    )}
                 </Form>
             </Modal>
 
@@ -141,7 +144,7 @@ const FundCluster = ({ fundClusters = [] }) => {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {fundClusters.map((cluster) => (
                         <div
-                            key={cluster.id} // Ensure each item has a unique key
+                            key={cluster.id}
                             className="flex flex-col rounded-md border bg-gray-100 p-3"
                         >
                             <span>Total Balance:</span>
@@ -162,14 +165,14 @@ FundCluster.propTypes = {
 };
 
 const Dashboard = ({ auth }) => {
-    const { chartData, fundClusters } = usePage().props;
+    const { chartData = { labels: [], data: [] }, fundClusters = [], csrfToken } = usePage().props;
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <div>
                 <div className="flex flex-col">
                     <div className="mb-10">
-                        <FundCluster fundClusters={fundClusters} />
+                        <FundCluster fundClusters={fundClusters} csrfToken={csrfToken} />
                     </div>
                     <div className="w-full rounded-md border p-2">
                         <ChartComponent chartData={chartData} />
