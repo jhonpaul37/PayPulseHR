@@ -148,7 +148,7 @@ const FundCluster = ({ fundClusters = [] }) => {
                             <strong className="text-xl font-bold">
                                 ₱{cluster.amount.toLocaleString()}
                             </strong>
-                            <span>Cluster Code: {cluster.cluster_code}</span>
+                            <span>Cluster {cluster.cluster_code}</span>
                         </div>
                     ))}
                 </div>
