@@ -10,13 +10,16 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Form, Modal, Input } from 'antd';
+import { Form, Modal, Input, Upload, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { usePage, useForm } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+const { Dragger } = Upload;
 
 const ChartComponent = ({ chartData }) => {
     const data = {
@@ -58,25 +61,26 @@ const FundCluster = ({ fundClusters = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
         csv_file: null,
     });
-    const { flash } = usePage().props;
-
-    const [fileName, setFileName] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setFileName(file.name);
-            setData('csv_file', file); // Use `setData` here
-        }
+    const handleFileChange = (file) => {
+        setData('csv_file', file);
+        message.success(`File "${file.name}" selected successfully.`);
+        return false; // Prevent default upload behavior.
     };
 
     const handleSubmit = () => {
+        if (!data.csv_file) {
+            message.error('Please select a CSV file before uploading.');
+            return;
+        }
         post('/fund-cluster/upload', {
             onSuccess: () => {
-                setFileName('');
-                alert('Fund Clusters updated successfully!');
+                message.success('Fund Clusters updated successfully!');
                 setIsModalOpen(false);
+            },
+            onError: () => {
+                message.error('Failed to upload the file. Please try again.');
             },
         });
     };
@@ -113,28 +117,25 @@ const FundCluster = ({ fundClusters = [] }) => {
                         onClick={handleSubmit}
                         disabled={processing}
                     >
-                        Upload CSV
+                        {processing ? 'Uploading...' : 'Upload CSV'}
                     </PrimaryButton>,
                 ]}
             >
-                <Form
-                    onFinish={handleSubmit}
-                    method="post"
-                    action="/fund-cluster/upload"
-                    encType="multipart/form-data"
+                <Dragger
+                    name="csv_file"
+                    accept=".csv"
+                    multiple={false}
+                    beforeUpload={handleFileChange}
+                    className="p-4"
                 >
-                    <Form.Item
-                        name="csv_file"
-                        rules={[{ required: true, message: 'Please upload a CSV file' }]}
-                    >
-                        <Input
-                            type="file"
-                            accept=".csv"
-                            onChange={handleFileChange}
-                            className="block w-full rounded border p-2"
-                        />
-                    </Form.Item>
-                </Form>
+                    <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                    <p className="ant-upload-hint">
+                        Ensure the file is in CSV format and follows the required structure.
+                    </p>
+                </Dragger>
             </Modal>
 
             {/* Display fund clusters */}

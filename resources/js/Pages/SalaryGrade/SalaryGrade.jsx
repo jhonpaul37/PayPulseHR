@@ -9,41 +9,51 @@ import {
     Space,
     Pagination,
     Button,
+    Upload,
     message,
 } from 'antd';
 import { Inertia } from '@inertiajs/inertia';
+import Papa from 'papaparse';
+import { UploadOutlined } from '@ant-design/icons';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const SalaryGradeManager = ({ salaryGrades, auth }) => {
-    // State for managing salary grades
     const grades = salaryGrades.reduce((acc, grade) => {
         acc[grade.grade] = acc[grade.grade] || [];
         acc[grade.grade].push(grade);
         return acc;
     }, {});
     const gradeKeys = Object.keys(grades);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [editableGrades, setEditableGrades] = useState(grades);
     const [originalGrades, setOriginalGrades] = useState(grades);
     const [isEditMode, setIsEditMode] = useState(false);
 
-    // State for adding a new salary grade
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [newGrade, setNewGrade] = useState('');
     const [steps, setSteps] = useState(
         Array.from({ length: 8 }, (_, i) => ({ step: i + 1, monthly_salary: '' }))
     );
 
-    // Bulk edit functions
-    const handleSalaryChange = (grade, step, value) => {
-        setEditableGrades((prev) => ({
-            ...prev,
-            [grade]: prev[grade].map((sg) =>
-                sg.step === step ? { ...sg, monthly_salary: value } : sg
-            ),
-        }));
+    // Handle CSV Upload
+    const handleCSVUpload = (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        Inertia.post('/salary_grades/upload_csv', formData, {
+            onSuccess: () => {
+                message.success('File uploaded successfully!');
+            },
+            onError: () => {
+                message.error('Failed to upload file.');
+            },
+        });
+
+        // Prevent Ant Design from automatically uploading the file
+        return false;
     };
 
     const handleEdit = () => {
@@ -73,53 +83,9 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
         );
     };
 
-    // Add a new salary grade
-    const handleNewGradeSave = () => {
-        if (!newGrade) {
-            message.error('Please enter a salary grade.');
-            return;
-        }
-
-        const data = { grade: newGrade, steps };
-        Inertia.post('/salary_grades/check_and_add', data, {
-            onSuccess: () => {
-                message.success('Salary grade added successfully!');
-                setIsAddModalVisible(false);
-                setSteps(
-                    Array.from({ length: 8 }, (_, i) => ({ step: i + 1, monthly_salary: '' }))
-                );
-                setNewGrade('');
-            },
-            onError: (errors) => {
-                if (errors.grade) {
-                    message.error(errors.grade);
-                } else {
-                    message.error('Failed to add salary grade.');
-                }
-            },
-        });
-    };
-
-    const handleNewSalaryChange = (step, value) => {
-        setSteps((prev) =>
-            prev.map((row) => (row.step === step ? { ...row, monthly_salary: value } : row))
-        );
-    };
-
-    const addRow = () => {
-        const newStep = steps.length + 1;
-        setSteps([...steps, { step: newStep, monthly_salary: '' }]);
-    };
-
-    const removeRow = (step) => {
-        setSteps(steps.filter((row) => row.step !== step));
-    };
-
-    // Pagination for bulk edit
     const pageSize = 3;
     const currentGrades = gradeKeys.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    // Table columns
     const columns = [
         {
             title: 'Step',
@@ -134,7 +100,13 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                 isEditMode ? (
                     <InputNumber
                         value={record.monthly_salary}
-                        onChange={(value) => handleSalaryChange(record.grade, record.step, value)}
+                        onChange={(value) => {
+                            const updated = { ...editableGrades };
+                            updated[record.grade] = updated[record.grade].map((sg) =>
+                                sg.step === record.step ? { ...sg, monthly_salary: value } : sg
+                            );
+                            setEditableGrades(updated);
+                        }}
                         formatter={(value) => `₱${value}`}
                         parser={(value) => value.replace('₱', '')}
                     />
@@ -169,6 +141,9 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                                 >
                                     Add Salary Grade
                                 </PrimaryButton>
+                                <Upload beforeUpload={handleCSVUpload} showUploadList={false}>
+                                    <Button icon={<UploadOutlined />}>Upload CSV</Button>
+                                </Upload>
                             </>
                         )}
                     </Space>
@@ -198,84 +173,6 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                         </Col>
                     ))}
                 </Row>
-
-                {/* Modal for Adding a New Salary Grade */}
-                <Modal
-                    title="Add Salary Grade"
-                    open={isAddModalVisible}
-                    onOk={handleNewGradeSave}
-                    onCancel={() => setIsAddModalVisible(false)}
-                    footer={[
-                        <DangerButton
-                            key="cancel"
-                            onClick={() => setIsAddModalVisible(false)}
-                            style={{ marginRight: '8px' }}
-                        >
-                            Cancel
-                        </DangerButton>,
-                        <PrimaryButton
-                            key="save"
-                            type="primary"
-                            onClick={handleNewGradeSave}
-                            style={{ marginLeft: '8px' }}
-                        >
-                            Save
-                        </PrimaryButton>,
-                    ]}
-                >
-                    <Row gutter={[16, 16]} className="mb-4">
-                        <Col span={8}>
-                            <Input
-                                placeholder="Grade"
-                                value={newGrade}
-                                onChange={(e) => setNewGrade(e.target.value)}
-                            />
-                        </Col>
-                    </Row>
-                    <Table
-                        dataSource={steps}
-                        columns={[
-                            {
-                                title: 'Step',
-                                dataIndex: 'step',
-                                key: 'step',
-                            },
-                            {
-                                title: 'Monthly Salary',
-                                dataIndex: 'monthly_salary',
-                                key: 'monthly_salary',
-                                render: (text, record) => (
-                                    <InputNumber
-                                        value={record.monthly_salary}
-                                        onChange={(value) =>
-                                            handleNewSalaryChange(record.step, value)
-                                        }
-                                        formatter={(value) => `₱${value}`}
-                                        parser={(value) => value.replace('₱', '')}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Action',
-                                key: 'action',
-                                render: (_, record) => (
-                                    <Button
-                                        danger
-                                        onClick={() => removeRow(record.step)}
-                                        disabled={steps.length <= 1}
-                                    >
-                                        Remove
-                                    </Button>
-                                ),
-                            },
-                        ]}
-                        rowKey="step"
-                        pagination={false}
-                    />
-                    <PrimaryButton type="dashed" onClick={addRow} className="mt-4">
-                        Add Step
-                    </PrimaryButton>
-                </Modal>
             </div>
         </AuthenticatedLayout>
     );
