@@ -16,6 +16,7 @@ import {
     faReceipt,
     faMoneyBillTrendUp,
     faCashRegister,
+    faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
@@ -69,15 +70,15 @@ const ScrollableContent = styled(Content)`
 `;
 
 const AuthenticatedLayout = ({ user, children }) => {
-    const [collapsed, setCollapsed] = useState(false); //true is  close by default sidebar
+    const [collapsed, setCollapsed] = useState(true); //true is  close by default sidebar
     const { url, props } = usePage();
     const { auth } = props;
 
     const selectedKey = () => {
+        if (url.startsWith('/dashboards')) return '2';
         if (url.startsWith('/dashboard')) return '1';
-        if (url === '/dashboards') return '2';
         if (url === '/voucher') return '3';
-        if (url === '/settings') return '4';
+        // if (url === '/settings') return '4';
         if (url === '/leaveRequest') return '5';
         if (url === '/employees') return '6';
         if (url === '/payroll/data') return '7';
@@ -90,91 +91,104 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url === '/AsignRoles') return '14';
         if (url === '/positions') return '15';
         if (url === '/departments') return '16';
-        return '1'; // Default case
+        return '1';
     };
+
+    const role = auth?.user?.employee?.role || 'No role assigned';
 
     const menuItems = [
         {
             key: '14',
             icon: <FontAwesomeIcon icon={faStar} />,
             label: <Link href="/AsignRoles">Asign Roles</Link>,
-            hidden: auth?.employee?.role !== 'SuperAdmin',
+            roles: ['SuperAdmin'],
         },
-        {
-            key: 'payrollTitle',
-            label: !collapsed ? 'Cashier' : null,
-            type: 'group',
-        },
+        // {
+        //     key: 'payrollTitle',
+        //     label: !collapsed ? 'Cashier' : null,
+        //     type: 'group',
+        // },
         {
             key: '7',
             icon: <FontAwesomeIcon icon={faCashRegister} />,
             label: <Link href="/payroll/data">Payroll</Link>,
+            roles: ['Cashier'],
         },
         {
             key: '8',
             icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
             label: <Link href="/loans">Loans</Link>,
+            roles: ['Cashier'],
         },
-        {
-            type: 'divider',
-        },
-        {
-            key: 'accountingTitle',
-            label: !collapsed ? 'Accounting' : null,
-            type: 'group',
-        },
+        // {
+        //     type: 'divider',
+        // },
+        // {
+        //     key: 'accountingTitle',
+        //     label: !collapsed ? 'Accounting' : null,
+        //     type: 'group',
+        // },
         {
             key: '2',
             icon: <FontAwesomeIcon icon={faHouse} />,
             label: <Link href="/dashboards">Dashboard</Link>,
+            roles: ['Accounting'],
         },
         {
             key: '3',
             icon: <FontAwesomeIcon icon={faFolder} />,
             label: <Link href="/voucher">Voucher</Link>,
+            roles: ['Accounting'],
         },
         {
             key: '9',
             icon: <FontAwesomeIcon icon={faMoneyBillTrendUp} />,
             label: <Link href="/employee_benefits">Gross Earnings</Link>,
+            roles: ['Accounting'],
         },
         {
             key: '12',
             icon: <FontAwesomeIcon icon={faReceipt} />,
             label: <Link href="/contributions">Deduction</Link>,
+            roles: ['Accounting'],
         },
         {
             key: '13',
             icon: <FontAwesomeIcon icon={faMoneyCheckDollar} />,
             label: <Link href="/salary_grades">Salary Grade</Link>,
+            roles: ['Accounting'],
         },
-        {
-            type: 'divider',
-        },
-        {
-            key: 'hrTitle',
-            label: !collapsed ? 'HR' : null,
-            type: 'group',
-        },
+        // {
+        //     type: 'divider',
+        // },
+        // {
+        //     key: 'hrTitle',
+        //     label: !collapsed ? 'HR' : null,
+        //     type: 'group',
+        // },
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequest">Leaves Request</Link>,
+            roles: ['HR'],
         },
         {
             key: '6',
             icon: <FontAwesomeIcon icon={faUsers} />,
             label: <Link href="/employees">Employees</Link>,
+            roles: ['HR'],
         },
         {
             key: '15',
             icon: <FontAwesomeIcon icon={faSitemap} />,
             label: <Link href="/positions">Position</Link>,
+            roles: ['HR'],
         },
         {
             key: '16',
             icon: <FontAwesomeIcon icon={faBuilding} />,
             label: <Link href="/departments">Departemnt</Link>,
+            roles: ['HR'],
         },
         {
             type: 'divider',
@@ -186,13 +200,15 @@ const AuthenticatedLayout = ({ user, children }) => {
         },
         {
             key: '11',
-            icon: <FontAwesomeIcon icon={faHouse} />,
-            label: <Link href="/my_loans">Dashboard</Link>,
+            icon: <FontAwesomeIcon icon={faUser} />,
+            label: <Link href="/my_loans">My Details</Link>,
+            roles: ['HR', 'employee', 'Accounting', 'Cashier'],
         },
         {
             key: '10',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequestForm">Leave</Link>,
+            roles: ['HR', 'employee', 'Accounting', 'Cashier'],
         },
 
         // {
@@ -204,20 +220,22 @@ const AuthenticatedLayout = ({ user, children }) => {
         //     label: <Link href="/settings">Settings</Link>,
         // },
     ];
-    const filteredMenuItems = menuItems.filter((item) => !item.hidden);
+
+    const filteredMenuItems = menuItems.filter((item) => {
+        if (!item.roles) return true; // Show items with no role restrictions
+        return item.roles.includes(role);
+    });
 
     return (
         <div>
             <Layout className="h-screen">
                 <StyledSider trigger={null} collapsible collapsed={collapsed}>
                     <div className="relative flex h-16 items-center justify-center bg-mainD">
-                        {/* Display the logo only when collapsed */}
                         <img
                             src="/images/PayPulseHRWhite.png"
                             alt="PayPulseHR Logo"
                             className={`h-12 ${collapsed ? 'block' : 'block'}`}
                         />
-                        {/* Display text when not collapsed */}
                         <span className={`font-bold text-white ${collapsed ? 'hidden' : 'block'}`}>
                             PayPulseHR
                         </span>
@@ -226,12 +244,11 @@ const AuthenticatedLayout = ({ user, children }) => {
                         theme="dark"
                         mode="inline"
                         selectedKeys={[selectedKey()]}
-                        items={menuItems}
+                        items={filteredMenuItems}
                         className="text-white-50 bg-main"
                     />
                 </StyledSider>
 
-                {/* Navbar */}
                 <Layout className="flex h-screen flex-col">
                     <Header className="flex justify-between bg-white shadow-md">
                         <Button
@@ -258,7 +275,7 @@ const AuthenticatedLayout = ({ user, children }) => {
                                                 >
                                                     <path
                                                         fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a 1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a 1 1 0 01-1.414 0l-4-4a 1 1 0 010-1.414z"
                                                         clipRule="evenodd"
                                                     />
                                                 </svg>
