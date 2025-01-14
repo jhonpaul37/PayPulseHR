@@ -70,7 +70,7 @@ const ScrollableContent = styled(Content)`
 `;
 
 const AuthenticatedLayout = ({ user, children }) => {
-    const [collapsed, setCollapsed] = useState(true); //true is  close by default sidebar
+    const [collapsed, setCollapsed] = useState(false); //true is  close by default sidebar
     const { url, props } = usePage();
     const { auth } = props;
 
@@ -95,6 +95,7 @@ const AuthenticatedLayout = ({ user, children }) => {
     };
 
     const role = auth?.user?.employee?.role || 'No role assigned';
+    // console.log(auth);
 
     const menuItems = [
         {
@@ -222,7 +223,7 @@ const AuthenticatedLayout = ({ user, children }) => {
     ];
 
     const filteredMenuItems = menuItems.filter((item) => {
-        if (!item.roles) return true; // Show items with no role restrictions
+        if (!item.roles) return true;
         return item.roles.includes(role);
     });
 

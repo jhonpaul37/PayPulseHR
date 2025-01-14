@@ -9,8 +9,8 @@ class HomeController extends Controller
 {
     public function landingPage()
     {
-        $user = Auth::user(); // Get the authenticated user
-        $today = now()->format('F j, Y'); // Current date in format like "December 5, 2024"
+        $user = Auth::user();
+        $today = now()->format('F j, Y');
 
         return Inertia::render('Home/LandingPages', [
             'user' => $user,
