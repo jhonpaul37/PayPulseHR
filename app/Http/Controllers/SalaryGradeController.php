@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\SalaryGrade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class SalaryGradeController extends Controller
 {
@@ -33,14 +34,26 @@ public function uploadCSV(Request $request)
         return response()->json(['message' => 'Invalid CSV headers. Please include grade, step, and monthly_salary columns.'], 400);
     }
 
-    foreach ($fileData as $row) {
-        $data = array_combine($header, $row);
+foreach ($fileData as $row) {
+    $data = array_combine($header, $row);
 
-        SalaryGrade::updateOrCreate(
-            ['grade' => $data['grade'], 'step' => $data['step']],
-            ['monthly_salary' => $data['monthly_salary']]
-        );
+    // Remove commas from monthly_salary
+    $monthlySalary = str_replace(',', '', $data['monthly_salary']);
+
+    // Ensure it's numeric
+    if (!is_numeric($monthlySalary)) {
+        return Inertia::render('YourComponentName', [
+            'message' => 'Invalid salary format in CSV. Please make sure the monthly_salary is a valid number.',
+        ]);
     }
+
+    // Update or create salary grade
+    SalaryGrade::updateOrCreate(
+        ['grade' => $data['grade'], 'step' => $data['step']],
+        ['monthly_salary' => $monthlySalary]
+    );
+}
+
 
     // Redirect or show a success message
     return redirect()->route('salary_grades.index') // Specify the route to redirect to
