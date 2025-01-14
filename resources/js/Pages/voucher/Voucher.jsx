@@ -64,15 +64,15 @@ export default function Voucher({ vouchers, auth }) {
             dataIndex: 'payee',
             key: 'payee',
         },
-        {
-            title: 'Actions',
-            key: 'actions',
-            render: (text, record) => (
-                <Link href={route('voucher.show', record)} className="font-bold text-main">
-                    View
-                </Link>
-            ),
-        },
+        // {
+        //     title: 'Actions',
+        //     key: 'actions',
+        //     render: (text, record) => (
+        //         <Link href={route('voucher.show', record)} className="font-bold text-main">
+        //             View
+        //         </Link>
+        //     ),
+        // },
     ];
 
     // Function to show the drawer with transaction details

@@ -95,6 +95,7 @@ const AuthenticatedLayout = ({ user, children }) => {
     };
 
     const role = auth?.user?.employee?.role || 'No role assigned';
+    console.log(role);
 
     const menuItems = [
         {
