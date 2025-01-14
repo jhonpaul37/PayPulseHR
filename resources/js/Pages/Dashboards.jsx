@@ -2,7 +2,6 @@ import React from 'react';
 
 const Dashboards = ({ roles }) => {
     const rolesList = roles || [];
-    // console.log(rolesList);
     return (
         <div>
             <h1>Dashboard</h1>

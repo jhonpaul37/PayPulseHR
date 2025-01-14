@@ -6,9 +6,49 @@ namespace App\Http\Controllers;
 
 use App\Models\SalaryGrade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SalaryGradeController extends Controller
 {
+
+public function uploadCSV(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'file' => 'required|mimes:csv,txt|max:2048',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => 'Invalid file format. Please upload a valid CSV file.'], 400);
+    }
+
+    $file = $request->file('file');
+    $fileData = array_map('str_getcsv', file($file->getRealPath()));
+
+    // Strip BOM from the header
+    $header = array_map(fn($value) => trim(preg_replace('/\x{FEFF}/u', '', $value)), array_shift($fileData));
+
+    $requiredHeaders = ['grade', 'step', 'monthly_salary'];
+
+    if ($header !== $requiredHeaders) {
+        return response()->json(['message' => 'Invalid CSV headers. Please include grade, step, and monthly_salary columns.'], 400);
+    }
+
+    foreach ($fileData as $row) {
+        $data = array_combine($header, $row);
+
+        SalaryGrade::updateOrCreate(
+            ['grade' => $data['grade'], 'step' => $data['step']],
+            ['monthly_salary' => $data['monthly_salary']]
+        );
+    }
+
+    // Redirect or show a success message
+    return redirect()->route('salary_grades.index') // Specify the route to redirect to
+                    ->with('success', 'Salary grades updated successfully!');
+
+}
+
+
     public function index()
     {
         $salaryGrades = SalaryGrade::all();

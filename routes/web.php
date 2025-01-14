@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['accounting'])->group(function () {
 
     // Salary Grade
+    Route::post('/salary_grades/upload_csv', [SalaryGradeController::class, 'uploadCSV'])->name('salary_grades.upload_csv');
+
     Route::get('/salary_grades', [SalaryGradeController::class, 'index'])->name('salary_grades.index');
     Route::post('/salary_grades/bulk_add', [SalaryGradeController::class, 'bulkAdd'])->name('salary_grades.bulk_add');
     Route::post('/salary_grades/bulk_update', [SalaryGradeController::class, 'bulkUpdate'])->name('salary_grades.bulk_update');
