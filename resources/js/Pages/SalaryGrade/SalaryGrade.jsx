@@ -165,9 +165,14 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                     <Space>
                         {isEditMode ? (
                             <>
-                                <PrimaryButton type="primary" onClick={handleSave}>
-                                    Save Changes
+                                <PrimaryButton onClick={() => setIsUploadModalVisible(true)}>
+                                    Upload
                                 </PrimaryButton>
+
+                                <PrimaryButton type="primary" onClick={handleSave}>
+                                    Save
+                                </PrimaryButton>
+
                                 <DangerButton onClick={handleCancel}>Cancel</DangerButton>
                             </>
                         ) : (
@@ -175,15 +180,12 @@ const SalaryGradeManager = ({ salaryGrades, auth }) => {
                                 <PrimaryButton type="primary" onClick={handleEdit}>
                                     Edit
                                 </PrimaryButton>
-                                <PrimaryButton
+                                {/* <PrimaryButton
                                     type="primary"
                                     onClick={() => setIsAddModalVisible(true)}
                                 >
                                     Add Salary Grade
-                                </PrimaryButton>
-                                <PrimaryButton onClick={() => setIsUploadModalVisible(true)}>
-                                    Upload Salary Grades CSV
-                                </PrimaryButton>
+                                </PrimaryButton> */}
                             </>
                         )}
                     </Space>

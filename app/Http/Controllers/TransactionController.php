@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Benefit;
+use App\Models\Contribution;
 use Inertia\Inertia;
 use App\Models\Transaction;
 use App\Models\EmployeeLoanPayment;
@@ -14,7 +17,7 @@ class TransactionController extends Controller
 public function store(Request $request)
 {
     $data = $request->input('data');
-    $processedEmployees = []; // Array to store processed employee data
+    $processedEmployees = [];
 
     foreach ($data as $employeeData) {
         $employee = Employee::where('id', $employeeData['id'])->first();
@@ -34,7 +37,6 @@ public function store(Request $request)
                         'payment_date' => now(),
                     ]);
 
-                    // Calculate total paid and update loan status
                     $totalPaid = $loan->payments()->sum('amount');
 
                     if ($totalPaid >= $loan->total_paid) {
@@ -49,16 +51,14 @@ public function store(Request $request)
 
             // PATVE, GSIS, TAX,
             foreach ($employeeData['contributions'] as $contributionData) {
-                // Save contribution data
                 $employee->contributions()->updateOrCreate(
                     ['contribution_id' => $contributionData['contribution_id']],
                     ['amount' => $contributionData['amount']]
                 );
             }
 
-            //PERA, LWOP-PERA, RATA,
+            // PERA, LWOP-PERA, RATA,
             foreach ($employeeData['benefits'] as $benefitData) {
-                // Save benefit data
                 $employee->benefits()->updateOrCreate(
                     ['benefit_id' => $benefitData['benefit_id']],
                     ['amount' => $benefitData['amount']]
@@ -68,7 +68,7 @@ public function store(Request $request)
             $employee->update([
                 'total_salary' => $employeeData['total_salary'],
                 'total_deductions' => $employeeData['total_deductions'],
-                'net_amount' => $employeeData['net_amount'],
+                // 'net_amount' => $employeeData['net_amount'],
                 'net_pay' => $employeeData['net_pay'],
             ]);
 
@@ -76,11 +76,18 @@ public function store(Request $request)
             $processedEmployees[] = [
                 'id' => $employee->id,
                 'name' => $employee->first_name . ' ' . $employee->last_name,
+                'monthly_salary' => $employeeData['monthly_salary'],
                 'total_salary' => $employeeData['total_salary'],
                 'net_pay' => $employeeData['net_pay'],
+                'net_pera' => $employeeData['net_pera'],
                 'contributions' => $employeeData['contributions'],
                 'benefits' => $employeeData['benefits'],
                 'loans' => $employeeData['loans'],
+
+                'total_contributions' => $employeeData['total_contributions'],
+                'total_loans' => $employeeData['total_loans'],
+                'total_deductions' => $employeeData['total_deductions'],
+                'net_amount' => $employeeData['net_amount'],
             ];
         }
     }
@@ -88,22 +95,25 @@ public function store(Request $request)
     // Generate a unique reference number
     $transaction = Transaction::create([
         'reference_number' => 'BSC-' . strtoupper(uniqid()),
-        'data' => json_encode($processedEmployees), // Store all processed data, including names
+        'data' => json_encode($processedEmployees),
     ]);
 
-return redirect()->route('payrollData')->with([
-    'message' => 'Transaction saved successfully!',
-    'reference_number' => $transaction->reference_number,
-    'employees' => $processedEmployees, // Include processed employees with names in the session
-]);
-
+    return redirect()->route('payrollData')->with([
+        'message' => 'Transaction saved successfully!',
+        'reference_number' => $transaction->reference_number,
+        'employees' => $processedEmployees,
+    ]);
 }
+
+
 
 
 
     public function show($referenceNumber)
     {
         $loanTypes = LoanType::all();
+        $Benefits = Benefit::all();
+        $contribution = Contribution::all();
         $transaction = Transaction::where('reference_number', $referenceNumber)->first();
 
         if (!$transaction) {
@@ -115,6 +125,8 @@ return redirect()->route('payrollData')->with([
             'transaction' => $transaction,
             'data' => $data,
             'loanTypes' => $loanTypes,
+            'benefit' => $Benefits,
+            'contribution' => $contribution,
         ]);
     }
 

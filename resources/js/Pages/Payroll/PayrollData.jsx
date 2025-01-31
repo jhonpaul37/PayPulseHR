@@ -265,7 +265,7 @@ const PayrollData = ({
             {
                 title: 'BIR GSIS PHIC HDMF TOTAL',
                 dataIndex: 'total_contributions',
-                render: PhpFormat,
+                render: (text) => <strong>{PhpFormat(text)}</strong>,
                 width: 150,
             },
         ];
@@ -311,8 +311,13 @@ const PayrollData = ({
     const saveTransaction = () => {
         const dataToSend = dataSource.map((employee) => ({
             id: employee.id,
+            monthly_salary: employee.salary_grade.monthly_salary,
+            total_contributions: employee.total_contributions,
+            total_loans: employee.total_loans,
+            total_deductions: employee.total_deductions,
+
             loans: employee.loans.map((loan) => ({
-                loan_id: loan.id,
+                loan_id: loan.loan_type_id,
                 remaining_amortization: loan.remainingAmortization,
             })),
             contributions: employee.contributions.map((contribution) => ({
@@ -325,8 +330,9 @@ const PayrollData = ({
             })),
             total_salary: employee.total_salary,
             total_deductions: employee.total_deductions,
-            net_amount: employee.net_amount,
+            net_pera: employee.net_pera,
             net_pay: employee.net_pay,
+            net_amount: employee.net_amount,
         }));
 
         Inertia.post(
