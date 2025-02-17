@@ -28,6 +28,8 @@ const LandingPage = ({ auth, user, date }) => {
                 return 'Welcome to PayPulseHR!';
         }
     };
+    console.log('User in LandingPage:', user);
+    // console.log('Auth in LandingPage:', auth);
 
     return (
         <AuthenticatedLayout user={auth.user}>

@@ -74,6 +74,8 @@ const AuthenticatedLayout = ({ user, children }) => {
     const { url, props } = usePage();
     const { auth } = props;
 
+    // console.log('Auth Object:', auth);
+
     const selectedKey = () => {
         if (url.startsWith('/dashboards')) return '2';
         if (url.startsWith('/dashboard')) return '1';
@@ -95,6 +97,7 @@ const AuthenticatedLayout = ({ user, children }) => {
     };
 
     const role = auth?.user?.employee?.role || 'No role assigned';
+    // console.log('Role:', role);
 
     const menuItems = [
         {
