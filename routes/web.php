@@ -21,6 +21,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\RemittanceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -111,6 +112,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/employee_loans', [EmployeeLoanController::class, 'store'])->name('employee_loans.store');
         Route::get('/employee_loans/{employeeLoan}/edit', [EmployeeLoanController::class, 'edit'])->name('employee_loans.edit');
         Route::put('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'update'])->name('employee_loans.update');
+
+    //Remittance
+        Route::get('/remittance', [RemittanceController::class, 'index'])->name('remittance.index');
 
     });
 

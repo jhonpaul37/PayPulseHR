@@ -93,6 +93,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url === '/AsignRoles') return '14';
         if (url === '/positions') return '15';
         if (url === '/departments') return '16';
+        // if (url === '/remittance') return '17';
         return '1';
     };
 
@@ -123,6 +124,12 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: <Link href="/loans">Loans</Link>,
             roles: ['Cashier'],
         },
+        // {
+        //     key: '17',
+        //     // icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
+        //     label: <Link href="/remittance">Remittance</Link>,
+        //     roles: ['Cashier'],
+        // },
         // {
         //     type: 'divider',
         // },

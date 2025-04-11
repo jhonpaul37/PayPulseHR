@@ -31,7 +31,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [activeLoans, setActiveLoans] = useState([]);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Modal for editing loan
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
     const [form] = Form.useForm();
@@ -130,12 +130,12 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
     };
 
     // Handle form submission
-    const handleFolderSubmit = (values) => {
-        console.log('Received values:', values);
-        // You can add your logic here to handle the form submission
-        setIsFolderModalOpen(false);
-        form.resetFields();
-    };
+    // const handleFolderSubmit = (values) => {
+    //     console.log('Received values:', values);
+    //     // You can add your logic here to handle the form submission
+    //     setIsFolderModalOpen(false);
+    //     form.resetFields();
+    // };
 
     const handleEditSubmit = (values) => {
         // Send updated loan data to the backend
@@ -163,6 +163,39 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
         </div>
     );
 
+    const [remittanceHistory, setRemittanceHistory] = useState([]);
+    const [isRemittanceModalOpen, setIsRemittanceModalOpen] = useState(false);
+    const [loanDetails, setLoanDetails] = useState(null); // Store loan info
+
+    const handleFolderSubmit = (values) => {
+        const selectedLoan = selectedEmployeeLoans.find((loan) => loan.id === values.loan_id);
+
+        if (!selectedLoan) {
+            message.error('Invalid loan selection');
+            return;
+        }
+
+        // Extract remittance (payment) history
+        const payments = selectedLoan.payments.map((payment, index) => ({
+            key: index + 1,
+            date: payment.payment_date,
+            amount: `₱${parseFloat(payment.amount).toFixed(2)}`,
+        }));
+
+        // Store loan details
+        setLoanDetails({
+            type: selectedLoan.loan_type?.type || `Loan ${selectedLoan.id}`,
+            totalAmount: `₱${parseFloat(selectedLoan.amount).toFixed(2)}`,
+            totalPaid: `₱${parseFloat(selectedLoan.total_paid).toFixed(2)}`,
+            remainingBalance: `₱${(selectedLoan.amount - selectedLoan.total_paid).toFixed(2)}`,
+        });
+
+        setRemittanceHistory(payments);
+        setIsRemittanceModalOpen(true);
+        message.success('Loan assigned successfully!');
+        handleFolderCancel();
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="flex justify-end">
@@ -183,6 +216,45 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     </Badge>
                 </Popover>
             </div>
+            <Modal
+                title="Remittance History"
+                open={isRemittanceModalOpen}
+                onCancel={() => setIsRemittanceModalOpen(false)}
+                footer={[
+                    <Button key="close" onClick={() => setIsRemittanceModalOpen(false)}>
+                        Close
+                    </Button>,
+                ]}
+            >
+                {loanDetails && (
+                    <div style={{ marginBottom: 16 }}>
+                        <p>
+                            <strong>Loan Type:</strong> {loanDetails.type}
+                        </p>
+                        <p>
+                            <strong>Total Loan Amount:</strong> {loanDetails.totalAmount}
+                        </p>
+                        <p>
+                            <strong>Total Paid:</strong> {loanDetails.totalPaid}
+                        </p>
+                        <p>
+                            <strong>Remaining Balance:</strong> {loanDetails.remainingBalance}
+                        </p>
+                    </div>
+                )}
+
+                <Table
+                    dataSource={remittanceHistory}
+                    columns={[
+                        { title: 'No.', dataIndex: 'key', key: 'key' },
+                        { title: 'Payment Date', dataIndex: 'date', key: 'date' },
+                        { title: 'Amount Paid', dataIndex: 'amount', key: 'amount' },
+                    ]}
+                    pagination={false}
+                />
+            </Modal>
+
+            {console.log(employeeLoan)}
 
             {/* Folder Modal */}
             <Modal
@@ -238,24 +310,11 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item
-                        label="Start Date"
-                        name="startDate"
-                        rules={[{ required: true, message: 'Please select the start date!' }]}
-                    >
-                        <DatePicker style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item
-                        label="End Date"
-                        name="endDate"
-                        rules={[{ required: true, message: 'Please select the end date!' }]}
-                    >
-                        <DatePicker style={{ width: '100%' }} />
-                    </Form.Item>
                 </Form>
             </Modal>
             {/* Loan Programs and Loan Types */}
-            <div className="grid grid-cols-2 gap-5">
+            {/* <div className="grid grid-cols-2 gap-5"> */}
+            <div className="gap-5">
                 <div>
                     <Divider style={{ borderColor: '#F0C519' }}>
                         <span className="text-xl font-bold">Loan Programs</span>
@@ -268,10 +327,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     <LoanTypes loanPrograms={loanPrograms} loanTypes={loanTypes} />
                 </div>
                 <div>
-                    <Divider style={{ borderColor: '#F0C519' }}>
-                        <span className="text-xl font-bold">Employee Loans</span>
-                    </Divider>
-
                     {/* Floating Add Button */}
                     <FloatButton
                         onClick={showModal}
@@ -290,261 +345,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                             loanTypes={loanTypes}
                             loanPrograms={loanPrograms}
                         />
-                    </Modal>
-                    {/* Loan Detail Modal */}
-                    <Modal
-                        title="Employee Loan Details"
-                        open={isDetailModalOpen}
-                        onCancel={handleDetailCancel}
-                        footer={null}
-                    >
-                        {selectedLoan && (
-                            <EmployeeLoanDetail
-                                employeeLoan={selectedLoan}
-                                payments={selectedLoan.payments || []}
-                                s
-                            />
-                        )}
-                    </Modal>
-                    {/* Unpaid Loans Table */}
-                    <Table
-                        dataSource={employees
-                            .map((employee) => {
-                                const loansForEmployee = employeeLoan.filter(
-                                    (loan) =>
-                                        loan.employee?.id === employee.id &&
-                                        loan.total_paid >
-                                            loan.payments.reduce(
-                                                (acc, payment) => acc + parseFloat(payment.amount),
-                                                0
-                                            )
-                                );
-
-                                if (loansForEmployee.length === 0) return null;
-
-                                const loansByType = {};
-                                loansForEmployee.forEach((loan) => {
-                                    const totalPaid = loan.payments.reduce(
-                                        (acc, payment) => acc + parseFloat(payment.amount),
-                                        0
-                                    );
-                                    const remainingBalance = loan.amount - totalPaid;
-                                    const monthlyAmortization =
-                                        loan.monthly_amortization || (loan.amount / 12).toFixed(2);
-
-                                    loansByType[loan.loan_type?.type || `Loan ${loan.id}`] = {
-                                        remainingBalance,
-                                        monthlyAmortization,
-                                        display: (
-                                            <div>
-                                                <span className="text-primary font-bold">
-                                                    ₱
-                                                    {parseFloat(
-                                                        monthlyAmortization
-                                                    ).toLocaleString()}
-                                                </span>
-                                            </div>
-                                        ),
-                                    };
-                                });
-
-                                return {
-                                    key: employee.id,
-                                    employee_name: `${employee.first_name} ${employee.last_name}`,
-                                    ...Object.keys(loansByType).reduce((acc, loanType) => {
-                                        acc[loanType] = loansByType[loanType].display;
-                                        return acc;
-                                    }, {}),
-                                    employee,
-                                };
-                            })
-                            .filter((entry) => entry !== null)}
-                        columns={[
-                            {
-                                title: 'Employee',
-                                dataIndex: 'employee_name',
-                                key: 'employee_name',
-                                fixed: 'left',
-                            },
-                            ...Array.from(
-                                new Set(
-                                    employeeLoan.map(
-                                        (loan) => loan.loan_type?.type || `Loan ${loan.id}`
-                                    )
-                                )
-                            ).map((loanType) => ({
-                                title: loanType,
-                                dataIndex: loanType,
-                                key: loanType,
-                                render: (value) => value || '----',
-                            })),
-                        ]}
-                        pagination={false}
-                        scroll={{ x: 'max-content' }}
-                        onRow={(record) => ({
-                            onClick: () => openSidebar(record.employee),
-                        })}
-                    />
-                    {/* Sidebar for Active Loans */}
-                    <Drawer
-                        title="Active Loans"
-                        placement="right"
-                        width={400}
-                        onClose={closeSidebar}
-                        open={isSidebarOpen}
-                    >
-                        {activeLoans.map((loan) => (
-                            <div key={loan.id} className="mb-4">
-                                <h3 className="font-bold">
-                                    {loan.loan_type?.type || `Loan ${loan.id}`}
-                                </h3>
-                                <p>Total Paid: ₱{loan.total_paid.toLocaleString()}</p>
-                                <p>Amount: ₱{loan.amount.toLocaleString()}</p>
-                                <p>Months to pay: {loan.months.toLocaleString()}</p>
-                                <p>
-                                    Remaining Balance: ₱
-                                    {loan.total_paid -
-                                        loan.payments.reduce(
-                                            (acc, p) => acc + parseFloat(p.amount),
-                                            0
-                                        )}
-                                </p>
-                                <p>
-                                    Monthly Amortization: ₱
-                                    {loan.monthly_amortization?.toLocaleString()}
-                                </p>
-                                <p>Status: {loan.status?.toLocaleString()}</p>
-                                <div className="flex justify-end py-2">
-                                    <PrimaryButton
-                                        type="primary"
-                                        onClick={() => openEditModal(loan)}
-                                    >
-                                        Edit
-                                    </PrimaryButton>
-                                </div>
-                                <Divider />
-                            </div>
-                        ))}
-                    </Drawer>
-                    {/* {console.log(employeeLoan)} */}
-                    {/* Edit Loan Modal */}
-                    <Modal
-                        title="Edit Loan"
-                        open={isEditModalOpen}
-                        onCancel={closeEditModal} // This will close the modal when clicked
-                        footer={[
-                            <DangerButton
-                                key="cancel"
-                                onClick={closeEditModal}
-                                style={{ marginRight: '8px' }}
-                            >
-                                Cancel
-                            </DangerButton>,
-                            <PrimaryButton key="save" type="primary" htmlType="submit">
-                                Save Changes
-                            </PrimaryButton>,
-                        ]}
-                    >
-                        {selectedLoan && (
-                            <Form
-                                initialValues={{
-                                    amount: selectedLoan.amount,
-                                    loan_date: selectedLoan.loan_date,
-                                    interest_rate: selectedLoan.interest_rate,
-                                    months: selectedLoan.months,
-                                    monthly_amortization: selectedLoan.monthly_amortization,
-                                }}
-                                onFinish={handleEditSubmit}
-                            >
-                                <div style={{ marginBottom: '16px' }}>
-                                    <strong>Total Paid: </strong> ₱
-                                    {selectedLoan.payments
-                                        .reduce(
-                                            (acc, payment) => acc + parseFloat(payment.amount),
-                                            0
-                                        )
-                                        .toLocaleString()}
-                                </div>
-
-                                <div style={{ marginBottom: '16px' }}>
-                                    <strong>Total Loan Amount with Interest: </strong> ₱
-                                    {(
-                                        selectedLoan.amount +
-                                        selectedLoan.amount * (selectedLoan.interest_rate / 100)
-                                    ).toLocaleString()}
-                                </div>
-
-                                <div style={{ marginBottom: '16px' }}>
-                                    <strong>Remaining Balance: </strong> ₱
-                                    {(
-                                        selectedLoan.amount +
-                                        selectedLoan.amount * (selectedLoan.interest_rate / 100) -
-                                        selectedLoan.payments.reduce(
-                                            (acc, payment) => acc + parseFloat(payment.amount),
-                                            0
-                                        )
-                                    ).toLocaleString()}
-                                </div>
-
-                                <Form.Item
-                                    name="amount"
-                                    label="Amount"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please input the loan amount!',
-                                        },
-                                    ]}
-                                >
-                                    <InputNumber min={0} style={{ width: '100%' }} />
-                                </Form.Item>
-
-                                <Form.Item
-                                    name="interest_rate"
-                                    label="Interest Rate (%)"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please input the interest rate!',
-                                        },
-                                    ]}
-                                >
-                                    <InputNumber min={0} style={{ width: '100%' }} />
-                                </Form.Item>
-
-                                <Form.Item
-                                    name="months"
-                                    label="Months"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please input the number of months!',
-                                        },
-                                    ]}
-                                >
-                                    <InputNumber min={1} style={{ width: '100%' }} />
-                                </Form.Item>
-
-                                <Form.Item
-                                    name="monthly_amortization"
-                                    label="Monthly Amortization"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please input the monthly amortization!',
-                                        },
-                                    ]}
-                                >
-                                    <InputNumber min={0} style={{ width: '100%' }} />
-                                </Form.Item>
-
-                                {/* <Form.Item>
-                            <PrimaryButton type="primary" htmlType="submit">
-                                Save Changes
-                            </PrimaryButton>
-                        </Form.Item> */}
-                            </Form>
-                        )}
                     </Modal>
                 </div>
             </div>

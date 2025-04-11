@@ -19,7 +19,6 @@ class LoanController extends Controller
         $loanPrograms = ProgramLoan::all();
         $employees = Employee::all();
         $transaction = Transaction::all();
-        // $employeeLoan = EmployeeLoan::with(['employee', 'loanType', 'payments'])->get();
         $employeeLoan = EmployeeLoan::with(['employee', 'loanType', 'payments'])
                             ->where('status', '!=', 'completed')
                             ->get();
