@@ -7,6 +7,8 @@ use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\LoanType;
 use App\Models\Benefit;
+use App\Models\EmployeeLoan;
+use App\Models\EmployeeLoanPayment;
 use App\Models\Loan;
 use App\Models\Transaction;
 use Inertia\Inertia;
@@ -32,6 +34,7 @@ public function payrollData()
     $loanTypes = LoanType::all();
     $benefits = Benefit::all();
     $transaction = Transaction::all();
+    $loanPayment = EmployeeLoanPayment::all();
 
     foreach ($employees as $employee) {
         // Calculate remaining loan amortization
@@ -119,6 +122,7 @@ public function payrollData()
         'loanTypes' => $loanTypes,
         'benefits' => $benefits,
         'transaction' => $transaction,
+        'loanPayment' => $loanPayment,
     ]);
 }
 

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { message } from 'antd'; // Import message
+import { message, Card, Empty, Modal } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import TextInput from '@/Components/TextInput';
-import { Card, Empty, Modal } from 'antd';
 
 export default function LoanPrograms({ programs }) {
     const [name, setName] = useState('');
@@ -13,17 +12,16 @@ export default function LoanPrograms({ programs }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             if (editingProgram) {
                 await Inertia.put(`/loanPrograms/${editingProgram.id}`, { name });
-                message.success('Loan Program updated successfully'); // Use message for success
+                message.success('Loan Program updated successfully');
             } else {
                 await Inertia.post('/loanPrograms', { name });
-                message.success('Loan Program added successfully'); // Use message for success
+                message.success('Loan Program added successfully');
             }
         } catch (error) {
-            message.error('Failed to add or update Loan Program'); // Use message for error
+            message.error('Failed to add or update Loan Program');
         }
 
         setName('');
@@ -49,66 +47,57 @@ export default function LoanPrograms({ programs }) {
         setEditingProgram(null);
     };
 
-    // Dynamically set the grid width
-    const getGridStyle = (totalPrograms) => {
-        if (totalPrograms >= 4) {
-            return { width: '25%', textAlign: 'center', cursor: 'pointer' };
-        } else if (totalPrograms === 3) {
-            return { width: '33.33%', textAlign: 'center', cursor: 'pointer' };
-        } else if (totalPrograms === 2) {
-            return { width: '50%', textAlign: 'center', cursor: 'pointer' };
-        } else {
-            return { width: '100%', textAlign: 'center', cursor: 'pointer' };
-        }
-    };
-
     return (
-        <div>
-            <div className="flex justify-end pb-5">
-                <PrimaryButton type="primary" onClick={handleAddNew}>
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold"></h2>
+                <PrimaryButton size="small" onClick={handleAddNew}>
                     Add Program
                 </PrimaryButton>
             </div>
+
             {programs && programs.length > 0 ? (
-                <Card title="Loan Programs">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
                     {programs.map((program) => (
-                        <Card.Grid
+                        <Card
                             key={program.id}
-                            style={getGridStyle(programs.length)}
+                            bodyStyle={{ padding: '10px' }}
+                            className="cursor-pointer !p-2 transition hover:shadow-sm"
                             onClick={() => handleEdit(program)}
                         >
-                            <div className="text-lg font-bold">{program.name}</div>
-                        </Card.Grid>
+                            <div className="truncate text-center text-sm font-medium">
+                                {program.name}
+                            </div>
+                        </Card>
                     ))}
-                </Card>
+                </div>
             ) : (
-                <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="No loan programs available"
-                />
+                <Empty description="No loan programs available" />
             )}
 
-            {/* Modal for Adding/Editing Programs */}
             <Modal
                 title={editingProgram ? 'Edit Loan Program' : 'Add Loan Program'}
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={null}
+                centered
             >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="space-y-3">
                     <div>
-                        <label className="pr-5">Program Name</label>
+                        <label className="mb-1 block text-sm">Program Name</label>
                         <TextInput
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
+                            className="w-full"
                         />
                     </div>
-
-                    <div className="flex justify-end gap-4 pt-4">
-                        <DangerButton onClick={handleCancel}>Cancel</DangerButton>
-                        <PrimaryButton type="submit">
+                    <div className="flex justify-end gap-2">
+                        <DangerButton size="small" onClick={handleCancel}>
+                            Cancel
+                        </DangerButton>
+                        <PrimaryButton size="small" type="submit">
                             {editingProgram ? 'Update' : 'Add'}
                         </PrimaryButton>
                     </div>

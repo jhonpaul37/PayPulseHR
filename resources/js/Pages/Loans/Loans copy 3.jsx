@@ -223,6 +223,12 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                                         <strong>Employee Name:</strong>{' '}
                                         {selectedEmployee.first_name} {selectedEmployee.last_name}
                                     </p>
+                                    <p>
+                                        <strong>Employee ID:</strong> {selectedEmployee.employee_id}
+                                    </p>
+                                    <p>
+                                        <strong>Department:</strong> {selectedEmployee.department}
+                                    </p>
                                 </div>
                                 <div>
                                     <p>
@@ -242,7 +248,8 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                                     <strong>Total Paid:</strong> {loanDetails.totalPaid}
                                 </p>
                                 <p>
-                                    <strong>Balance:</strong> {loanDetails.remainingBalance}
+                                    <strong>Remaining Balance:</strong>{' '}
+                                    {loanDetails.remainingBalance}
                                 </p>
                             </div>
                         </div>
@@ -255,6 +262,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                                     <th className="border px-4 py-2 text-left">No.</th>
                                     <th className="border px-4 py-2 text-left">Payment Date</th>
                                     <th className="border px-4 py-2 text-left">Amount Paid</th>
+                                    <th className="border px-4 py-2 text-left">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -267,6 +275,9 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                                             {payment.amount.toLocaleString(undefined, {
                                                 minimumFractionDigits: 2,
                                             })}
+                                        </td>
+                                        <td className="border px-4 py-2">
+                                            {payment.remarks || '-'}
                                         </td>
                                     </tr>
                                 ))}

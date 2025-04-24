@@ -22,6 +22,8 @@ public function store(Request $request)
     foreach ($data as $employeeData) {
         $employee = Employee::where('id', $employeeData['id'])->first();
 
+        // dd($employeeData);
+
         if ($employee) {
             // Process loans
             foreach ($employeeData['loans'] as $loanData) {
@@ -30,12 +32,14 @@ public function store(Request $request)
                 if ($loan && isset($loanData['remaining_amortization'])) {
                     $deductionAmount = (float) $loanData['remaining_amortization'];
 
+                    // dd($loanData['loan_id'], $loan);
                     // Create a new loan payment
                     EmployeeLoanPayment::create([
                         'employee_loan_id' => $loan->id,
                         'amount' => $deductionAmount,
                         'payment_date' => now(),
                     ]);
+
 
                     $totalPaid = $loan->payments()->sum('amount');
 
@@ -44,10 +48,10 @@ public function store(Request $request)
                     } else {
                         $loan->status = 'active';
                     }
-
                     $loan->save();
                 }
             }
+// dd($loanData['loan_id'], $loan);
 
             // PATVE, GSIS, TAX,
             foreach ($employeeData['contributions'] as $contributionData) {

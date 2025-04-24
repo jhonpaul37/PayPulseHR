@@ -20,70 +20,12 @@ const PayrollData = ({
     reference_number,
     transaction,
     benefits,
-    loanPayment,
 }) => {
     const [dataSource, setDataSource] = useState(employee);
     const [columns, setColumns] = useState([]);
     const [visible, setVisible] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const [grandTotals, setGrandTotals] = useState({});
-
-    console.log(loanPayment);
-
-    // Calculate grand totals
-    const calculateGrandTotals = () => {
-        const totals = {
-            basic_pay: 0,
-            net_basic: 0,
-            pera: 0,
-            net_pera: 0,
-            rata: 0,
-            salary_differential: 0,
-            total_salary: 0,
-            tax: 0,
-            gsis_prem: 0,
-            hdmf_prem1: 0,
-            phic: 0,
-            total_contributions: 0,
-            patve_cont: 0,
-            loans_total: 0,
-            total_deductions: 0,
-            net_amount: 0,
-        };
-
-        dataSource.forEach((record) => {
-            totals.basic_pay += record.salary_grade?.monthly_salary || 0;
-            totals.net_basic += record.salary_grade?.monthly_salary || 0;
-            totals.pera += record.benefits?.find((b) => b.name === 'PERA')?.pivot?.amount || 0;
-            totals.net_pera += record.net_pera || 0;
-            totals.rata += record.benefits?.find((b) => b.name === 'RATA')?.pivot?.amount || 0;
-            totals.salary_differential +=
-                record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL')?.pivot?.amount || 0;
-            totals.total_salary += record.total_salary || 0;
-            totals.tax += record.contributions?.find((c) => c.name === 'TAX')?.pivot?.amount || 0;
-            totals.gsis_prem +=
-                record.contributions?.find((c) => c.name === 'GSIS PREM')?.pivot?.amount || 0;
-            totals.hdmf_prem1 +=
-                record.contributions?.find((c) => c.name === 'HDMF PREM1')?.pivot?.amount || 0;
-            totals.phic += record.contributions?.find((c) => c.name === 'PHIC')?.pivot?.amount || 0;
-            totals.total_contributions += record.total_contributions || 0;
-            totals.patve_cont +=
-                record.contributions?.find((c) => c.name === 'PATVE CONT.')?.pivot?.amount || 0;
-            totals.loans_total += record.loans?.reduce(
-                (sum, loan) => sum + (loan.remainingAmortization || 0),
-                0
-            );
-            totals.total_deductions += record.total_deductions || 0;
-            totals.net_amount += record.net_amount || 0;
-        });
-
-        setGrandTotals(totals);
-    };
-
-    useEffect(() => {
-        calculateGrandTotals();
-    }, [dataSource]);
 
     const showEmployeeModal = (employee) => {
         setSelectedEmployee(employee);
@@ -121,6 +63,7 @@ const PayrollData = ({
                 return <span className="font-semibold">{PhpFormat(totalLoans || 0)}</span>;
             },
             width: 150,
+            // className: 'bg-yellow-400',
         };
         const PATVEColumn = {
             title: 'PATVE CONT.',
@@ -129,6 +72,7 @@ const PayrollData = ({
                 return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
             },
             width: 150,
+            // className: 'bg-yellow-300',
         };
         // Static columns
         const staticColumns = [
@@ -145,6 +89,14 @@ const PayrollData = ({
                 },
                 width: 200,
             },
+            // {
+            //     title: 'DEPARTMENT',
+            //     render: (_, record) => {
+            //         const { department } = record;
+            //         return `${department || ''}`.trim();
+            //     },
+            //     width: 150,
+            // },
             {
                 title: 'DEPARTMENT',
                 dataIndex: 'department',
@@ -180,6 +132,7 @@ const PayrollData = ({
                     return <span className="font-semibold">{PhpFormat(monthlySalary)}</span>;
                 },
                 width: 150,
+                // className: 'bg-yellow-400',
             },
             {
                 title: 'PERA',
@@ -205,6 +158,7 @@ const PayrollData = ({
                     return <span className="font-semibold">{PhpFormat(record.net_pera)}</span>;
                 },
                 width: 150,
+                // className: 'bg-yellow-400',
             },
             {
                 title: 'RATA',
@@ -228,6 +182,7 @@ const PayrollData = ({
                     <span className="font-semibold">{PhpFormat(record.total_salary || 0)}</span>
                 ),
                 width: 150,
+                // className: 'bg-yellow-400',
             },
         ];
 
@@ -268,8 +223,9 @@ const PayrollData = ({
             {
                 title: 'BIR GSIS PHIC HDMF TOTAL',
                 dataIndex: 'total_contributions',
-                render: (text) => <strong>{PhpFormat(text)}</strong>,
+                render: PhpFormat,
                 width: 150,
+                // className: 'bg-yellow-400',
             },
         ];
         // Total Deduction
@@ -281,6 +237,7 @@ const PayrollData = ({
                 );
             },
             width: 200,
+            // className: 'bg-orange-400 ',
         };
         // Net Amont
         const NetAmountColumn = {
@@ -289,8 +246,28 @@ const PayrollData = ({
                 return <span className="font-semibold">{PhpFormat(record.net_amount || 0)}</span>;
             },
             width: 200,
+            // className: 'bg-red-400 ',
         };
+        // const NetPay1To15Column = [
+        //     {
+        //         title: 'Net Pay 1-15',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-200',
+        //     },
+        //     {
+        //         title: 'Net Pay 16-30',
+        //         render: (_, record) => {
+        //             return <span className="font-semibold">{PhpFormat(record.net_pay || 0)}</span>;
+        //         },
+        //         width: 200,
+        //         className: 'bg-green-300',
+        //     },
+        // ];
 
+        // Combine all columns
         setColumns([
             ...staticColumns,
             ...BenefitColumns,
@@ -300,8 +277,23 @@ const PayrollData = ({
             loansTotalColumn,
             totalDeductionColumn,
             NetAmountColumn,
+            // ...NetPay1To15Column,
         ]);
     }, [loanTypes, employee]);
+
+    // const saveTransaction = () => {
+    //     const dataToSend = dataSource.map((employee) => ({
+    //         id: employee.id,v
+    //         loans: employee.loans.map((loan) => ({
+    //             loan_id: loan.id,
+    //             remaining_amortization: loan.remainingAmortization,
+    //         })),
+    //     }));
+
+    //     Inertia.post('/transactions', {
+    //         data: dataToSend,
+    //     });
+    // };
 
     const showDrawer = () => {
         setVisible(true);
@@ -310,20 +302,13 @@ const PayrollData = ({
     const onClose = () => {
         setVisible(false);
     };
-
     const saveTransaction = () => {
         const dataToSend = dataSource.map((employee) => ({
             id: employee.id,
-            monthly_salary: employee.salary_grade.monthly_salary,
-            total_contributions: employee.total_contributions,
-            total_loans: employee.total_loans,
-            total_deductions: employee.total_deductions,
-
             loans: employee.loans.map((loan) => ({
                 loan_id: loan.id,
                 remaining_amortization: loan.remainingAmortization,
             })),
-
             contributions: employee.contributions.map((contribution) => ({
                 contribution_id: contribution.id,
                 amount: contribution.pivot.amount,
@@ -334,9 +319,8 @@ const PayrollData = ({
             })),
             total_salary: employee.total_salary,
             total_deductions: employee.total_deductions,
-            net_pera: employee.net_pera,
-            net_pay: employee.net_pay,
             net_amount: employee.net_amount,
+            net_pay: employee.net_pay,
         }));
 
         Inertia.post(
@@ -366,11 +350,11 @@ const PayrollData = ({
             )}
             <div className="flex justify-end gap-5 pb-5">
                 <PrimaryButton onClick={saveTransaction} className="rounded px-4 py-2">
-                    Save Payroll
+                    Save Transaction
                 </PrimaryButton>
 
                 <PrimaryButton onClick={showDrawer} className="rounded px-4 py-2">
-                    View
+                    view
                 </PrimaryButton>
             </div>
             <Table
@@ -381,70 +365,6 @@ const PayrollData = ({
                 onRow={(record) => ({
                     onClick: () => showEmployeeModal(record),
                 })}
-                summary={() => (
-                    <Table.Summary fixed>
-                        <Table.Summary.Row className="bg-gray-100 font-bold">
-                            <Table.Summary.Cell index={0} colSpan={5}>
-                                Grand Total
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={5}>
-                                {PhpFormat(grandTotals.basic_pay)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={6}>
-                                {PhpFormat(grandTotals.net_basic)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={7}>
-                                {PhpFormat(grandTotals.pera)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={8}>
-                                {PhpFormat(grandTotals.lwop_pera)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={9}>
-                                {PhpFormat(grandTotals.net_pera)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={10}>
-                                {PhpFormat(grandTotals.rata)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={11}>
-                                {PhpFormat(grandTotals.salary_differential)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={12}>
-                                {PhpFormat(grandTotals.total_salary)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={13}>
-                                {PhpFormat(grandTotals.tax)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={14}>
-                                {PhpFormat(grandTotals.gsis_prem)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={15}>
-                                {PhpFormat(grandTotals.hdmf_prem1)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={16}>
-                                {PhpFormat(grandTotals.phic)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={17}>
-                                {PhpFormat(grandTotals.total_contributions)}
-                            </Table.Summary.Cell>
-                            {/* Add cells for loan columns dynamically */}
-                            {loanTypes.map((_, index) => (
-                                <Table.Summary.Cell key={index}></Table.Summary.Cell>
-                            ))}
-                            <Table.Summary.Cell>
-                                {PhpFormat(grandTotals.patve_cont)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell>
-                                {PhpFormat(grandTotals.loans_total)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell>
-                                {PhpFormat(grandTotals.total_deductions)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell>
-                                {PhpFormat(grandTotals.net_amount)}
-                            </Table.Summary.Cell>
-                        </Table.Summary.Row>
-                    </Table.Summary>
-                )}
             />
 
             <Drawer
@@ -526,12 +446,12 @@ const PayrollData = ({
                                     (b) => b.id === benefit.id
                                 );
                                 return (
-                                    <>
+                                    <React.Fragment key={`benefit-${benefit.id}`}>
                                         <span className="font-bold">{benefit.name}:</span>
                                         <span>
                                             {PhpFormat(employeeBenefit?.pivot?.amount || 0)}
                                         </span>
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
 
@@ -549,20 +469,19 @@ const PayrollData = ({
                                     (loan) => loan.loan_type_id === loanType.id
                                 );
                                 return (
-                                    <>
+                                    <React.Fragment key={`loan-${loanType.id}`}>
                                         <span className="font-bold">{loanType.type}:</span>
                                         <span>
                                             {PhpFormat(employeeLoan?.remainingAmortization || 0)}
                                         </span>
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
-
                             {selectedEmployee.contributions?.map((contribution) => (
-                                <>
+                                <React.Fragment key={`contribution-${contribution.id}`}>
                                     <span className="font-bold">{contribution.name}:</span>
                                     <span>{PhpFormat(contribution.pivot.amount)}</span>
-                                </>
+                                </React.Fragment>
                             ))}
 
                             <span className="font-bold">TOTAL DEDUCTION:</span>

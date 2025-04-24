@@ -1,21 +1,11 @@
 import { useState } from 'react';
-import { Card, Col, Row, Statistic, Divider, Tabs, Badge } from 'antd';
+import { Card, Col, Row, Statistic, Tabs, Badge } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const { TabPane } = Tabs;
 
-const MyLoans = ({
-    auth,
-    loans,
-    activeLoans,
-    fullyPaidLoans,
-    totalLoanAmount,
-    totalPaidLoanAmount,
-    totalActiveLoanAmount,
-    remainingBalance,
-    transaction,
-}) => {
+const MyLoans = ({ auth, activeLoans, fullyPaidLoans, totalLoanAmount, remainingBalance }) => {
     const [selectedLoanType, setSelectedLoanType] = useState('active');
 
     return (
@@ -46,7 +36,7 @@ const MyLoans = ({
                         />
                     </Card>
                 </Col>
-                <Col span={6}>
+                {/* <Col span={6}>
                     <Card bordered={false} className="bg-gray-100 shadow-lg">
                         <Statistic
                             title="Leave Balance"
@@ -54,8 +44,8 @@ const MyLoans = ({
                             // suffix="Leave"
                         />
                     </Card>
-                </Col>
-                <Col span={6}>
+                </Col> */}
+                {/* <Col span={6}>
                     <Card bordered={false} className="bg-gray-100 shadow-lg">
                         <Statistic
                             title="Payslip"
@@ -63,7 +53,7 @@ const MyLoans = ({
                             // suffix="Payslip"
                         />
                     </Card>
-                </Col>
+                </Col> */}
             </Row>
             <Tabs
                 defaultActiveKey="active"
@@ -105,7 +95,8 @@ const MyLoans = ({
 
 const LoanItem = ({ loan }) => {
     const totalPaid = loan.payments.reduce((acc, payment) => acc + parseFloat(payment.amount), 0);
-    const percentPaid = loan.amount > 0 ? ((totalPaid / loan.amount) * 100).toFixed(0) : 0;
+    const percentPaid =
+        loan.total_paid > 0 ? Math.min((totalPaid / loan.total_paid) * 100, 100).toFixed(0) : 0;
 
     return (
         <div className="mb-4">

@@ -68,7 +68,8 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {/* Employee Name Input with Suggestions */}
-            <div>
+
+            <div className="relative">
                 <label htmlFor="employee_name" className="block text-sm font-medium text-gray-700">
                     Employee
                 </label>
@@ -81,7 +82,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     autoComplete="off"
                 />
                 {employeeSuggestions.length > 0 && (
-                    <ul className="mt-1 max-h-60 overflow-y-auto border border-gray-300">
+                    <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-300 bg-white shadow-lg">
                         {employeeSuggestions.map((employee) => (
                             <li
                                 key={employee.id}
@@ -123,6 +124,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     value={formData.amount}
                     onChange={handleChange}
                     className="mt-1 block w-full"
+                    autoComplete="off"
                 />
             </div>
 
@@ -150,6 +152,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     onChange={handleChange}
                     className="mt-1 block w-full"
                     step="0.01"
+                    autoComplete="off"
                 />
             </div>
 
@@ -180,6 +183,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     onChange={handleChange}
                     className="mt-1 block w-full"
                     step="0.01"
+                    autoComplete="off"
                 />
             </div>
             <div>
@@ -196,6 +200,7 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     onChange={handleChange}
                     className="mt-1 block w-full"
                     step="0.01"
+                    autoComplete="off"
                 />
             </div>
 

@@ -9,6 +9,8 @@ class EmployeeLoanPayment extends Model
 {
     use HasFactory;
 
+    protected $table = 'employee_loan_payments';
+
     protected $fillable = [
         'employee_loan_id',
         'amount',

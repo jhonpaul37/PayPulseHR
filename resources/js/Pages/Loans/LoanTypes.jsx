@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Input, Select, Form, Card, Empty, message } from 'antd';
+import { Modal, Input, Select, Form, Empty, message, Divider } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { useForm } from '@inertiajs/react';
@@ -17,7 +17,6 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
         description: '',
     });
 
-    // Group loan types by loan program
     const loanTypesByProgram = loanPrograms.map((program) => ({
         ...program,
         loanTypes: loanTypes.filter((loanType) => loanType.loan_program_id === program.id),
@@ -43,14 +42,14 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
             await post(route('loanTypes.store'), {
                 onSuccess: () => {
                     setIsCreateModalVisible(false);
-                    message.success('Loan Type added successfully!'); // Success message
+                    message.success('Loan Type added successfully!');
                 },
                 onError: () => {
-                    message.error('Failed to add Loan Type.'); // Error message
+                    message.error('Failed to add Loan Type.');
                 },
             });
         } catch (error) {
-            message.error('An error occurred while adding Loan Type.'); // General error message
+            message.error('An error occurred while adding Loan Type.');
         }
     };
 
@@ -59,25 +58,20 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
             await put(route('loanTypes.update', selectedLoanType.id), {
                 onSuccess: () => {
                     setIsEditModalVisible(false);
-                    message.success('Loan Type updated successfully!'); // Success message
+                    message.success('Loan Type updated successfully!');
                 },
                 onError: () => {
-                    message.error('Failed to update Loan Type.'); // Error message
+                    message.error('Failed to update Loan Type.');
                 },
             });
         } catch (error) {
-            message.error('An error occurred while updating Loan Type.'); // General error message
+            message.error('An error occurred while updating Loan Type.');
         }
     };
 
     const handleCancel = () => {
         setIsEditModalVisible(false);
     };
-
-    const getGridStyle = (count) => ({
-        width: count > 4 ? '20%' : '25%',
-        textAlign: 'center',
-    });
 
     return (
         <div>
@@ -89,27 +83,42 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
 
             {loanTypesByProgram.length > 0 ? (
                 loanTypesByProgram.some((program) => program.loanTypes.length > 0) ? (
-                    loanTypesByProgram.map((program) => (
-                        <div key={program.id} className="mb-4">
-                            {program.loanTypes.length > 0 ? (
-                                <Card title={program.name} className="">
-                                    {program.loanTypes.map((loanType) => (
-                                        <Card.Grid
-                                            key={loanType.id}
-                                            style={getGridStyle(program.loanTypes.length)}
-                                            onClick={() => showEditModal(loanType)}
-                                            className="flex flex-col justify-center"
-                                        >
-                                            <div className="text-lg font-bold">{loanType.type}</div>
-                                            <div className="text-gray-400">
-                                                {loanType.description}
+                    <div className="grid gap-6">
+                        {loanTypesByProgram.map((program) => (
+                            <div key={program.id}>
+                                {program.loanTypes.length > 0 && (
+                                    <>
+                                        <h2 className="mb-2 text-lg font-semibold">
+                                            <div className="mb-2 flex items-center gap-4">
+                                                <span className="text-base font-semibold text-gray-800">
+                                                    {program.name}
+                                                </span>
+                                                <div className="flex-1 border-t border-gray-300"></div>
                                             </div>
-                                        </Card.Grid>
-                                    ))}
-                                </Card>
-                            ) : null}
-                        </div>
-                    ))
+                                        </h2>
+                                        <div className="ml-6 columns-1 gap-4 space-y-4 sm:columns-2 md:columns-3 lg:columns-4">
+                                            {program.loanTypes.map((loanType) => (
+                                                <div
+                                                    key={loanType.id}
+                                                    className="cursor-pointer break-inside-avoid rounded bg-white p-4 shadow transition hover:shadow-md"
+                                                    onClick={() => showEditModal(loanType)}
+                                                >
+                                                    <div className="text-sm font-semibold">
+                                                        {loanType.type}
+                                                    </div>
+                                                    {loanType.description && (
+                                                        <div className="mt-1 text-xs text-gray-500">
+                                                            {loanType.description}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 ) : (
                     <Empty
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -130,12 +139,10 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
                 onCancel={() => setIsCreateModalVisible(false)}
                 footer={
                     <div className="flex justify-end space-x-4">
-                        <DangerButton key="cancel" onClick={() => setIsCreateModalVisible(false)}>
+                        <DangerButton onClick={() => setIsCreateModalVisible(false)}>
                             Cancel
                         </DangerButton>
-                        <PrimaryButton key="submit" type="primary" onClick={handleCreateSubmit}>
-                            Add
-                        </PrimaryButton>
+                        <PrimaryButton onClick={handleCreateSubmit}>Add</PrimaryButton>
                     </div>
                 }
             >
@@ -187,12 +194,8 @@ const LoanTypes = ({ loanPrograms = [], loanTypes = [] }) => {
                 onCancel={handleCancel}
                 footer={
                     <div className="flex justify-end space-x-4">
-                        <DangerButton key="cancel" onClick={handleCancel}>
-                            Cancel
-                        </DangerButton>
-                        <PrimaryButton key="submit" type="primary" onClick={handleEditSubmit}>
-                            Update
-                        </PrimaryButton>
+                        <DangerButton onClick={handleCancel}>Cancel</DangerButton>
+                        <PrimaryButton onClick={handleEditSubmit}>Update</PrimaryButton>
                     </div>
                 }
             >
