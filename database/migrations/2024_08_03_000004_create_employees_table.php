@@ -39,11 +39,6 @@ public function up(){
         $table->string('termination_reason')->nullable();
         $table->string('role')->nullable();
 
-        // Benefits & Perks
-        // $table->integer('vacation_days')->default(0);
-        // $table->integer('sick_days')->default(0);
-        // $table->integer('leave_balance')->default(0);
-
         $table->timestamps();
     });
 

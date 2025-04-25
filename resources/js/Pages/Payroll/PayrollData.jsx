@@ -29,7 +29,7 @@ const PayrollData = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [grandTotals, setGrandTotals] = useState({});
 
-    console.log(loanPayment);
+    // console.log(loanPayment);
 
     // Calculate grand totals
     const calculateGrandTotals = () => {
@@ -93,7 +93,6 @@ const PayrollData = ({
     const handleCloseModal = () => {
         setModalVisible(false);
     };
-    console.log(employee);
 
     useEffect(() => {
         // loan columns for all loan types

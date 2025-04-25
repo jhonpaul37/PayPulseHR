@@ -81,7 +81,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/dashboard')) return '1';
         if (url === '/voucher') return '3';
         // if (url === '/settings') return '4';
-        if (url === '/leaveRequest') return '5';
+        if (url === '/leaveManagement') return '5';
         if (url === '/employees') return '6';
         if (url === '/payroll/data') return '7';
         if (url === '/loans') return '8';
@@ -179,7 +179,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
-            label: <Link href="/leaveRequest">Leaves Request</Link>,
+            label: <Link href="/leaveManagement">Leave Management</Link>,
             roles: ['HR'],
         },
         {

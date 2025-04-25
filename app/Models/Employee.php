@@ -106,5 +106,8 @@ class Employee extends Model
     {
         return $this->belongsTo(Department::class);
     }
-
+    public function leaveCredits()
+    {
+        return $this->hasOne(EmployeeLeaveCredit::class);
+    }
 }

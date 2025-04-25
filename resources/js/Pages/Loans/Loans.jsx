@@ -1,5 +1,4 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Inertia } from '@inertiajs/inertia';
 import { Modal, Table, Drawer, Button, Form, Badge, Popover, List, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';

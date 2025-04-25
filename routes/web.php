@@ -32,6 +32,7 @@ Route::get('/', function () {
     ]);
 });
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'landingPage'])->name('dashboard');
 
@@ -125,7 +126,12 @@ Route::middleware('auth')->group(function () {
         //Leave Management
         // Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm'); // employee access
         // Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
+        Route::get('/leaveManagement', [LeaveController::class, 'LeaveManagement'])->name('LeaveRequest');
+
         Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
+        Route::get('/leaveCredit', [LeaveController::class, 'leaveCredit'])->name('leave.credit');
+
+        Route::post('/employees/{employee}/update-leave', [LeaveController::class, 'updateLeaveCredit'])->name('leave.update-leave');
 
         Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
         Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');

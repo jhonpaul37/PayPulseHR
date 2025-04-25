@@ -32,7 +32,7 @@ public function store(Request $request)
                 if ($loan && isset($loanData['remaining_amortization'])) {
                     $deductionAmount = (float) $loanData['remaining_amortization'];
 
-                    // dd($loanData['loan_id'], $loan);
+
                     // Create a new loan payment
                     EmployeeLoanPayment::create([
                         'employee_loan_id' => $loan->id,
@@ -51,7 +51,6 @@ public function store(Request $request)
                     $loan->save();
                 }
             }
-// dd($loanData['loan_id'], $loan);
 
             // PATVE, GSIS, TAX,
             foreach ($employeeData['contributions'] as $contributionData) {

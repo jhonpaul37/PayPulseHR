@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmployeeLeaveCredit;
 use Illuminate\Http\Request;
+use App\Models\Employee;
 use App\Models\Leave;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 class LeaveController extends Controller
@@ -45,12 +48,44 @@ class LeaveController extends Controller
         return redirect()->route('my.loans')->with('success', 'Leave request submitted successfully.');
     }
 
+    public function leaveManagement()
+    {
+        return Inertia::render('Leave/LeaveManagement');
+    }
 
     public function leaveRequest()
     {
         $LeaveRequest = Leave::latest()->paginate(6);
         return Inertia::render('Leave/LeaveRequest',['LeaveRequest'=>$LeaveRequest]);
     }
+    public function leaveCredit()
+    {
+        $employees = Employee::with([
+            'position',
+            'department',
+            'salaryGrade',
+            'leaveCredits'
+        ])->get();
+
+        return Inertia::render('Leave/LeaveCredit', ['employee' => $employees]);
+    }
+
+public function updateLeaveCredit(Request $request, Employee $employee)
+{
+    $validated = $request->validate([
+        'vacation_leave' => 'required|numeric|min:0|max:365',
+        'sick_leave' => 'required|numeric|min:0|max:365',
+        'special_privilege_leave' => 'required|numeric|min:0|max:365',
+    ]);
+
+    $employee->leaveCredit()->updateOrCreate(
+        ['employee_id' => $employee->id],
+        $validated
+    );
+
+    return back()->with('success', 'Leave credits updated successfully');
+}
+
     public function leaveRequestShow($id)
     {
         $LeaveRequest = Leave::findOrFail($id);

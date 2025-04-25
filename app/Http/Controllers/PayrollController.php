@@ -158,4 +158,67 @@ public function payrollData()
         ]);
     }
 
+
+
+    // PayrollController.php
+
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'pay_period_start' => 'required|date',
+        'pay_period_end' => 'required|date',
+        'pay_date' => 'required|date',
+        'employees' => 'required|array',
+        'employees.*.employee_id' => 'required|exists:employees,id',
+        // Add other validation rules
+    ]);
+
+    // Create the payroll
+    $payroll = Payroll::create([
+        'pay_period_start' => $validated['pay_period_start'],
+        'pay_period_end' => $validated['pay_period_end'],
+        'pay_date' => $validated['pay_date'],
+        // Other payroll fields
+    ]);
+
+    // Add payroll items for each employee
+    foreach ($validated['employees'] as $employeeData) {
+        $payrollEmployee = $payroll->employees()->create([
+            'employee_id' => $employeeData['employee_id'],
+            'basic_salary' => $employeeData['basic_salary'],
+            'gross_earnings' => $employeeData['gross_earnings'],
+            'total_deductions' => $employeeData['total_deductions'],
+            'net_pay' => $employeeData['net_pay'],
+        ]);
+
+        // Add earnings
+        foreach ($employeeData['earnings'] as $earning) {
+            $payrollEmployee->earnings()->create([
+                'benefit_id' => $earning['benefit_id'],
+                'amount' => $earning['amount'],
+            ]);
+        }
+
+        // Add deductions
+        foreach ($employeeData['deductions'] as $deduction) {
+            $payrollEmployee->deductions()->create([
+                'deduction_id' => $deduction['deduction_id'],
+                'deduction_type' => $deduction['type'],
+                'amount' => $deduction['amount'],
+            ]);
+        }
+
+        // Add loan payments
+        foreach ($employeeData['loans'] as $loan) {
+            $payrollEmployee->loanPayments()->create([
+                'employee_loan_id' => $loan['loan_id'],
+                'amount' => $loan['amount'],
+            ]);
+        }
+    }
+
+    return redirect()->route('payrolls.show', $payroll)
+        ->with('message', 'Payroll created successfully');
+}
+
 }
