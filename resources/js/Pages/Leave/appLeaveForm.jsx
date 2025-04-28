@@ -3,21 +3,30 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AvailLeave from './components/AvailLeave';
 import FormHeader from './components/FormHeader';
 import TextInput from '@/Components/TextInput';
+import { useForm } from '@inertiajs/inertia-react';
 
-function AppLeaveForm({ LeaveRequest, auth, Employee }) {
-    const [formData, setFormData] = useState({
-        office_unit: '',
-        lastName: Employee.last_name,
-        firstName: Employee.first_name,
-        middleName: Employee.middle_name,
-        dateOfFiling: '',
-        position: Employee.position,
-        salary: Employee.salary,
-        leaveAvail: '',
-        leaveDetails: {},
+function AppLeaveForm({ auth, LeaveRequest }) {
+    const employee = LeaveRequest?.employee || {};
+    const leaveCredits = LeaveRequest?.leave_credits || {};
+
+    const { data, setData, post, processing } = useForm({
+        status: 'review',
+        // Include other fields you want to submit
     });
-    // console.log(LeaveRequest);
-    // console.log(Employee.first_name);
+
+    const [formData, setFormData] = useState({
+        office_unit: LeaveRequest?.office_unit || '',
+        lastName: employee?.last_name || '',
+        firstName: employee?.first_name || '',
+        middleName: employee?.middle_name || '',
+        dateOfFiling: LeaveRequest?.request_date || '',
+        position: employee?.position?.name || '',
+        salary: employee?.salary_grade?.monthly_salary || '',
+        leaveAvail: LeaveRequest?.leave_type || '',
+        leaveDetails: LeaveRequest?.leave_details || {},
+    });
+
+    console.log('LeaveRequest:', LeaveRequest);
 
     const handleLeaveTypeChange = (leaveType, leaveDetails) => {
         setFormData((prevState) => ({
@@ -25,6 +34,16 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
             leaveAvail: leaveType,
             leaveDetails: leaveDetails,
         }));
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
     };
 
     const handleInputChange = (e) => {
@@ -37,9 +56,17 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        console.log('Form Submitted! Form Data:', formData);
+        post(route('leave.updateStatus', LeaveRequest.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Optional success handling
+                console.log('Status updated to review');
+            },
+        });
     };
+
+    // Helper function to safely handle null values
+    const safeValue = (value) => (value === null || value === undefined ? '' : value);
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -52,36 +79,48 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                         </span>
                     </div>
                     <div className="flex justify-between border-t border-black p-2">
-                        <span>
-                            <label className="mr-2"> 1. OFFICE/DEPARTMENT</label>
+                        <span className="">
+                            <label className="mr-2 block"> 1. OFFICE/DEPARTMENT</label>
                             <TextInput
                                 type="text"
                                 name="office_unit"
-                                value={LeaveRequest.office_unit}
+                                className="ml-10"
+                                value={safeValue(formData.office_unit)}
                                 readOnly
                             />
                         </span>
-                        <span className="flex items-center justify-between">
-                            <label>2. NAME:</label>
-                            <TextInput
-                                type="text"
-                                name="lastName"
-                                value={formData.lastName}
-                                readOnly
-                            />
-                            <TextInput
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                readOnly
-                            />
+                        <span className="flex">
+                            <label className="mr-2">2. NAME:</label>
+                            <div className="flex">
+                                <div className="flex flex-col items-center">
+                                    <span className="mb-1">(last)</span>
+                                    <TextInput
+                                        type="text"
+                                        name="lastName"
+                                        value={safeValue(formData.lastName)}
+                                        readOnly
+                                    />
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="mb-1">(first)</span>
+                                    <TextInput
+                                        type="text"
+                                        name="lastName"
+                                        value={safeValue(formData.firstName)}
+                                        readOnly
+                                    />
+                                </div>
 
-                            <TextInput
-                                type="text"
-                                name="middleName"
-                                value={formData.middleName}
-                                readOnly
-                            />
+                                <div className="flex flex-col items-center">
+                                    <span className="mb-1">(middle)</span>
+                                    <TextInput
+                                        type="text"
+                                        name="lastName"
+                                        value={safeValue(formData.middleName)}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
                         </span>
                     </div>
                     <div className="flex justify-evenly border-t border-black p-2">
@@ -89,8 +128,8 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                             <label className="mr-2">3. DATE OF FILING</label>
                             <TextInput
                                 type="text"
-                                name="office_unit"
-                                value={LeaveRequest.request_date}
+                                name="dateOfFiling"
+                                value={safeValue(formData.dateOfFiling)}
                                 readOnly
                             />
                         </span>
@@ -99,19 +138,17 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                             <TextInput
                                 type="text"
                                 name="position"
-                                value={formData.position}
-                                // onChange={handleInputChange}
+                                value={safeValue(formData.position)}
                                 readOnly
                             />
                         </span>
-                        <span>
+                        <span className="">
                             <label className="mr-2">5. SALARY</label>
                             <TextInput
                                 type="text"
                                 name="salary"
-                                value={formData.salary}
+                                value={safeValue(formData.salary)}
                                 onChange={handleInputChange}
-                                className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                 placeholder="salary"
                                 autoComplete="off"
                             />
@@ -123,9 +160,15 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                         </label>
                     </div>
                     {/* Type of Leave */}
+
                     <AvailLeave
-                        onLeaveTypeChange={handleLeaveTypeChange}
-                        typeOfLeave={LeaveRequest.leave_type}
+                        typeOfLeave={LeaveRequest?.leave_type || ''}
+                        leaveDetails={LeaveRequest?.leave_details || {}}
+                        onLeaveTypeChange={(type, details) => {
+                            // Handle the change without causing re-renders
+                            // You might want to debounce this if it's causing performance issues
+                            console.log('Leave type changed:', type, details);
+                        }}
                     />
                     <div className="grid grid-cols-2">
                         <div className="border-t border-black p-1">
@@ -133,13 +176,18 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                             <div className="flex flex-col p-4">
                                 <TextInput
                                     type="text"
-                                    value={LeaveRequest.total_days}
+                                    value={safeValue(LeaveRequest?.total_days)}
                                     className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     readOnly
                                 />
                                 <span>INCLUSIVE DATES</span>
                                 <TextInput
                                     type="text"
+                                    value={
+                                        LeaveRequest?.from_date && LeaveRequest?.to_date
+                                            ? `${formatDate(LeaveRequest.from_date)} - ${formatDate(LeaveRequest.to_date)}`
+                                            : ''
+                                    }
                                     className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
                                     readOnly
                                 />
@@ -152,8 +200,10 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                                     <TextInput
                                         type="radio"
                                         name="commutation"
+                                        // checked={!LeaveRequest?.commutation_requested}
                                         className="form-radio"
                                         autoComplete="off"
+                                        readOnly
                                     />{' '}
                                     <span className="mx-2">Not Requested</span>
                                 </label>
@@ -161,8 +211,10 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                                     <TextInput
                                         type="radio"
                                         name="commutation"
+                                        // checked={LeaveRequest?.commutation_requested}
                                         className="form-radio"
                                         autoComplete="off"
+                                        readOnly
                                     />{' '}
                                     <span className="mx-2">Requested</span>
                                 </label>
@@ -184,11 +236,13 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                             <label className=""> 7.A CERTIFICATION OF LEAVE CREDITS</label>
                             <div className="p-2">
                                 <div className="flex justify-center">
-                                    <label className="flex items-center">
-                                        As{' '}
+                                    <label className="flex">
+                                        As of{' '}
                                         <TextInput
                                             type="text"
+                                            value={safeValue(leaveCredits?.as_of_date)}
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                            readOnly
                                         />
                                     </label>
                                 </div>
@@ -210,22 +264,49 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                                                 <td className="border border-black px-1">
                                                     Total Earned
                                                 </td>
-                                                <td className="border border-black px-1"></td>
-                                                <td className="border border-black px-1"></td>
+                                                {/* <td className="border border-black px-1">
+                                                    {safeValue(
+                                                        leaveCredits?.employee.leave_credits
+                                                            .vacation_leave
+                                                    )}
+                                                </td> */}
+                                                <td className="border border-black px-1">
+                                                    {safeValue(
+                                                        LeaveRequest?.employee?.leave_credits
+                                                            ?.vacation_leave
+                                                    )}
+                                                </td>
+
+                                                <td className="border border-black px-1">
+                                                    {safeValue(
+                                                        LeaveRequest?.employee?.leave_credits
+                                                            ?.sick_leave
+                                                    )}
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td className="border border-black px-1">
                                                     Less this application
                                                 </td>
-                                                <td className="border border-black px-1"></td>
-                                                <td className="border border-black px-1"></td>
+                                                <td className="border border-black px-1">
+                                                    {safeValue(leaveCredits?.vacation_leave_used)}
+                                                </td>
+                                                <td className="border border-black px-1">
+                                                    {safeValue(leaveCredits?.sick_leave_used)}
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td className="border border-black px-1">
                                                     Balance
                                                 </td>
-                                                <td className="border border-black px-1"></td>
-                                                <td className="border border-black px-1"></td>
+                                                <td className="border border-black px-1">
+                                                    {safeValue(
+                                                        leaveCredits?.vacation_leave_balance
+                                                    )}
+                                                </td>
+                                                <td className="border border-black px-1">
+                                                    {safeValue(leaveCredits?.sick_leave_balance)}
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -246,9 +327,9 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                                     <div className="flex flex-col">
                                         <label htmlFor=""> For disapproval due to</label>
                                         <textarea
-                                            name=""
-                                            id=""
+                                            value={safeValue(LeaveRequest?.disapproval_reason)}
                                             className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                            readOnly
                                         ></textarea>
                                     </div>
                                 </div>
@@ -268,21 +349,27 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                                 <label>
                                     <TextInput
                                         type="text"
+                                        value={safeValue(LeaveRequest?.approved_days_with_pay)}
                                         className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                        readOnly
                                     />{' '}
                                     days with pay
                                 </label>
                                 <label>
                                     <TextInput
                                         type="text"
+                                        value={safeValue(LeaveRequest?.approved_days_without_pay)}
                                         className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                        readOnly
                                     />{' '}
                                     days without pay
                                 </label>
                                 <label>
                                     <TextInput
                                         type="text"
+                                        value={safeValue(LeaveRequest?.approved_other)}
                                         className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                        readOnly
                                     />{' '}
                                     others (Specify)
                                 </label>
@@ -292,9 +379,9 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                             <label>7.D DISAPPROVED DUE TO:</label>
                             <div className="p-2">
                                 <textarea
-                                    name=""
-                                    id=""
+                                    value={safeValue(LeaveRequest?.disapproval_reason)}
                                     className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    readOnly
                                 ></textarea>
                             </div>
                         </div>
@@ -304,8 +391,12 @@ function AppLeaveForm({ LeaveRequest, auth, Employee }) {
                     </div>
                 </div>
                 <div className="mt-10 flex justify-center">
-                    <button type="submit" className="rounded-md bg-high px-4 py-2 font-bold">
-                        Submit Application
+                    <button
+                        type="submit"
+                        className="rounded-md bg-high px-4 py-2 font-bold"
+                        disabled={processing}
+                    >
+                        {processing ? 'Submitting...' : 'Submit Application'}
                     </button>
                 </div>
             </form>

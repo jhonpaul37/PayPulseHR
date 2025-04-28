@@ -20,7 +20,7 @@ const EmployeeInfo = ({ visible, onClose, employee }) => {
     });
 
     const handleEdit = (id) => {
-        Inertia.get(`/employees/${id}/edit`);
+        Inertia.get(`/hr/employees/${id}/edit`);
     };
 
     const handleTerminationChange = (e) => {
@@ -36,7 +36,7 @@ const EmployeeInfo = ({ visible, onClose, employee }) => {
     };
 
     const handleConfirmTermination = () => {
-        Inertia.post(`/employees/${employee.id}/terminate`, terminationData, {
+        Inertia.post(`/hr/employees/${employee.id}/terminate`, terminationData, {
             onFinish: () => {
                 setShowConfirmation(false);
                 setShowTerminationForm(false);

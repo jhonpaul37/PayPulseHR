@@ -4,7 +4,6 @@ import Dropdown from '@/Components/Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faHouse,
-    faGear,
     faFolder,
     faUsers,
     faHeartPulse,
@@ -81,8 +80,8 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/dashboard')) return '1';
         if (url === '/voucher') return '3';
         // if (url === '/settings') return '4';
-        if (url === '/leaveManagement') return '5';
-        if (url === '/employees') return '6';
+        if (url === '/hr/leaveManagement') return '5';
+        if (url === '/hr/employees') return '6';
         if (url === '/payroll/data') return '7';
         if (url === '/loans') return '8';
         if (url === '/employee_benefits') return '9';
@@ -91,8 +90,8 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url === '/contributions') return '12';
         if (url === '/salary_grades') return '13';
         if (url === '/AsignRoles') return '14';
-        if (url === '/positions') return '15';
-        if (url === '/departments') return '16';
+        if (url === '/hr/positions') return '15';
+        if (url === '/hr/departments') return '16';
         // if (url === '/remittance') return '17';
         return '1';
     };
@@ -179,25 +178,25 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '5',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
-            label: <Link href="/leaveManagement">Leave Management</Link>,
+            label: <Link href="/hr/leaveManagement">Leave Management</Link>,
             roles: ['HR'],
         },
         {
             key: '6',
             icon: <FontAwesomeIcon icon={faUsers} />,
-            label: <Link href="/employees">Employees</Link>,
+            label: <Link href="/hr/employees">Employees</Link>,
             roles: ['HR'],
         },
         {
             key: '15',
             icon: <FontAwesomeIcon icon={faSitemap} />,
-            label: <Link href="/positions">Position</Link>,
+            label: <Link href="/hr/positions">Position</Link>,
             roles: ['HR'],
         },
         {
             key: '16',
             icon: <FontAwesomeIcon icon={faBuilding} />,
-            label: <Link href="/departments">Departemnt</Link>,
+            label: <Link href="/hr/departments">Departemnt</Link>,
             roles: ['HR'],
         },
         {

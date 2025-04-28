@@ -26,21 +26,22 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
         if (!LeaveRequest.links?.length) return null;
 
         return (
-            <div className="mt-4 flex flex-wrap justify-center gap-1">
-                {LeaveRequest.links.map((link, index) =>
+            <div className="mt-4 flex justify-center">
+                {LeaveRequest.links.map((link) =>
                     link.url ? (
                         <Link
-                            key={`${index}-${link.label}`}
+                            key={link.label}
                             href={link.url}
-                            className={`rounded px-3 py-1 text-sm ${
-                                link.active ? 'bg-high text-white' : 'bg-gray-200 text-gray-700'
+                            className={`mx-1 rounded px-3 py-1 ${
+                                link.active ? 'bg-blue-500 text-white' : 'bg-gray-200'
                             }`}
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
+                        >
+                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                        </Link>
                     ) : (
                         <span
-                            key={index}
-                            className="rounded px-3 py-1 text-sm text-gray-400"
+                            key={link.label}
+                            className="mx-1 px-3 py-1 text-gray-400"
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     )
@@ -49,8 +50,6 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
         );
     };
 
-    console.log(LeaveRequest);
-
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
@@ -58,55 +57,52 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
             </div>
             <div className="container mx-auto mt-10 p-4">
                 {LeaveRequest.data?.length > 0 ? (
-                    <>
-                        <div className="overflow-hidden rounded-lg bg-white shadow">
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                                Employee
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                                Type of Leave
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                                Request Date
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                                Days
-                                            </th>
+                    <div className="overflow-hidden rounded-lg bg-white shadow">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Employee
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Type of Leave
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Request Date
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Days
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 bg-white">
+                                    {LeaveRequest.data.map((request) => (
+                                        <tr
+                                            key={request.id}
+                                            className="cursor-pointer hover:bg-gray-50"
+                                            onClick={() => showDrawer(request)}
+                                        >
+                                            <td className="whitespace-nowrap px-6 py-4">
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {request.requestor_name || 'N/A'}
+                                                </div>
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                {request.leave_type || 'N/A'}
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                {request.request_date || 'N/A'}
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                {request.total_days || 'N/A'}
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
-                                        {LeaveRequest.data.map((request) => (
-                                            <tr
-                                                key={request.id}
-                                                className="cursor-pointer hover:bg-gray-50"
-                                                onClick={() => showDrawer(request)}
-                                            >
-                                                <td className="whitespace-nowrap px-6 py-4">
-                                                    <div className="text-sm font-medium text-gray-900">
-                                                        {request.requestor_name || 'N/A'}
-                                                    </div>
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {request.leave_type || 'N/A'}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {request.request_date || 'N/A'}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {request.total_days || 'N/A'}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                        {renderPagination()}
-                    </>
+                    </div>
                 ) : (
                     <Empty
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -157,6 +153,7 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                 >
                                     View
                                 </PrimaryButton>
+
                                 <DangerButton
                                     className="flex w-full items-center justify-center py-3 text-lg" // Added flex centering
                                     onClick={onClose}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { useRoute } from '@ziggy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import LeaveCard from './components/LeaveCard';
+import LeaveCard from '../components/LeaveCard';
 import { Empty } from 'antd';
 
 export default function LeaveRequest({ LeaveRequest, auth }) {

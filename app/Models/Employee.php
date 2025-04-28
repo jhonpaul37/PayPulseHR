@@ -108,6 +108,7 @@ class Employee extends Model
     }
     public function leaveCredits()
     {
-        return $this->hasOne(EmployeeLeaveCredit::class);
+        return $this->hasOne(EmployeeLeaveCredit::class, 'employee_id');
     }
+
 }

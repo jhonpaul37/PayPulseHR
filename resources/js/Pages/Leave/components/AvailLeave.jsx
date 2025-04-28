@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
+function AvailLeave({ typeOfLeave, onLeaveTypeChange, leaveDetails: initialLeaveDetails = {} }) {
     const avail = [
         'Vacation Leave',
         'Mandatory',
@@ -18,47 +18,79 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
         'Others',
     ];
 
-    const [leaveType, setLeaveType] = useState({ typeOfLeave });
-    const [leaveDetails, setLeaveDetails] = useState({
-        vacationLeave: '',
-        sickLeave: '',
-        specialBenefitsWomen: '',
-        studyLeave: '',
-        otherPurpose: '',
+    // Initialize with the first item if typeOfLeave is an array
+    const initialLeaveType = Array.isArray(typeOfLeave) ? typeOfLeave[0] : typeOfLeave || '';
 
-        vacationLeaveText: '',
-        sickLeaveText: '',
-        specialBenefitsWomenText: '',
+    const [leaveType, setLeaveType] = useState(initialLeaveType);
+    const [leaveDetails, setLeaveDetails] = useState({
+        vacationLeave: initialLeaveDetails?.vacationLeave || '',
+        sickLeave: initialLeaveDetails?.sickLeave || '',
+        specialBenefitsWomen: initialLeaveDetails?.specialBenefitsWomen || '',
+        studyLeave: initialLeaveDetails?.studyLeave || '',
+        otherPurpose: initialLeaveDetails?.otherPurpose || '',
+        vacationLeaveText: initialLeaveDetails?.vacationLeaveText || '',
+        sickLeaveText: initialLeaveDetails?.sickLeaveText || '',
+        specialBenefitsWomenText: initialLeaveDetails?.specialBenefitsWomenText || '',
     });
 
+    // Initialize the component state only once when mounted
+    useEffect(() => {
+        if (typeOfLeave) {
+            const newLeaveType = Array.isArray(typeOfLeave) ? typeOfLeave[0] : typeOfLeave;
+            setLeaveType(newLeaveType);
+        }
+        if (initialLeaveDetails) {
+            setLeaveDetails((prev) => ({
+                ...prev,
+                ...initialLeaveDetails,
+            }));
+        }
+    }, []); // Empty dependency array means this runs only once on mount
+
     const handleRadioChange = (e) => {
-        setLeaveType(e.target.value);
-        setLeaveDetails((prevDetails) => ({
-            ...prevDetails,
+        const newType = e.target.value;
+        setLeaveType(newType);
+        // Reset details when leave type changes
+        setLeaveDetails({
+            vacationLeave: '',
+            sickLeave: '',
+            specialBenefitsWomen: '',
+            studyLeave: '',
+            otherPurpose: '',
             vacationLeaveText: '',
             sickLeaveText: '',
             specialBenefitsWomenText: '',
-        }));
+        });
+        // Call the change handler immediately
+        onLeaveTypeChange(newType, {
+            vacationLeave: '',
+            sickLeave: '',
+            specialBenefitsWomen: '',
+            studyLeave: '',
+            otherPurpose: '',
+            vacationLeaveText: '',
+            sickLeaveText: '',
+            specialBenefitsWomenText: '',
+        });
     };
-
-    useEffect(() => {
-        onLeaveTypeChange(leaveType, leaveDetails);
-    }, [leaveType, leaveDetails]);
 
     const handleDetailsChange = (e) => {
         const { name, value } = e.target;
-        setLeaveDetails((prevDetails) => ({
-            ...prevDetails,
+        const newDetails = {
+            ...leaveDetails,
             [name]: value,
-        }));
+        };
+        setLeaveDetails(newDetails);
+        // Call the change handler immediately
+        onLeaveTypeChange(leaveType, newDetails);
     };
-    // console.log(leaveType);
 
     const isVacationLeave =
         leaveType === 'Vacation Leave' || leaveType === 'Special Privilege Leave';
     const isSickLeave = leaveType === 'Sick Leave';
     const isSpecialBenefitsForWomen = leaveType === 'Special Benefits for Women';
     const isStudyLeave = leaveType === 'Study Leave';
+    const isOthers = leaveType === 'Others';
 
     return (
         <div className="">
@@ -66,42 +98,16 @@ function AvailLeave({ typeOfLeave, onLeaveTypeChange }) {
                 <div className="p-1">
                     <label>6.A TYPE OF LEAVE TO BE AVAILED OF</label>
 
-                    {/* {typeOfLeave} */}
                     <div className="flex flex-col p-4">
-                        {/* {avail.map((type, index) => (
-                            <label
-                                key={index}
-                                className={`inline-flex items-center ${
-                                    type === 'Others (please specify)' ? 'col-span-3' : ''
-                                }`}
-                            >
-                                <input
-                                    type="radio"
-                                    name="leaveType"
-                                    checked={typeOfLeave.includes(type)}
-                                    value={type}
-                                    onChange={handleRadioChange}
-                                    className="form-radio"
-                                    autoComplete="off"
-                                />
-                                <span className="ml-2">{type}</span>
-                            </label>
-                        ))} */}
-                        {avail.map((type, index) => (
-                            <label
-                                key={index}
-                                className={`inline-flex items-center ${
-                                    type === 'Others (please specify)' ? 'col-span-3' : ''
-                                }`}
-                            >
+                        {avail.map((type) => (
+                            <label key={type} className="inline-flex items-center">
                                 <input
                                     type="radio"
                                     name="leaveType"
                                     value={type}
                                     checked={leaveType === type}
                                     onChange={handleRadioChange}
-                                    className="form-radio"
-                                    autoComplete="off"
+                                    className="form-radio h-4 w-4 text-blue-600"
                                 />
                                 <span className="ml-2">{type}</span>
                             </label>

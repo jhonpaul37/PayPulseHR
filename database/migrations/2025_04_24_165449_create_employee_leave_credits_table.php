@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create('employee_leave_credits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->unique(); // Ensure this is correct
+            $table->foreignId('employee_id')->constrained();
             $table->decimal('vacation_leave', 8, 2)->default(0);
             $table->decimal('sick_leave', 8, 2)->default(0);
             $table->decimal('special_privilege_leave', 8, 2)->default(0);

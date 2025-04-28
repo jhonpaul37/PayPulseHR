@@ -122,16 +122,24 @@ Route::middleware('auth')->group(function () {
     //Cashier end
 
         // HR Access
-    Route::middleware(['hr'])->group(function () {
+    Route::middleware(['hr'])->prefix('hr')->group(function () {
         //Leave Management
         // Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm'); // employee access
         // Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
-        Route::get('/leaveManagement', [LeaveController::class, 'LeaveManagement'])->name('LeaveRequest');
+        Route::get('/leaveManagement', [LeaveController::class, 'LeaveManagement'])->name('leaveManagement');
 
         Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
-        Route::get('/leaveCredit', [LeaveController::class, 'leaveCredit'])->name('leave.credit');
+        Route::post('/leave/{leave}/update-status', [LeaveController::class, 'updateStatus'])->name('leave.updateStatus');
+        Route::get('/forReview', [LeaveController::class, 'forReview'])->name('forReview');
+        Route::get('/leaveCredit', [LeaveController::class, 'leaveCredit'])->name('LeaveCredit');
 
-        Route::post('/employees/{employee}/update-leave', [LeaveController::class, 'updateLeaveCredit'])->name('leave.update-leave');
+        Route::get('/leaveStatus', [LeaveController::class, 'leaveStatus'])->name('LeaveStatus');
+
+        Route::post('/employees/{employee}/update_leave', [LeaveController::class, 'updateLeaveCredit'])->name('leave.update-leave');
+
+        Route::get('/leave-request/hr', [LeaveController::class, 'LeaveRequestFormHR'])->name('leave.request.hr.form');
+        Route::post('/leave-request/hr', [LeaveController::class, 'LeaveRequestHRstore'])->name('leave.request.hr.store');
+
 
         Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
         Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
@@ -156,14 +164,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');
         Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
 
+        //HR Leave Request
+        // Route::get('/leaveRequestFormHR', [LeaveController::class, 'LeaveRequestFormHR'])->name('leaveRequestFormHR');
+        // Route::post('/leaveRequestFormHR', [LeaveController::class, 'LeaveRequestHRstore'])->name('LeaveRequestHRstore');
+        // Route::post('/leave-request/hr', [LeaveController::class, 'LeaveRequestHRstore'])->name('LeaveRequestHRstore');
+
+
     });
 
     // Employee Access
     Route::middleware(['employee'])->group(function () {
-        // Leave Request // HR
+        // Leave Request
         Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm');
         Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
-          //Employee Loans
+
+        //Employee Loans
         Route::get('/my_loans', [EmployeeLoanController::class, 'myLoans'])->name('my.loans');
         //Loan Details
         Route::get('/employee_loans/{employeeLoan}', [EmployeeLoanController::class, 'show'])->name('loan.details');

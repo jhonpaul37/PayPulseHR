@@ -51,32 +51,27 @@ export default function LeaveManagement({ auth, employee }) {
     const handleSubmit = () => {
         form.validateFields()
             .then((values) => {
-                console.log('Submitting values:', values); // Add this
-                console.log('Employee ID:', selectedEmployee.id); // Add this
                 setLoading(true);
-                Inertia.post(`/employees/${selectedEmployee.id}/update-leave`, values, {
+                console.log('Submitting:', values); // Debug log
+
+                Inertia.post(`/hr/employees/${selectedEmployee.id}/update_leave`, values, {
                     preserveScroll: true,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
                     onSuccess: () => {
-                        console.log('Success!'); // Add this
                         message.success('Leave credits updated successfully');
                         onClose();
                     },
                     onError: (errors) => {
-                        console.log('Errors:', errors); // Add this
+                        console.error('Error response:', errors);
                         message.error(errors.message || 'Failed to update leave credits');
                     },
-                    onFinish: () => {
-                        console.log('Finished'); // Add this
-                        setLoading(false);
-                    },
+                    onFinish: () => setLoading(false),
                 });
             })
-            .catch((error) => {
-                console.error('Validation error:', error); // Add this
-                message.error('Form validation failed');
-            });
+            .catch(console.error);
     };
-    console.log(employee);
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -158,7 +153,7 @@ export default function LeaveManagement({ auth, employee }) {
             </div>
 
             <Drawer
-                title={`${selectedEmployee?.first_name} ${selectedEmployee?.last_name}`}
+                // title={`${selectedEmployee?.first_name} ${selectedEmployee?.last_name}`}
                 placement="right"
                 onClose={onClose}
                 open={open}
@@ -176,8 +171,8 @@ export default function LeaveManagement({ auth, employee }) {
                     <div className="space-y-6">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <h3 className="font-semibold">Employee ID</h3>
-                                <p>{selectedEmployee.employee_id}</p>
+                                <h3 className="font-semibold">Name</h3>
+                                <p>{`${selectedEmployee?.first_name} ${selectedEmployee?.last_name}`}</p>
                             </div>
                             <div>
                                 <h3 className="font-semibold">Position</h3>

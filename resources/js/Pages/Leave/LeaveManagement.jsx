@@ -19,8 +19,18 @@ export default function LeaveManagement({ auth }) {
         },
         {
             name: 'Submitted',
-            // route: route('leave.submitted'),
+            route: route('LeaveStatus'),
             description: 'Track leave requests (Approved/Disapproved).',
+        },
+        {
+            name: 'Review Requests',
+            route: route('forReview'),
+            description: 'Review and manage submitted leave requests.',
+        },
+        {
+            name: 'Application for Leave',
+            route: route('leave.request.hr.form'),
+            description: 'Fill out a formal leave application.',
         },
     ];
 

@@ -11,20 +11,27 @@ class Leave extends Model
     protected $table = 'leave_requests';
 
     protected $fillable = [
-        'requestor_name',
         'employee_id',
+        'requestor_name',
         'office_unit',
         'request_date',
+        'leave_type',
+        'other_leave_type',
         'from_date',
         'to_date',
         'total_days',
-        'leave_type',
+        'status',
     ];
-        protected $casts = [
-        'leave_type' => 'array', // leave_type as an array
+
+    protected $casts = [
+        'leave_type' => 'array',
+        'from_date' => 'date',
+        'to_date' => 'date',
+        'request_date' => 'date',
     ];
+
     public function employee()
     {
-        return $this->belongsTo(Employee::class, 'employee_id');
+        return $this->belongsTo(Employee::class);
     }
 }

@@ -17,9 +17,12 @@ class EmployeeLeaveCredit extends Model
         'special_privilege_leave',
     ];
 
+    public $timestamps = true;
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);
     }
+
 
 }

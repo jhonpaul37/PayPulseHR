@@ -27,7 +27,7 @@ const UnassignedUsers = ({ auth, users }) => {
     ];
 
     const handleAssignDetails = (userId) => {
-        Inertia.visit(`/admin/employees/create/${userId}`, {
+        Inertia.visit(`/hr/admin/employees/create/${userId}`, {
             method: 'get',
         });
     };
