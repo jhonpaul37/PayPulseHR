@@ -80,7 +80,16 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/dashboard')) return '1';
         if (url === '/voucher') return '3';
         // if (url === '/settings') return '4';
+
+        //HR Leave Management
         if (url === '/hr/leaveManagement') return '5';
+        if (url === '/hr/leaveCredit') return '5';
+        if (url === '/hr/leaveRequest') return '5';
+        if (url === '/hr/forReview') return '5';
+        if (url === '/hr/leaveStatus') return '5';
+        if (url === '/hr/leave-request/hr') return '5';
+        if (url.startsWith('/hr/appLeaveForm/')) return '5';
+
         if (url === '/hr/employees') return '6';
         if (url === '/payroll/data') return '7';
         if (url === '/loans') return '8';
@@ -196,7 +205,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '16',
             icon: <FontAwesomeIcon icon={faBuilding} />,
-            label: <Link href="/hr/departments">Departemnt</Link>,
+            label: <Link href="/hr/departments">Department/Unit</Link>,
             roles: ['HR'],
         },
         {

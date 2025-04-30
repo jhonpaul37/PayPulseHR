@@ -1,18 +1,33 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Empty, Drawer, Input, Button, Form, message, Tabs } from 'antd';
+import { Empty, Drawer, Input, Form, message, Tabs, Descriptions, Card, Statistic } from 'antd';
 import { Inertia } from '@inertiajs/inertia';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
+import { Link } from '@inertiajs/react';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
 
-export default function LeaveManagement({ auth, employee }) {
+export default function LeaveCredit({ auth, employee }) {
     const [open, setOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('1');
+
+    // Constants for leave policies
+    const LEAVE_POLICIES = {
+        MAX_VACATION: 15,
+        MAX_SICK: 15,
+        EARN_RATE: 1.25,
+    };
+
+    // Utility function to format leave values
+    const formatLeave = (value) => {
+        const num = parseFloat(value) || 0;
+        return num % 1 === 0 ? num.toString() : num.toFixed(2);
+    };
 
     // Group employees by classification
     const groupedByClassification = employee.reduce((groups, emp) => {
@@ -26,18 +41,9 @@ export default function LeaveManagement({ auth, employee }) {
 
     const showDrawer = (employee) => {
         setSelectedEmployee(employee);
-
-        // Fix the typo in variable name
-        const leaveCredits = employee.leave_credits || {
-            vacation_leave: 0,
-            sick_leave: 0,
-            special_privilege_leave: 0,
-        };
-
         form.setFieldsValue({
-            vacation_leave: leaveCredits.vacation_leave,
-            sick_leave: leaveCredits.sick_leave,
-            special_privilege_leave: leaveCredits.special_privilege_leave,
+            vacation_leave: '',
+            sick_leave: '',
         });
         setOpen(true);
     };
@@ -48,27 +54,73 @@ export default function LeaveManagement({ auth, employee }) {
         form.resetFields();
     };
 
+    const validateLeaveInput = (_, value, maxLimit, currentBalance) => {
+        if (value === '' || value === null) return Promise.resolve();
+
+        const numValue = parseFloat(value);
+
+        if (isNaN(numValue)) {
+            return Promise.reject('Please enter a valid number');
+        }
+
+        if (numValue < 0) {
+            return Promise.reject('Value must be positive');
+        }
+
+        if (currentBalance + numValue > maxLimit) {
+            return Promise.reject(`Cannot exceed maximum limit of ${maxLimit} days`);
+        }
+
+        return Promise.resolve();
+    };
+
+    const calculateEarnedLeaves = (startDate) => {
+        const start = new Date(startDate);
+        const now = new Date();
+        const monthsWorked =
+            (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+        return Math.floor(monthsWorked * LEAVE_POLICIES.EARN_RATE);
+    };
+
     const handleSubmit = () => {
         form.validateFields()
             .then((values) => {
-                setLoading(true);
-                console.log('Submitting:', values); // Debug log
+                const filteredValues = Object.fromEntries(
+                    Object.entries(values).filter(([_, value]) => value !== null && value !== '')
+                );
 
-                Inertia.post(`/hr/employees/${selectedEmployee.id}/update_leave`, values, {
-                    preserveScroll: true,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    onSuccess: () => {
-                        message.success('Leave credits updated successfully');
-                        onClose();
-                    },
-                    onError: (errors) => {
-                        console.error('Error response:', errors);
-                        message.error(errors.message || 'Failed to update leave credits');
-                    },
-                    onFinish: () => setLoading(false),
+                if (Object.keys(filteredValues).length === 0) {
+                    message.warning('No leave credits to update');
+                    return;
+                }
+
+                // Convert all values to numbers
+                const numericValues = {};
+                Object.entries(filteredValues).forEach(([key, value]) => {
+                    numericValues[key] = parseFloat(value);
                 });
+
+                setLoading(true);
+
+                Inertia.post(
+                    `/hr/employees/${selectedEmployee.id}/update_leave`,
+                    {
+                        ...numericValues,
+                        added_by: auth.user.id,
+                        added_at: new Date().toISOString(),
+                    },
+                    {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            message.success('Leave credits updated successfully');
+                            onClose();
+                        },
+                        onError: (errors) => {
+                            message.error(errors.message || 'Failed to update leave credits');
+                        },
+                        onFinish: () => setLoading(false),
+                    }
+                );
             })
             .catch(console.error);
     };
@@ -76,7 +128,15 @@ export default function LeaveManagement({ auth, employee }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
-                <header className="flex text-xl font-bold">Leave Credit</header>
+                <header className="flex items-center text-xl font-bold">
+                    <Link
+                        href={route('leaveManagement')}
+                        className="mr-4 flex items-center text-gray-600 hover:text-gray-800"
+                    >
+                        <ArrowLeftOutlined className="mr-1" />
+                    </Link>
+                    Leave Credit Management
+                </header>
             </div>
 
             <div className="container mx-auto mt-10 p-4">
@@ -105,13 +165,19 @@ export default function LeaveManagement({ auth, employee }) {
                                                         Sick
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                                        Special Privilege
+                                                        Total Leave Balance
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-200 bg-white">
                                                 {employees.map((emp) => {
                                                     const credits = emp.leave_credits || {};
+                                                    const vacation =
+                                                        parseFloat(credits.vacation_leave) || 0;
+                                                    const sick =
+                                                        parseFloat(credits.sick_leave) || 0;
+                                                    const totalLeaveBalance = vacation + sick;
+
                                                     return (
                                                         <tr
                                                             key={emp.id}
@@ -124,14 +190,13 @@ export default function LeaveManagement({ auth, employee }) {
                                                                 </div>
                                                             </td>
                                                             <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                                {credits.vacation_leave || 0}
+                                                                {formatLeave(vacation)}
                                                             </td>
                                                             <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                                {credits.sick_leave || 0}
+                                                                {formatLeave(sick)}
                                                             </td>
-                                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                                {credits.special_privilege_leave ||
-                                                                    0}
+                                                            <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-gray-900">
+                                                                {formatLeave(totalLeaveBalance)}
                                                             </td>
                                                         </tr>
                                                     );
@@ -153,7 +218,7 @@ export default function LeaveManagement({ auth, employee }) {
             </div>
 
             <Drawer
-                // title={`${selectedEmployee?.first_name} ${selectedEmployee?.last_name}`}
+                title="Manage Leave Credits"
                 placement="right"
                 onClose={onClose}
                 open={open}
@@ -162,58 +227,120 @@ export default function LeaveManagement({ auth, employee }) {
                     <div className="flex justify-end space-x-2">
                         <DangerButton onClick={onClose}>Cancel</DangerButton>
                         <PrimaryButton type="primary" onClick={handleSubmit} loading={loading}>
-                            Save
+                            Add
                         </PrimaryButton>
                     </div>
                 }
             >
                 {selectedEmployee && (
                     <div className="space-y-6">
+                        <Descriptions bordered column={1}>
+                            <Descriptions.Item label="Employee Name">
+                                {`${selectedEmployee.first_name} ${selectedEmployee.last_name}`}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Position">
+                                {selectedEmployee.position?.name || 'N/A'}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Department">
+                                {selectedEmployee.department?.name || 'N/A'}
+                            </Descriptions.Item>
+                        </Descriptions>
+
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <h3 className="font-semibold">Name</h3>
-                                <p>{`${selectedEmployee?.first_name} ${selectedEmployee?.last_name}`}</p>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold">Position</h3>
-                                <p>{selectedEmployee.position?.name || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold">Department</h3>
-                                <p>{selectedEmployee.department?.name || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold">Start Date</h3>
-                                <p>{selectedEmployee.start_date}</p>
-                            </div>
+                            <Card>
+                                <Statistic
+                                    title="Vacation Leave"
+                                    value={parseFloat(
+                                        selectedEmployee.leave_credits?.vacation_leave || 0
+                                    )}
+                                    precision={2}
+                                />
+                            </Card>
+                            <Card>
+                                <Statistic
+                                    title="Sick Leave"
+                                    value={parseFloat(
+                                        selectedEmployee.leave_credits?.sick_leave || 0
+                                    )}
+                                    precision={2}
+                                />
+                            </Card>
+                            <Card className="col-span-2">
+                                <Statistic
+                                    title="Total Leave Balance"
+                                    value={
+                                        parseFloat(
+                                            selectedEmployee.leave_credits?.vacation_leave || 0
+                                        ) +
+                                        parseFloat(selectedEmployee.leave_credits?.sick_leave || 0)
+                                    }
+                                    precision={2}
+                                />
+                            </Card>
                         </div>
+                        {/*
+                        <div className="mt-4">
+                            <p className="text-sm text-gray-600">
+                                <strong>Note:</strong> Employees earn {LEAVE_POLICIES.EARN_RATE}{' '}
+                                days per month worked. Current earned leaves:{' '}
+                                {calculateEarnedLeaves(selectedEmployee.start_date)} days
+                            </p>
+                        </div> */}
+
                         <Form form={form} layout="vertical">
                             <Tabs activeKey={activeTab} onChange={setActiveTab}>
                                 <TabPane tab="Vacation Leave" key="1">
                                     <Form.Item
-                                        label="Vacation Leave Balance"
+                                        label="Add Vacation Leave Credits"
                                         name="vacation_leave"
-                                        rules={[{ required: true }]}
+                                        rules={[
+                                            {
+                                                validator: (_, value) =>
+                                                    validateLeaveInput(
+                                                        _,
+                                                        value,
+                                                        LEAVE_POLICIES.MAX_VACATION,
+                                                        parseFloat(
+                                                            selectedEmployee.leave_credits
+                                                                ?.vacation_leave || 0
+                                                        )
+                                                    ),
+                                            },
+                                        ]}
                                     >
-                                        <Input type="number" />
+                                        <Input
+                                            type="number"
+                                            min={0}
+                                            step="0.01"
+                                            placeholder="Enter credits to add"
+                                        />
                                     </Form.Item>
                                 </TabPane>
                                 <TabPane tab="Sick Leave" key="2">
                                     <Form.Item
-                                        label="Sick Leave Balance"
+                                        label="Add Sick Leave Credits"
                                         name="sick_leave"
-                                        rules={[{ required: true }]}
+                                        rules={[
+                                            {
+                                                validator: (_, value) =>
+                                                    validateLeaveInput(
+                                                        _,
+                                                        value,
+                                                        LEAVE_POLICIES.MAX_SICK,
+                                                        parseFloat(
+                                                            selectedEmployee.leave_credits
+                                                                ?.sick_leave || 0
+                                                        )
+                                                    ),
+                                            },
+                                        ]}
                                     >
-                                        <Input type="number" />
-                                    </Form.Item>
-                                </TabPane>
-                                <TabPane tab="Special Privilege Leave" key="3">
-                                    <Form.Item
-                                        label="Special Privilege Leave Balance"
-                                        name="special_privilege_leave"
-                                        rules={[{ required: true }]}
-                                    >
-                                        <Input type="number" />
+                                        <Input
+                                            type="number"
+                                            min={0}
+                                            step="0.01"
+                                            placeholder="Enter credits to add"
+                                        />
                                     </Form.Item>
                                 </TabPane>
                             </Tabs>

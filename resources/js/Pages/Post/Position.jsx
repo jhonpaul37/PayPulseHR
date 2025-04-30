@@ -16,7 +16,7 @@ const Positions = ({ auth }) => {
 
     const handleAddOrEdit = (values) => {
         if (editingPosition) {
-            Inertia.put(`/positions/${editingPosition.id}`, values, {
+            Inertia.put(`/hr/positions/${editingPosition.id}`, values, {
                 onSuccess: () => {
                     message.success('Position updated successfully');
                     closeModal();
@@ -24,7 +24,7 @@ const Positions = ({ auth }) => {
                 onError: () => message.error('Failed to update position'),
             });
         } else {
-            Inertia.post('/positions', values, {
+            Inertia.post('/hr/positions', values, {
                 onSuccess: () => {
                     message.success('Position added successfully');
                     closeModal();
@@ -35,7 +35,7 @@ const Positions = ({ auth }) => {
     };
 
     const handleDelete = (id) => {
-        Inertia.delete(`/positions/${id}`, {
+        Inertia.delete(`/hr/positions/${id}`, {
             onSuccess: () => message.success('Position deleted successfully'),
             onError: () => message.error('Failed to delete position'),
         });

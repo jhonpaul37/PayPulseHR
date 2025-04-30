@@ -126,20 +126,26 @@ Route::middleware('auth')->group(function () {
         //Leave Management
         // Route::get('/leaveRequestForm', [LeaveController::class, 'LeaveRequestForm'])->name('leaveRequestForm'); // employee access
         // Route::post('/leaveRequestForm', [LeaveController::class, 'store'])->name('LeaveRequstForm.store');
+
         Route::get('/leaveManagement', [LeaveController::class, 'LeaveManagement'])->name('leaveManagement');
 
         Route::get('/leaveRequest', [LeaveController::class, 'LeaveRequest'])->name('LeaveRequest');
         Route::post('/leave/{leave}/update-status', [LeaveController::class, 'updateStatus'])->name('leave.updateStatus');
-        Route::get('/forReview', [LeaveController::class, 'forReview'])->name('forReview');
         Route::get('/leaveCredit', [LeaveController::class, 'leaveCredit'])->name('LeaveCredit');
 
         Route::get('/leaveStatus', [LeaveController::class, 'leaveStatus'])->name('LeaveStatus');
+
+    //for Review
+        Route::get('/forReview', [LeaveController::class, 'forReview'])->name('forReview');
+
+        Route::post('/leave/{leave}/update-status', [LeaveController::class, 'updateStatus'])->name('leave.updateStatus');
+
+        // Route::get('/leave/{leave}/edit', [LeaveController::class, 'LeaveEdit'])->name('leave.edit');
 
         Route::post('/employees/{employee}/update_leave', [LeaveController::class, 'updateLeaveCredit'])->name('leave.update-leave');
 
         Route::get('/leave-request/hr', [LeaveController::class, 'LeaveRequestFormHR'])->name('leave.request.hr.form');
         Route::post('/leave-request/hr', [LeaveController::class, 'LeaveRequestHRstore'])->name('leave.request.hr.store');
-
 
         Route::get('/leaveRequest/show/{id}', [LeaveController::class, 'leaveRequestShow'])->name('LeaveRequest.show');
         Route::get('/appLeaveForm/{id}', [LeaveController::class, 'AppLeaveForm'])->name('Appleave');
@@ -163,12 +169,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/unassigned-users', [UserController::class, 'unassignedUsers'])->name('users.unassigned');
         Route::get('/admin/employees/create/{userId}', [EmployeeController::class, 'register'])->name('admin.employees.create');
         Route::post('/admin/employees/create/{userId}', [EmployeeController::class, 'storeNew'])->name('employees.stores');
-
-        //HR Leave Request
-        // Route::get('/leaveRequestFormHR', [LeaveController::class, 'LeaveRequestFormHR'])->name('leaveRequestFormHR');
-        // Route::post('/leaveRequestFormHR', [LeaveController::class, 'LeaveRequestHRstore'])->name('LeaveRequestHRstore');
-        // Route::post('/leave-request/hr', [LeaveController::class, 'LeaveRequestHRstore'])->name('LeaveRequestHRstore');
-
 
     });
 

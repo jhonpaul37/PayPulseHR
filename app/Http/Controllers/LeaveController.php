@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeLeaveCredit;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Leave;
-use Carbon\Carbon;
-use Illuminate\Support\Carbon as SupportCarbon;
-// use Illuminate\Container\Attributes\Log;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 class LeaveController extends Controller
@@ -130,15 +127,25 @@ class LeaveController extends Controller
             'special_privilege_leave'
         ]);
 
+        // Filter out null or empty values
+        $data = array_filter($data, function($value) {
+            return $value !== null && $value !== '';
+        });
+
         $leaveCredit = $employee->leaveCredits;
 
         if ($leaveCredit) {
-            $leaveCredit->update($data);
+            // Add the new values to the existing ones
+            foreach ($data as $key => $value) {
+                $leaveCredit->$key += $value;
+            }
+            $leaveCredit->save();
         } else {
+            // Create new record with the provided values
             $employee->leaveCredits()->create($data);
         }
 
-        return back()->with('success', 'Leave credits updated successfully');
+        return back()->with('success', 'Leave credits added successfully');
     }
 
     //
@@ -158,15 +165,86 @@ class LeaveController extends Controller
 
     //
 
-    public function forReview()
-    {
-        $ReviewLeave = Leave::whereIn('status', ['review'])
-            ->with('employee')
-            ->latest()
-            ->paginate(6);
+    // public function forReview()
+    // {
+    //     $ReviewLeave = Leave::whereIn('status', ['review'])
+    //         ->with('employee')
+    //         ->latest()
+    //         ->paginate(6);
 
-        return Inertia::render('Leave/ForReview', [
-            'ReviewLeave' => $ReviewLeave,
+    //     return Inertia::render('Leave/ForReview', [
+    //         'ReviewLeave' => $ReviewLeave,
+    //     ]);
+    // }
+
+    public function forReview()
+{
+    $ReviewLeave = Leave::whereIn('status', ['review'])
+        ->with('employee')
+        ->latest()
+        ->paginate(6);
+
+    return Inertia::render('Leave/ForReview', [
+        'ReviewLeave' => $ReviewLeave,
+    ]);
+}
+
+// public function updateStatus(Leave $leave, Request $request)
+// {
+
+//     $request->validate([
+//         'status' => 'required|in:Approved,rejected,review',
+//     ]);
+
+//     $leave->update([
+//         'status' => $request->status,
+//     ]);
+
+//     return back()->with('success', 'Leave status updated successfully');
+// }
+
+public function updateStatus(Leave $leave, Request $request)
+{
+    $request->validate([
+        'status' => 'required|in:Approved,rejected,review',
+    ]);
+
+    DB::beginTransaction();
+    try {
+        $previousStatus = $leave->status;
+        $leave->update(['status' => $request->status]);
+
+        // Only deduct credits if changing to Approved and wasn't already approved
+        if ($request->status === 'Approved' && $previousStatus !== 'Approved') {
+            $user = $leave->user; // Assuming there's a user relationship
+
+            // Determine which leave type to deduct from
+            $leaveType = $leave->leave_type; // Adjust based on your structure
+
+            // Example for vacation leave deduction
+            if ($leaveType === 'Vacation') {
+                $user->vacation_leave_balance -= $leave->total_days;
+            }
+            // Example for sick leave deduction
+            elseif ($leaveType === 'Sick') {
+                $user->sick_leave_balance -= $leave->total_days;
+            }
+
+            $user->save();
+        }
+
+        DB::commit();
+        return back()->with('success', 'Leave status updated successfully');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Failed to update leave status: ' . $e->getMessage());
+    }
+}
+
+    public function LeaveEdit(Leave $leave)
+    {
+        return Inertia::render('Leave/EditLeaveForm', [
+            'leave' => $leave->load('employee'),
         ]);
     }
 
@@ -195,13 +273,13 @@ class LeaveController extends Controller
             ],
         ]);
     }
-    public function updateStatus(Leave $leave, Request $request)
-    {
+    // public function updateStatus(Leave $leave, Request $request)
+    // {
 
-        $leave->update([
-            'status' => 'review',
-        ]);
+    //     $leave->update([
+    //         'status' => 'review',
+    //     ]);
 
-        return back()->with('success', 'Leave request status updated to review');
-    }
+    //     return back()->with('success', 'Leave request status updated to review');
+    // }
 }

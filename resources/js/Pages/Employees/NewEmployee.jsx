@@ -450,7 +450,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                     >
                                         <Option value="Regular">Regular</Option>
                                         <Option value="Casual">Casual</Option>
-                                        <Option value="OJ/Job Order">OJ/Job Order</Option>
+                                        <Option value="JO/Job Order">JO/Job Order</Option>
                                         <Option value="COS/Contract of Service">
                                             COS/Contract of Service
                                         </Option>

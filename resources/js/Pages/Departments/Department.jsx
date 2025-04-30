@@ -36,14 +36,14 @@ const Department = ({ auth }) => {
     };
 
     const handleCreateSubmit = () => {
-        post('/departments', {
+        post('/hr/departments', {
             onSuccess: () => setIsCreateModalVisible(false),
         });
     };
 
     const handleEditSubmit = () => {
         if (currentDepartment) {
-            put(`/departments/${currentDepartment.id}`, {
+            put(`/hr/departments/${currentDepartment.id}`, {
                 onSuccess: () => setIsEditModalVisible(false),
             });
         }
@@ -70,7 +70,7 @@ const Department = ({ auth }) => {
                     </PrimaryButton>
                     <Link
                         method="delete"
-                        href={`/departments/${record.id}`}
+                        href={`/hr/departments/${record.id}`}
                         as="form"
                         data={{ method: 'delete' }}
                     >

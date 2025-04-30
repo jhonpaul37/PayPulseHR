@@ -6,11 +6,22 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Empty, Drawer } from 'antd';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 export default function LeaveRequest({ LeaveRequest, auth }) {
     const route = useRoute();
     const [open, setOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
 
     const showDrawer = (request) => {
         setSelectedRequest(request);
@@ -49,12 +60,18 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
         );
     };
 
-    console.log(LeaveRequest);
-
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
-                <header className="flex text-xl font-bold">Leave Request List</header>
+                <header className="flex items-center text-xl font-bold">
+                    <Link
+                        href={route('leaveManagement')}
+                        className="mr-4 flex items-center text-gray-600 hover:text-gray-800"
+                    >
+                        <ArrowLeftOutlined className="mr-1" />
+                    </Link>
+                    Leave Request List
+                </header>
             </div>
             <div className="container mx-auto mt-10 p-4">
                 {LeaveRequest.data?.length > 0 ? (
@@ -72,9 +89,6 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                                 Request Date
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                                Days
                                             </th>
                                         </tr>
                                     </thead>
@@ -94,10 +108,7 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                                     {request.leave_type || 'N/A'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {request.request_date || 'N/A'}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {request.total_days || 'N/A'}
+                                                    {formatDate(request.request_date)}
                                                 </td>
                                             </tr>
                                         ))}
@@ -121,7 +132,7 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                     onClose={onClose}
                     open={open}
                     width={500}
-                    footer={null} // Remove footer since we're adding buttons inside the content
+                    footer={null}
                 >
                     {selectedRequest && (
                         <div className="flex h-full flex-col">
@@ -136,17 +147,26 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold">Request Date</h3>
-                                    <p>{selectedRequest.request_date}</p>
+                                    <p>{formatDate(selectedRequest.request_date)}</p>
                                 </div>
                                 <div>
                                     <h3 className="font-semibold">Days</h3>
                                     <p>{selectedRequest.total_days}</p>
                                 </div>
+                                {selectedRequest.from_date && selectedRequest.to_date && (
+                                    <div>
+                                        <h3 className="font-semibold">Leave Period</h3>
+                                        <p>
+                                            {formatDate(selectedRequest.from_date)} to{' '}
+                                            {formatDate(selectedRequest.to_date)}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="mb-10 flex justify-center gap-4">
                                 <PrimaryButton
-                                    className="flex w-full items-center justify-center py-3 text-lg" // Added flex centering
+                                    className="flex w-full items-center justify-center py-3 text-lg"
                                     onClick={() => {
                                         if (selectedRequest) {
                                             Inertia.visit(
@@ -158,7 +178,7 @@ export default function LeaveRequest({ LeaveRequest, auth }) {
                                     View
                                 </PrimaryButton>
                                 <DangerButton
-                                    className="flex w-full items-center justify-center py-3 text-lg" // Added flex centering
+                                    className="flex w-full items-center justify-center py-3 text-lg"
                                     onClick={onClose}
                                 >
                                     Close

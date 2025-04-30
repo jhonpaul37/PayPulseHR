@@ -11,6 +11,8 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Link } from '@inertiajs/react';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 const locales = {
     'en-US': enUS,
@@ -246,11 +248,19 @@ const LeaveRequestFormHR = ({ auth, employees }) => {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="p-4">
-                <div className="mb-10 border-b pb-6">
-                    <header className="flex p-1 text-xl font-bold">Leave Request</header>
+                <div className="border-b pb-6">
+                    <header className="flex items-center text-xl font-bold">
+                        <Link
+                            href={route('leaveManagement')}
+                            className="mr-4 flex items-center text-gray-600 hover:text-gray-800"
+                        >
+                            <ArrowLeftOutlined className="mr-1" />
+                        </Link>
+                        Leave Request
+                    </header>
                 </div>
                 <form onSubmit={submit}>
-                    <div className="flex gap-4">
+                    <div className="mt-8 flex gap-4">
                         {/* Left side - Form content */}
                         <div className="flex-1">
                             <div className="flex justify-between">

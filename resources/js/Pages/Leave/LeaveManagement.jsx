@@ -18,14 +18,14 @@ export default function LeaveManagement({ auth }) {
             description: 'Submit a new leave request.',
         },
         {
-            name: 'Submitted',
-            route: route('LeaveStatus'),
-            description: 'Track leave requests (Approved/Disapproved).',
-        },
-        {
-            name: 'Review Requests',
+            name: 'For Review',
             route: route('forReview'),
             description: 'Review and manage submitted leave requests.',
+        },
+        {
+            name: 'Approved',
+            route: route('LeaveStatus'),
+            description: 'Track leave requests (Approved/Disapproved).',
         },
         {
             name: 'Application for Leave',
@@ -37,7 +37,7 @@ export default function LeaveManagement({ auth }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="border-b pb-6">
-                <header className="flex justify-center text-xl font-bold">Leave Management</header>
+                <header className="text-xl font-bold">Leave Management</header>
             </div>
 
             <div className="mt-8 grid grid-cols-1 gap-6 px-4 sm:grid-cols-2 md:grid-cols-3">

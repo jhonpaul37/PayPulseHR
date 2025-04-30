@@ -107,8 +107,7 @@ public function update(Request $request, Employee $employee)
  */
 private function updateEmployeeContributions(Employee $employee)
 {
-    // Get the updated monthly salary for the employee's salary grade
-    $salaryGrade = $employee->salaryGrade; // Assuming relationship is `salaryGrade()`
+    $salaryGrade = $employee->salaryGrade;
     $monthlySalary = $salaryGrade ? $salaryGrade->monthly_salary : 0;
 
     // Contribution calculations
@@ -168,7 +167,7 @@ private function updateEmployeeContributions(Employee $employee)
             'start_date' => 'required|date',
             'employment_type' => 'required|string',
             'salary_grade_id' => 'required|exists:salary_grades,id',
-            'classification' => 'required|in:Regular,Casual,OJ/Job Order,COS/Contract of Service',
+            'classification' => 'required|in:Regular,Casual,JO/Job Order,COS/Contract of Service',
             'gsis_no' => 'nullable|string',
             'hdmf_no' => 'nullable|string',
             'phic_no' => 'nullable|string',

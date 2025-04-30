@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AvailLeave from './components/AvailLeave';
+import AvailLeave from '../components/AvailLeave';
+import FormHeader from '../components/FormHeader';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/inertia-react';
 import { Link } from '@inertiajs/react';
@@ -8,10 +9,11 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 
 function AppLeaveForm({ auth, LeaveRequest }) {
     const employee = LeaveRequest?.employee || {};
-    const leaveCredits = LeaveRequest?.employee?.leave_credits || {};
+    const leaveCredits = LeaveRequest?.leave_credits || {};
 
     const { data, setData, post, processing } = useForm({
         status: 'review',
+        // Include other fields you want to submit
     });
 
     const [formData, setFormData] = useState({
@@ -26,30 +28,7 @@ function AppLeaveForm({ auth, LeaveRequest }) {
         leaveDetails: LeaveRequest?.leave_details || {},
     });
 
-    const [credits, setCredits] = useState({
-        vacation_leave: leaveCredits?.vacation_leave || 0,
-        sick_leave: leaveCredits?.sick_leave || 0,
-        vacation_leave_used: leaveCredits?.vacation_leave_used || 0,
-        sick_leave_used: leaveCredits?.sick_leave_used || 0,
-    });
-
-    useEffect(() => {
-        setCredits((prev) => ({
-            ...prev,
-            vacation_leave_balance: prev.vacation_leave - prev.vacation_leave_used,
-            sick_leave_balance: prev.sick_leave - prev.sick_leave_used,
-        }));
-    }, [credits.vacation_leave_used, credits.sick_leave_used]);
-
-    const handleCreditChange = (e) => {
-        const { name, value } = e.target;
-        setCredits((prev) => ({
-            ...prev,
-            [name]: parseFloat(value) || 0,
-        }));
-    };
-
-    // console.log('LeaveRequest:', LeaveRequest);
+    console.log('LeaveRequest:', LeaveRequest);
 
     const handleLeaveTypeChange = (leaveType, leaveDetails) => {
         setFormData((prevState) => ({
@@ -77,25 +56,18 @@ function AppLeaveForm({ auth, LeaveRequest }) {
         });
     };
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     post(route('leave.updateStatus', LeaveRequest.id), {
-    //         preserveScroll: true,
-    //         onSuccess: () => {
-    //             // Optional success handling
-    //             console.log('Status updated to review');
-    //         },
-    //     });
-    // };
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('leave.updateStatus', LeaveRequest.id), {
-            ...data,
-            leave_credits: credits,
             preserveScroll: true,
+            onSuccess: () => {
+                // Optional success handling
+                console.log('Status updated to review');
+            },
         });
     };
 
+    // Helper function to safely handle null values
     const safeValue = (value) => (value === null || value === undefined ? '' : value);
 
     return (
@@ -113,6 +85,12 @@ function AppLeaveForm({ auth, LeaveRequest }) {
             </div>
             <form onSubmit={handleSubmit} className="pt-10">
                 <div className="border border-black">
+                    <div className="p-4">
+                        <FormHeader />
+                        <span className="flex justify-center text-2xl font-bold">
+                            APPLICATION FOR LEAVE
+                        </span>
+                    </div>
                     <div className="flex justify-between border-black p-2">
                         <span className="">
                             <label className="mr-2 block"> 1. OFFICE/DEPARTMENT</label>
@@ -164,7 +142,7 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                             <TextInput
                                 type="text"
                                 name="dateOfFiling"
-                                value={formatDate(safeValue(formData.dateOfFiling))}
+                                value={safeValue(formData.dateOfFiling)}
                                 readOnly
                             />
                         </span>
@@ -175,7 +153,6 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                 name="position"
                                 value={safeValue(formData.position)}
                                 readOnly
-                                className="w-[400px]"
                             />
                         </span>
                         <span className="">
@@ -304,11 +281,24 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                                 <td className="border border-black px-1">
                                                     Total Earned
                                                 </td>
+                                                {/* <td className="border border-black px-1">
+                                                    {safeValue(
+                                                        leaveCredits?.employee.leave_credits
+                                                            .vacation_leave
+                                                    )}
+                                                </td> */}
                                                 <td className="border border-black px-1">
-                                                    {safeValue(credits.vacation_leave)}
+                                                    {safeValue(
+                                                        LeaveRequest?.employee?.leave_credits
+                                                            ?.vacation_leave
+                                                    )}
                                                 </td>
+
                                                 <td className="border border-black px-1">
-                                                    {safeValue(credits.sick_leave)}
+                                                    {safeValue(
+                                                        LeaveRequest?.employee?.leave_credits
+                                                            ?.sick_leave
+                                                    )}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -316,28 +306,10 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                                     Less this application
                                                 </td>
                                                 <td className="border border-black px-1">
-                                                    <TextInput
-                                                        type="number"
-                                                        name="vacation_leave_used"
-                                                        value={safeValue(
-                                                            credits.vacation_leave_used
-                                                        )}
-                                                        onChange={handleCreditChange}
-                                                        className="w-full"
-                                                        step="0.5"
-                                                        min="0"
-                                                    />
+                                                    {safeValue(leaveCredits?.vacation_leave_used)}
                                                 </td>
                                                 <td className="border border-black px-1">
-                                                    <TextInput
-                                                        type="number"
-                                                        name="sick_leave_used"
-                                                        value={safeValue(credits.sick_leave_used)}
-                                                        onChange={handleCreditChange}
-                                                        className="w-full"
-                                                        step="0.5"
-                                                        min="0"
-                                                    />
+                                                    {safeValue(leaveCredits?.sick_leave_used)}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -345,10 +317,12 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                                     Balance
                                                 </td>
                                                 <td className="border border-black px-1">
-                                                    {safeValue(credits.vacation_leave_balance)}
+                                                    {safeValue(
+                                                        leaveCredits?.vacation_leave_balance
+                                                    )}
                                                 </td>
                                                 <td className="border border-black px-1">
-                                                    {safeValue(credits.sick_leave_balance)}
+                                                    {safeValue(leaveCredits?.sick_leave_balance)}
                                                 </td>
                                             </tr>
                                         </tbody>
