@@ -24,19 +24,20 @@ class EmployeeBenefitController extends Controller
             'employeeBenefits' => $employeeBenefits,
         ]);
     }
-    public function bulkUpdate(Request $request)
-    {
-        $changes = $request->input('changes', []);
 
-        foreach ($changes as $change) {
-            EmployeeBenefit::updateOrCreate(
-                ['employee_id' => $change['employee_id'], 'benefit_id' => $change['benefit_id']],
-                ['amount' => $change['amount']]
-            );
-        }
+    // public function bulkUpdate(Request $request)
+    // {
+    //     $changes = $request->input('changes', []);
 
-        return redirect()->back()->with('success', 'Bulk benefits updated successfully!');
-    }
+    //     foreach ($changes as $change) {
+    //         EmployeeBenefit::updateOrCreate(
+    //             ['employee_id' => $change['employee_id'], 'benefit_id' => $change['benefit_id']],
+    //             ['amount' => $change['amount']]
+    //         );
+    //     }
+
+    //     return redirect()->back()->with('success', 'Bulk benefits updated successfully!');
+    // }
 
 
     public function store(Request $request)

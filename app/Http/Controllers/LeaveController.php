@@ -124,7 +124,7 @@ class LeaveController extends Controller
         $data = $request->only([
             'vacation_leave',
             'sick_leave',
-            'special_privilege_leave'
+            // 'special_privilege_leave'
         ]);
 
         // Filter out null or empty values
@@ -214,23 +214,37 @@ public function updateStatus(Leave $leave, Request $request)
         $previousStatus = $leave->status;
         $leave->update(['status' => $request->status]);
 
-        // Only deduct credits if changing to Approved and wasn't already approved
         if ($request->status === 'Approved' && $previousStatus !== 'Approved') {
-            $user = $leave->user; // Assuming there's a user relationship
+            $employee = $leave->employee;
 
-            // Determine which leave type to deduct from
-            $leaveType = $leave->leave_type; // Adjust based on your structure
-
-            // Example for vacation leave deduction
-            if ($leaveType === 'Vacation') {
-                $user->vacation_leave_balance -= $leave->total_days;
-            }
-            // Example for sick leave deduction
-            elseif ($leaveType === 'Sick') {
-                $user->sick_leave_balance -= $leave->total_days;
+            if (!$employee) {
+                throw new \Exception('User not found for this leave request');
             }
 
-            $user->save();
+            $leaveType = is_array($leave->leave_type)
+                ? $leave->leave_type[0]
+                : $leave->leave_type;
+
+            // Get or create leave credits record
+            $EmployeeLeaveCredit = $employee->leaveCredits()->firstOrNew([]);
+
+            switch ($leaveType) {
+                case 'Vacation Leave':
+                    if ($EmployeeLeaveCredit->vacation_leave < $leave->total_days) {
+                        throw new \Exception('Insufficient vacation leave balance');
+                    }
+                    $EmployeeLeaveCredit->vacation_leave -= $leave->total_days;
+                    break;
+
+                case 'Sick Leave':
+                    if ($EmployeeLeaveCredit->sick_leave < $leave->total_days) {
+                        throw new \Exception('Insufficient sick leave balance');
+                    }
+                    $EmployeeLeaveCredit->sick_leave -= $leave->total_days;
+                    break;
+            }
+
+            $EmployeeLeaveCredit->save();
         }
 
         DB::commit();

@@ -20,6 +20,7 @@ import {
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
 import styled from 'styled-components';
+import { Head } from '@inertiajs/react';
 
 const { Header, Sider, Content } = Layout;
 
@@ -246,6 +247,7 @@ const AuthenticatedLayout = ({ user, children }) => {
 
     return (
         <div>
+            <Head title="PayPulseHR" />
             <Layout className="h-screen">
                 <StyledSider trigger={null} collapsible collapsed={collapsed}>
                     <div className="relative flex h-16 items-center justify-center bg-mainD">

@@ -31,14 +31,18 @@ const ForReview = ({ auth, ReviewLeave }) => {
         setSelectedLeave(null);
     };
 
-    const updateStatus = (status) => {
-        Inertia.post(route('leave.updateStatus', selectedLeave.id), {
-            status,
-            preserveScroll: true,
-            onSuccess: () => {
-                onClose();
-            },
-        });
+    const updateLeaveStatus = (leaveId, status) => {
+        Inertia.post(
+            route('leave.updateStatus', leaveId),
+            { status },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    onClose();
+                },
+                onError: (errors) => {},
+            }
+        );
     };
 
     const renderPagination = () => {
@@ -156,7 +160,28 @@ const ForReview = ({ auth, ReviewLeave }) => {
                     onClose={onClose}
                     open={open}
                     width={500}
-                    footer={null}
+                    footer={
+                        selectedLeave && selectedLeave.status !== 'Approved' ? (
+                            <div className="flex justify-end gap-4">
+                                <DangerButton
+                                    onClick={() => {
+                                        updateLeaveStatus(selectedLeave.id, 'rejected');
+                                        onClose();
+                                    }}
+                                >
+                                    Reject
+                                </DangerButton>
+                                <PrimaryButton
+                                    onClick={() => {
+                                        updateLeaveStatus(selectedLeave.id, 'Approved');
+                                        onClose();
+                                    }}
+                                >
+                                    Approve
+                                </PrimaryButton>
+                            </div>
+                        ) : null
+                    }
                 >
                     {selectedLeave && (
                         <div className="flex h-full flex-col">
@@ -194,7 +219,7 @@ const ForReview = ({ auth, ReviewLeave }) => {
                                 </div>
                             </div>
 
-                            <div className="mb-10 flex justify-center gap-4">
+                            {/* <div className="mb-10 flex justify-center gap-4">
                                 <button
                                     type="button"
                                     className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
@@ -208,7 +233,7 @@ const ForReview = ({ auth, ReviewLeave }) => {
                                     Approve
                                 </PrimaryButton>
                                 <DangerButton onClick={onClose}>Close</DangerButton>
-                            </div>
+                            </div> */}
                         </div>
                     )}
                 </Drawer>

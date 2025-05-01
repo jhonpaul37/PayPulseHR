@@ -21,7 +21,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\LwopRecordController;
 use App\Http\Controllers\RemittanceController;
+use App\Models\LwopRecord;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -76,7 +78,10 @@ Route::middleware('auth')->group(function () {
     //Benefits / Gross Earning
     Route::get('/employee_benefits', [EmployeeBenefitController::class, 'index'])->name('employee_benefits.index');
     Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
-    Route::post('/employee_benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
+
+
+    // Route::post('/employee_benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
+    Route::post('/employee-benefits/lwop', [LwopRecordController::class, 'storeLwopRecord'])->name('storeLwopRecord');
 
     Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');
 

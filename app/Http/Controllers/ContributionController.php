@@ -30,6 +30,7 @@ class ContributionController extends Controller
         ]);
     }
 
+
     public function create()
     {
         return inertia('Contribution/ContributionCreate');
