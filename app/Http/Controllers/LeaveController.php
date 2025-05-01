@@ -88,10 +88,22 @@ class LeaveController extends Controller
         return redirect()->route('leaveManagement')->with('success', 'Leave request submitted successfully.');
     }
 
-    //
+    // leaveManagement
+    // public function leaveManagement()
+    // {
+    //     return Inertia::render('Leave/LeaveManagement');
+    // }
     public function leaveManagement()
     {
-        return Inertia::render('Leave/LeaveManagement');
+        $badgeCounts = [
+            'requestLeave' => Leave::where('status', 'pending')->count(),
+            'forReview' => Leave::where('status', 'review')->count(),
+            'approved' => Leave::where('status', 'Approved')->count(),
+        ];
+
+        return Inertia::render('Leave/LeaveManagement', [
+            'badgeCounts' => $badgeCounts,
+        ]);
     }
 
     // Request

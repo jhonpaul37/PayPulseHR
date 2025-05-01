@@ -209,25 +209,25 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: <Link href="/hr/departments">Department/Unit</Link>,
             roles: ['HR'],
         },
-        {
-            type: 'divider',
-        },
-        {
-            key: 'employeeTitle',
-            label: !collapsed ? 'Employee' : null,
-            type: 'group',
-        },
+        // {
+        //     type: 'divider',
+        // },
+        // {
+        //     key: 'employeeTitle',
+        //     label: !collapsed ? 'Employee' : null,
+        //     type: 'group',
+        // },
         {
             key: '11',
             icon: <FontAwesomeIcon icon={faUser} />,
             label: <Link href="/my_loans">My Details</Link>,
-            roles: ['HR', 'employee', 'Accounting', 'Cashier'],
+            roles: ['employee'],
         },
         {
             key: '10',
             icon: <FontAwesomeIcon icon={faHeartPulse} />,
             label: <Link href="/leaveRequestForm">Leave</Link>,
-            roles: ['HR', 'employee', 'Accounting', 'Cashier'],
+            roles: ['employee'],
         },
 
         // {

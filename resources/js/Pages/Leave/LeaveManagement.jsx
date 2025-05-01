@@ -1,9 +1,10 @@
 import React from 'react';
 import { useRoute } from '@ziggy';
 import { Link } from '@inertiajs/react';
+import { Badge } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function LeaveManagement({ auth }) {
+export default function LeaveManagement({ auth, badgeCounts = {} }) {
     const route = useRoute();
 
     const items = [
@@ -16,16 +17,19 @@ export default function LeaveManagement({ auth }) {
             name: 'Request Leave',
             route: route('LeaveRequest'),
             description: 'Submit a new leave request.',
+            badge: badgeCounts.requestLeave || 0,
         },
         {
             name: 'For Review',
             route: route('forReview'),
             description: 'Review and manage submitted leave requests.',
+            badge: badgeCounts.forReview || 0,
         },
         {
             name: 'Approved',
             route: route('LeaveStatus'),
             description: 'Track leave requests (Approved/Disapproved).',
+            badge: badgeCounts.approved || 0,
         },
         {
             name: 'Application for Leave',
@@ -47,7 +51,10 @@ export default function LeaveManagement({ auth }) {
                         href={item.route}
                         className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md transition-all duration-200 hover:bg-gray-100"
                     >
-                        <h2 className="text-lg font-semibold">{item.name}</h2>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-semibold">{item.name}</h2>
+                            {item.badge > 0 && <Badge count={item.badge} offset={[10, 0]} />}
+                        </div>
                         <p className="mt-1 text-sm text-gray-600">{item.description}</p>
                     </Link>
                 ))}

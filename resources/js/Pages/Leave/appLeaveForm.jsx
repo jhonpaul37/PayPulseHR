@@ -245,9 +245,9 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                             <span>Requested</span>
                                         </label>
                                     </div>
-                                    <div className="mt-8 border-t border-black pt-2 text-center">
+                                    {/* <div className="mt-8 border-t border-black pt-2 text-center">
                                         (Signature of Applicant)
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -349,9 +349,9 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div className="mt-8 border-t border-black pt-2 text-center">
+                                    {/* <div className="mt-8 border-t border-black pt-2 text-center">
                                         Name & Signature of Authorized Official
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                             <div className="p-2">
@@ -367,9 +367,9 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                             rows={3}
                                         ></textarea>
                                     </div>
-                                    <div className="mt-8 border-t border-black pt-2 text-center">
+                                    {/* <div className="mt-8 border-t border-black pt-2 text-center">
                                         Name & Signature of Authorized Official
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -422,20 +422,11 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                                 </div>
                             </div>
                         </div>
-
-                        {/* College President */}
-                        <div className="border-t border-black p-2 text-center font-bold">
-                            College President
-                        </div>
                     </div>
 
                     {/* Submit Button */}
                     <div className="mt-6 flex justify-center">
-                        <PrimaryButton
-                            type="submit"
-                            className="rounded-md bg-blue-600 px-6 py-2 font-bold text-white hover:bg-blue-700"
-                            disabled={processing}
-                        >
+                        <PrimaryButton type="submit" disabled={processing}>
                             {processing ? 'Submitting...' : 'Submit Application'}
                         </PrimaryButton>
                     </div>
