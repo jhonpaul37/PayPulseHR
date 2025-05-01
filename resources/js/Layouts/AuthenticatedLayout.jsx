@@ -113,7 +113,7 @@ const AuthenticatedLayout = ({ user, children }) => {
         {
             key: '14',
             icon: <FontAwesomeIcon icon={faStar} />,
-            label: <Link href="/AsignRoles">Asign Roles</Link>,
+            label: <Link href="/AsignRoles">Assign Roles</Link>,
             roles: ['SuperAdmin'],
         },
         // {
@@ -229,6 +229,12 @@ const AuthenticatedLayout = ({ user, children }) => {
             label: <Link href="/leaveRequestForm">Leave</Link>,
             roles: ['employee'],
         },
+        // {
+        //     key: '10',
+        //     icon: <FontAwesomeIcon icon={faHeartPulse} />,
+        //     label: <Link href="/leaveRequestForm">Leave</Link>,
+        //     roles: ['HR', 'employee', 'Accounting', 'Cashier'],
+        // },
 
         // {
         //     type: 'divider',
