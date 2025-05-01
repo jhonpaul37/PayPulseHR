@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/employee_benefits', [EmployeeBenefitController::class, 'store'])->name('employee_benefits.store');
 
 
-    // Route::post('/employee_benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
+    Route::post('/employee_benefits/bulkUpdate', [EmployeeBenefitController::class, 'bulkUpdate'])->name('employee_benefits.bulkUpdate');
     Route::post('/employee-benefits/lwop', [LwopRecordController::class, 'storeLwopRecord'])->name('storeLwopRecord');
 
     Route::post('/benefits/store', [BenefitController::class, 'store'])->name('benefits.store');

@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/inertia-react';
 import { Link } from '@inertiajs/react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 function AppLeaveForm({ auth, LeaveRequest }) {
     const employee = LeaveRequest?.employee || {};
@@ -49,8 +50,6 @@ function AppLeaveForm({ auth, LeaveRequest }) {
         }));
     };
 
-    // console.log('LeaveRequest:', LeaveRequest);
-
     const handleLeaveTypeChange = (leaveType, leaveDetails) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -77,16 +76,6 @@ function AppLeaveForm({ auth, LeaveRequest }) {
         });
     };
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     post(route('leave.updateStatus', LeaveRequest.id), {
-    //         preserveScroll: true,
-    //         onSuccess: () => {
-    //             // Optional success handling
-    //             console.log('Status updated to review');
-    //         },
-    //     });
-    // };
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('leave.updateStatus', LeaveRequest.id), {
@@ -108,341 +97,350 @@ function AppLeaveForm({ auth, LeaveRequest }) {
                     >
                         <ArrowLeftOutlined className="mr-1" />
                     </Link>
-                    Application for Leave{' '}
+                    Application for Leave
                 </header>
             </div>
-            <form onSubmit={handleSubmit} className="pt-10">
-                <div className="border border-black">
-                    <div className="flex justify-between border-black p-2">
-                        <span className="">
-                            <label className="mr-2 block"> 1. OFFICE/DEPARTMENT</label>
-                            <TextInput
-                                type="text"
-                                name="office_unit"
-                                className="ml-10"
-                                value={safeValue(formData.office_unit)}
-                                readOnly
-                            />
-                        </span>
-                        <span className="flex">
-                            <label className="mr-2">2. NAME:</label>
-                            <div className="flex">
-                                <div className="flex flex-col items-center">
-                                    <span className="mb-1">(last)</span>
-                                    <TextInput
-                                        type="text"
-                                        name="lastName"
-                                        value={safeValue(formData.lastName)}
-                                        readOnly
-                                    />
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="mb-1">(first)</span>
-                                    <TextInput
-                                        type="text"
-                                        name="lastName"
-                                        value={safeValue(formData.firstName)}
-                                        readOnly
-                                    />
-                                </div>
-
-                                <div className="flex flex-col items-center">
-                                    <span className="mb-1">(middle)</span>
-                                    <TextInput
-                                        type="text"
-                                        name="lastName"
-                                        value={safeValue(formData.middleName)}
-                                        readOnly
-                                    />
-                                </div>
-                            </div>
-                        </span>
-                    </div>
-                    <div className="flex justify-evenly border-t border-black p-2">
-                        <span>
-                            <label className="mr-2">3. DATE OF FILING</label>
-                            <TextInput
-                                type="text"
-                                name="dateOfFiling"
-                                value={formatDate(safeValue(formData.dateOfFiling))}
-                                readOnly
-                            />
-                        </span>
-                        <span>
-                            <label className="mr-2">4. POSITION</label>
-                            <TextInput
-                                type="text"
-                                name="position"
-                                value={safeValue(formData.position)}
-                                readOnly
-                                className="w-[400px]"
-                            />
-                        </span>
-                        <span className="">
-                            <label className="mr-2">5. SALARY</label>
-                            <TextInput
-                                type="text"
-                                name="salary"
-                                value={safeValue(formData.salary)}
-                                onChange={handleInputChange}
-                                placeholder="salary"
-                                autoComplete="off"
-                            />
-                        </span>
-                    </div>
-                    <div>
-                        <label className="flex justify-center border-b border-t border-black p-1 font-bold">
-                            6. DETAILS OF APPLICATION
-                        </label>
-                    </div>
-                    {/* Type of Leave */}
-
-                    <AvailLeave
-                        typeOfLeave={LeaveRequest?.leave_type || ''}
-                        leaveDetails={LeaveRequest?.leave_details || {}}
-                        onLeaveTypeChange={(type, details) => {
-                            // Handle the change without causing re-renders
-                            // You might want to debounce this if it's causing performance issues
-                            console.log('Leave type changed:', type, details);
-                        }}
-                    />
-                    <div className="grid grid-cols-2">
-                        <div className="border-t border-black p-1">
-                            <label>6.C NUMBER OF WORKING DAYS APPLIED FOR</label>
-                            <div className="flex flex-col p-4">
+            <div className="mx-auto max-w-6xl px-4">
+                <form onSubmit={handleSubmit} className="pt-10">
+                    <div className="border border-black">
+                        {/* Section 1-2 */}
+                        <div className="flex justify-between border-b border-black p-2">
+                            <div className="w-1/2">
+                                <label className="mr-2 block">1. OFFICE/DEPARTMENT</label>
                                 <TextInput
                                     type="text"
-                                    value={safeValue(LeaveRequest?.total_days)}
-                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                    readOnly
-                                />
-                                <span>INCLUSIVE DATES</span>
-                                <TextInput
-                                    type="text"
-                                    value={
-                                        LeaveRequest?.from_date && LeaveRequest?.to_date
-                                            ? `${formatDate(LeaveRequest.from_date)} - ${formatDate(LeaveRequest.to_date)}`
-                                            : ''
-                                    }
-                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                    name="office_unit"
+                                    className="ml-10 w-full max-w-xs"
+                                    value={safeValue(formData.office_unit)}
                                     readOnly
                                 />
                             </div>
-                        </div>
-                        <div className="border-l border-t border-black p-1">
-                            <label>6.D COMMUTATION</label>
-                            <div className="flex flex-col p-4">
-                                <label>
-                                    <TextInput
-                                        type="radio"
-                                        name="commutation"
-                                        // checked={!LeaveRequest?.commutation_requested}
-                                        className="form-radio"
-                                        autoComplete="off"
-                                        readOnly
-                                    />{' '}
-                                    <span className="mx-2">Not Requested</span>
-                                </label>
-                                <label>
-                                    <TextInput
-                                        type="radio"
-                                        name="commutation"
-                                        // checked={LeaveRequest?.commutation_requested}
-                                        className="form-radio"
-                                        autoComplete="off"
-                                        readOnly
-                                    />{' '}
-                                    <span className="mx-2">Requested</span>
-                                </label>
-                                <label className="mt-10 border-t border-black">
-                                    <span className="flex justify-center">
-                                        (Signature of Applicant)
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <label className="flex justify-center border-b border-t border-black font-bold">
-                            7. DETAILS OF ACTION ON APPLICATION
-                        </label>
-                    </div>
-                    <div className="grid grid-cols-2">
-                        <div className="p-1">
-                            <label className=""> 7.A CERTIFICATION OF LEAVE CREDITS</label>
-                            <div className="p-2">
-                                <div className="flex justify-center">
-                                    <label className="flex">
-                                        As of{' '}
+                            <div className="flex w-1/2 items-center">
+                                <label className="mr-2 whitespace-nowrap">2. NAME:</label>
+                                <div className="flex w-full space-x-2">
+                                    <div className="flex flex-col">
+                                        <span className="mb-1 text-center text-xs">(last)</span>
                                         <TextInput
                                             type="text"
-                                            value={new Date().toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                            })}
-                                            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none"
+                                            name="lastName"
+                                            value={safeValue(formData.lastName)}
                                             readOnly
+                                            className="w-full"
                                         />
-                                    </label>
-                                </div>
-                                <div className="overflow-x-auto px-10 pt-5">
-                                    <table className="min-w-full border border-gray-200 bg-white">
-                                        <thead>
-                                            <tr className="bg-gray-200 text-gray-700">
-                                                <th className="border border-black px-1"></th>
-                                                <th className="border border-black px-1">
-                                                    Vacation Leave
-                                                </th>
-                                                <th className="border border-black px-1">
-                                                    Sick Leave
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td className="border border-black px-1">
-                                                    Total Earned
-                                                </td>
-                                                <td className="border border-black px-1">
-                                                    {safeValue(credits.vacation_leave)}
-                                                </td>
-                                                <td className="border border-black px-1">
-                                                    {safeValue(credits.sick_leave)}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="border border-black px-1">
-                                                    Less this application
-                                                </td>
-                                                <td className="border border-black px-1">
-                                                    <TextInput
-                                                        type="number"
-                                                        name="vacation_leave_used"
-                                                        value={safeValue(
-                                                            credits.vacation_leave_used
-                                                        )}
-                                                        onChange={handleCreditChange}
-                                                        className="w-full"
-                                                        step="0.5"
-                                                        min="0"
-                                                    />
-                                                </td>
-                                                <td className="border border-black px-1">
-                                                    <TextInput
-                                                        type="number"
-                                                        name="sick_leave_used"
-                                                        value={safeValue(credits.sick_leave_used)}
-                                                        onChange={handleCreditChange}
-                                                        className="w-full"
-                                                        step="0.5"
-                                                        min="0"
-                                                    />
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="border border-black px-1">
-                                                    Balance
-                                                </td>
-                                                <td className="border border-black px-1">
-                                                    {safeValue(credits.vacation_leave_balance)}
-                                                </td>
-                                                <td className="border border-black px-1">
-                                                    {safeValue(credits.sick_leave_balance)}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div className="mt-10 flex justify-center">
-                                <span className="border-t border-black px-10">
-                                    {' '}
-                                    Name & Signature of Authorized Official
-                                </span>
-                            </div>
-                        </div>
-                        <div className="border-l border-black p-1">
-                            <label className=""> 7.B RECOMMENDATION</label>
-                            <div className="p-2">
-                                <div className="flex flex-col">
-                                    <label htmlFor=""> For approval</label>
+                                    </div>
                                     <div className="flex flex-col">
-                                        <label htmlFor=""> For disapproval due to</label>
-                                        <textarea
-                                            value={safeValue(LeaveRequest?.disapproval_reason)}
-                                            className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+                                        <span className="mb-1 text-center text-xs">(first)</span>
+                                        <TextInput
+                                            type="text"
+                                            name="firstName"
+                                            value={safeValue(formData.firstName)}
                                             readOnly
-                                        ></textarea>
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="mb-1 text-center text-xs">(middle)</span>
+                                        <TextInput
+                                            type="text"
+                                            name="middleName"
+                                            value={safeValue(formData.middleName)}
+                                            readOnly
+                                            className="w-full"
+                                        />
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-10 flex justify-center">
-                                <span className="border-t border-black px-10">
-                                    {' '}
-                                    Name & Signature of Authorized Official
-                                </span>
-                            </div>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-2 border-t border-black">
-                        <div className="p-1">
-                            <label> 7.C APPROVED FOR:</label>
-                            <div className="flex flex-col p-2">
-                                <label>
-                                    <TextInput
-                                        type="text"
-                                        value={safeValue(LeaveRequest?.approved_days_with_pay)}
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                        readOnly
-                                    />{' '}
-                                    days with pay
-                                </label>
-                                <label>
-                                    <TextInput
-                                        type="text"
-                                        value={safeValue(LeaveRequest?.approved_days_without_pay)}
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                        readOnly
-                                    />{' '}
-                                    days without pay
-                                </label>
-                                <label>
-                                    <TextInput
-                                        type="text"
-                                        value={safeValue(LeaveRequest?.approved_other)}
-                                        className={`focus:shadow-outline appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
-                                        readOnly
-                                    />{' '}
-                                    others (Specify)
-                                </label>
-                            </div>
-                        </div>
-                        <div className="p-1">
-                            <label>7.D DISAPPROVED DUE TO:</label>
-                            <div className="p-2">
-                                <textarea
-                                    value={safeValue(LeaveRequest?.disapproval_reason)}
-                                    className={`focus:shadow-outline w-full appearance-none rounded border px-3 py-2 font-bold leading-tight shadow focus:outline-none`}
+
+                        {/* Section 3-5 */}
+                        <div className="flex justify-between gap-5 border-b border-black p-2">
+                            <div className="w-1/3">
+                                <label className="mr-2">3. DATE OF FILING</label>
+                                <TextInput
+                                    type="text"
+                                    name="dateOfFiling"
+                                    value={formatDate(safeValue(formData.dateOfFiling))}
                                     readOnly
-                                ></textarea>
+                                    className="w-full"
+                                />
+                            </div>
+                            <div className="w-1/3">
+                                <label className="mr-2">4. POSITION</label>
+                                <TextInput
+                                    type="text"
+                                    name="position"
+                                    value={safeValue(formData.position)}
+                                    readOnly
+                                    className="w-full"
+                                />
+                            </div>
+                            <div className="w-1/3">
+                                <label className="mr-2">5. SALARY</label>
+                                <TextInput
+                                    type="text"
+                                    name="salary"
+                                    value={safeValue(formData.salary)}
+                                    onChange={handleInputChange}
+                                    className="w-full"
+                                />
                             </div>
                         </div>
+
+                        {/* Section 6 */}
+                        <div>
+                            <label className="flex justify-center border-b border-t border-black p-1 font-bold">
+                                6. DETAILS OF APPLICATION
+                            </label>
+                            <AvailLeave
+                                typeOfLeave={LeaveRequest?.leave_type || ''}
+                                leaveDetails={LeaveRequest?.leave_details || {}}
+                                onLeaveTypeChange={handleLeaveTypeChange}
+                            />
+                        </div>
+
+                        {/* Section 6.C and 6.D */}
+                        <div className="grid grid-cols-2 border-t border-black">
+                            <div className="border-r border-black p-2">
+                                <label>6.C NUMBER OF WORKING DAYS APPLIED FOR</label>
+                                <div className="p-2">
+                                    <TextInput
+                                        type="text"
+                                        value={safeValue(LeaveRequest?.total_days)}
+                                        className="w-full"
+                                        readOnly
+                                    />
+                                    <span className="block pt-2">INCLUSIVE DATES</span>
+                                    <TextInput
+                                        type="text"
+                                        value={
+                                            LeaveRequest?.from_date && LeaveRequest?.to_date
+                                                ? `${formatDate(LeaveRequest.from_date)} - ${formatDate(LeaveRequest.to_date)}`
+                                                : ''
+                                        }
+                                        className="w-full"
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                            <div className="p-2">
+                                <label>6.D COMMUTATION</label>
+                                <div className="p-2">
+                                    <div className="space-y-2">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="commutation"
+                                                className="mr-2"
+                                                readOnly
+                                            />
+                                            <span>Not Requested</span>
+                                        </label>
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="commutation"
+                                                className="mr-2"
+                                                readOnly
+                                            />
+                                            <span>Requested</span>
+                                        </label>
+                                    </div>
+                                    <div className="mt-8 border-t border-black pt-2 text-center">
+                                        (Signature of Applicant)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section 7 */}
+                        <div>
+                            <label className="flex justify-center border-b border-t border-black p-1 font-bold">
+                                7. DETAILS OF ACTION ON APPLICATION
+                            </label>
+                        </div>
+
+                        {/* Section 7.A and 7.B */}
+                        <div className="grid grid-cols-2 border-t border-black">
+                            <div className="border-r border-black p-2">
+                                <label>7.A CERTIFICATION OF LEAVE CREDITS</label>
+                                <div className="p-2">
+                                    <div className="flex justify-center">
+                                        <label className="flex items-center">
+                                            As of{' '}
+                                            <TextInput
+                                                type="text"
+                                                value={new Date().toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                })}
+                                                className="ml-2 w-48"
+                                                readOnly
+                                            />
+                                        </label>
+                                    </div>
+                                    <div className="overflow-x-auto px-4 pt-4">
+                                        <table className="w-full border border-gray-200 bg-white">
+                                            <thead>
+                                                <tr className="bg-gray-200 text-gray-700">
+                                                    <th className="border border-black px-2 py-1"></th>
+                                                    <th className="border border-black px-2 py-1">
+                                                        Vacation Leave
+                                                    </th>
+                                                    <th className="border border-black px-2 py-1">
+                                                        Sick Leave
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td className="border border-black px-2 py-1">
+                                                        Total Earned
+                                                    </td>
+                                                    <td className="border border-black px-2 py-1">
+                                                        {safeValue(credits.vacation_leave)}
+                                                    </td>
+                                                    <td className="border border-black px-2 py-1">
+                                                        {safeValue(credits.sick_leave)}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="border border-black px-2 py-1">
+                                                        Less this application
+                                                    </td>
+                                                    <td className="border border-black px-2 py-1">
+                                                        <TextInput
+                                                            type="number"
+                                                            name="vacation_leave_used"
+                                                            value={safeValue(
+                                                                credits.vacation_leave_used
+                                                            )}
+                                                            onChange={handleCreditChange}
+                                                            className="w-full"
+                                                            step="0.5"
+                                                            min="0"
+                                                        />
+                                                    </td>
+                                                    <td className="border border-black px-2 py-1">
+                                                        <TextInput
+                                                            type="number"
+                                                            name="sick_leave_used"
+                                                            value={safeValue(
+                                                                credits.sick_leave_used
+                                                            )}
+                                                            onChange={handleCreditChange}
+                                                            className="w-full"
+                                                            step="0.5"
+                                                            min="0"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="border border-black px-2 py-1">
+                                                        Balance
+                                                    </td>
+                                                    <td className="border border-black px-2 py-1">
+                                                        {safeValue(credits.vacation_leave_balance)}
+                                                    </td>
+                                                    <td className="border border-black px-2 py-1">
+                                                        {safeValue(credits.sick_leave_balance)}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="mt-8 border-t border-black pt-2 text-center">
+                                        Name & Signature of Authorized Official
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-2">
+                                <label>7.B RECOMMENDATION</label>
+                                <div className="p-2">
+                                    <div className="space-y-2">
+                                        <label className="block">For approval</label>
+                                        <label className="block">For disapproval due to</label>
+                                        <textarea
+                                            value={safeValue(LeaveRequest?.disapproval_reason)}
+                                            className="w-full border p-1"
+                                            readOnly
+                                            rows={3}
+                                        ></textarea>
+                                    </div>
+                                    <div className="mt-8 border-t border-black pt-2 text-center">
+                                        Name & Signature of Authorized Official
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section 7.C and 7.D */}
+                        <div className="grid grid-cols-2 border-t border-black">
+                            <div className="border-r border-black p-2">
+                                <label>7.C APPROVED FOR:</label>
+                                <div className="space-y-2 p-2">
+                                    <div className="flex items-center">
+                                        <TextInput
+                                            type="text"
+                                            value={safeValue(LeaveRequest?.approved_days_with_pay)}
+                                            className="w-16"
+                                            readOnly
+                                        />
+                                        <span className="ml-2">days with pay</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <TextInput
+                                            type="text"
+                                            value={safeValue(
+                                                LeaveRequest?.approved_days_without_pay
+                                            )}
+                                            className="w-16"
+                                            readOnly
+                                        />
+                                        <span className="ml-2">days without pay</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <TextInput
+                                            type="text"
+                                            value={safeValue(LeaveRequest?.approved_other)}
+                                            className="w-16"
+                                            readOnly
+                                        />
+                                        <span className="ml-2">others (Specify)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-2">
+                                <label>7.D DISAPPROVED DUE TO:</label>
+                                <div className="p-2">
+                                    <textarea
+                                        value={safeValue(LeaveRequest?.disapproval_reason)}
+                                        className="w-full border p-1"
+                                        readOnly
+                                        rows={3}
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* College President */}
+                        <div className="border-t border-black p-2 text-center font-bold">
+                            College President
+                        </div>
                     </div>
-                    <div className="mt-10 flex justify-center font-bold">
-                        <span className="border-t border-black px-10">College President</span>
+
+                    {/* Submit Button */}
+                    <div className="mt-6 flex justify-center">
+                        <PrimaryButton
+                            type="submit"
+                            className="rounded-md bg-blue-600 px-6 py-2 font-bold text-white hover:bg-blue-700"
+                            disabled={processing}
+                        >
+                            {processing ? 'Submitting...' : 'Submit Application'}
+                        </PrimaryButton>
                     </div>
-                </div>
-                <div className="mt-10 flex justify-center">
-                    <button
-                        type="submit"
-                        className="rounded-md bg-high px-4 py-2 font-bold"
-                        disabled={processing}
-                    >
-                        {processing ? 'Submitting...' : 'Submit Application'}
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </AuthenticatedLayout>
     );
 }
