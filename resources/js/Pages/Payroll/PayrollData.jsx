@@ -246,7 +246,7 @@ const PayrollData = ({
             )}
             <div className="flex justify-end gap-5 pb-5">
                 <PrimaryButton onClick={saveTransaction} className="rounded px-4 py-2">
-                    Save Payroll
+                    Generate
                 </PrimaryButton>
 
                 <PrimaryButton onClick={showDrawer} className="rounded px-4 py-2">
@@ -261,59 +261,26 @@ const PayrollData = ({
                 onRow={(record) => ({
                     onClick: () => showEmployeeModal(record),
                 })}
+                // Replace the current summary section in the Table component with this:
                 summary={() => (
                     <Table.Summary fixed>
                         <Table.Summary.Row className="bg-gray-100 font-bold">
-                            <Table.Summary.Cell index={0} colSpan={5}>
+                            <Table.Summary.Cell index={0} colSpan={4}>
                                 Grand Total
                             </Table.Summary.Cell>
-                            {/* <Table.Summary.Cell index={5}>
-                                {PhpFormat(grandTotals.basic_pay)}
-                            </Table.Summary.Cell> */}
-                            <Table.Summary.Cell index={6}>
-                                {PhpFormat(grandTotals.net_basic)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={7}>
-                                {PhpFormat(grandTotals.pera)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={8}>
-                                {PhpFormat(grandTotals.lwop_pera)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={9}>
-                                {PhpFormat(grandTotals.net_pera)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={10}>
-                                {PhpFormat(grandTotals.rata)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={11}>
-                                {PhpFormat(grandTotals.salary_differential)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={12}>
+                            <Table.Summary.Cell index={4}>
                                 {PhpFormat(grandTotals.total_salary)}
                             </Table.Summary.Cell>
-                            <Table.Summary.Cell index={13}>
-                                {PhpFormat(grandTotals.tax)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={14}>
-                                {PhpFormat(grandTotals.gsis_prem)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={15}>
-                                {PhpFormat(grandTotals.hdmf_prem1)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={16}>
-                                {PhpFormat(grandTotals.phic)}
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={17}>
+                            <Table.Summary.Cell index={5}>
                                 {PhpFormat(grandTotals.total_contributions)}
                             </Table.Summary.Cell>
-
-                            <Table.Summary.Cell>
+                            <Table.Summary.Cell index={6}>
                                 {PhpFormat(grandTotals.loans_total)}
                             </Table.Summary.Cell>
-                            <Table.Summary.Cell>
+                            <Table.Summary.Cell index={7}>
                                 {PhpFormat(grandTotals.total_deductions)}
                             </Table.Summary.Cell>
-                            <Table.Summary.Cell>
+                            <Table.Summary.Cell index={8}>
                                 {PhpFormat(grandTotals.net_amount)}
                             </Table.Summary.Cell>
                         </Table.Summary.Row>
