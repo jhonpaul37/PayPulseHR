@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { Upload, message, Form, Input, DatePicker, Select, Button, Radio } from 'antd';
+import { Upload, message, Form, InputNumber, Input, DatePicker, Select, Button, Radio } from 'antd';
 
 //Components
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
+import { Link } from '@inertiajs/react';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -102,15 +104,26 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="">
-                <h1 className="pb-10 text-center text-xl font-bold">Add New Employee</h1>
+                {/* <h1 className="pb-10 text-center text-xl font-bold">Add New Employee</h1> */}
+                <div className="border-b pb-6">
+                    <header className="flex items-center text-xl font-bold">
+                        <Link
+                            href={route('leaveManagement')}
+                            className="mr-4 flex items-center text-gray-600 hover:text-gray-800"
+                        >
+                            <ArrowLeftOutlined className="mr-1" />
+                        </Link>
+                        Add New Employee
+                    </header>
+                </div>
                 <Form
                     onFinish={handleSubmit}
                     layout="vertical"
-                    className="flex justify-center gap-20"
+                    className="pt-10"
                     encType="multipart/form-data"
                 >
                     {/* Profile Picture */}
-                    <div className="flex flex-col items-center justify-center">
+                    {/* <div className="flex flex-col items-center justify-center">
                         <Upload
                             name="photo"
                             listType="picture-card"
@@ -139,7 +152,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                             <div className="mt-2 text-sm text-red-500">{errors.photo}</div>
                         )}
                         <label className="mt-2 text-gray-600">Profile Picture</label>
-                    </div>
+                    </div> */}
 
                     <div>
                         <div>
@@ -160,6 +173,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                         autoComplete="off"
                                         value={data.first_name}
                                         onChange={(e) => setData('first_name', e.target.value)}
+                                        className="w-80"
                                     />
                                 </Form.Item>
 
@@ -175,6 +189,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                         autoComplete="off"
                                         value={data.last_name}
                                         onChange={(e) => setData('last_name', e.target.value)}
+                                        className="w-80"
                                     />
                                 </Form.Item>
 
@@ -189,6 +204,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                         autoComplete="off"
                                         value={data.middle_name}
                                         onChange={(e) => setData('middle_name', e.target.value)}
+                                        className="w-80"
                                     />
                                 </Form.Item>
                             </div>
@@ -300,8 +316,8 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
 
                                 <div className="grid grid-cols-2 gap-8">
                                     {/* Phone */}
-                                    <Form.Item
-                                        label="Phone"
+                                    {/* <Form.Item
+                                        label="Mobile Number"
                                         name="phone"
                                         validateStatus={errors.phone ? 'error' : ''}
                                         help={errors.phone}
@@ -315,7 +331,29 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                             className="w-full"
                                             autoComplete="off"
                                         />
+                                    </Form.Item> */}
+                                    <Form.Item
+                                        label="Mobile Number"
+                                        name="phone"
+                                        validateStatus={errors.phone ? 'error' : ''}
+                                        help={errors.phone}
+                                        rules={[
+                                            { required: true, message: 'Phone Number is required' },
+                                            {
+                                                pattern: /^09\d{9}$/,
+                                                message:
+                                                    'Phone number must start with 09 and be exactly 11 digits',
+                                            },
+                                        ]}
+                                    >
+                                        <TextInput
+                                            value={data.phone}
+                                            onChange={(e) => setData('phone', e.target.value)}
+                                            className="w-full"
+                                            autoComplete="off"
+                                        />
                                     </Form.Item>
+
                                     {/* Email */}
                                     <Form.Item
                                         label="Email"
@@ -336,7 +374,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                             </div>
                         </div>
                         <div>
-                            <div className="flex gap-5">
+                            <div className="flex justify-evenly gap-5">
                                 {/* GSIS No */}
                                 <Form.Item
                                     label="GSIS No"
@@ -347,6 +385,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                     <TextInput
                                         type="number"
                                         value={data.gsis_no}
+                                        className="w-80"
                                         onChange={(e) => setData('gsis_no', e.target.value)}
                                     />
                                 </Form.Item>
@@ -361,12 +400,10 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                     <TextInput
                                         type="number"
                                         value={data.hdmf_no}
+                                        className="w-80"
                                         onChange={(e) => setData('hdmf_no', e.target.value)}
                                     />
                                 </Form.Item>
-                            </div>
-
-                            <div className="flex gap-5">
                                 {/* PHIC No */}
                                 <Form.Item
                                     label="PHIC No"
@@ -377,6 +414,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                     <TextInput
                                         type="number"
                                         value={data.phic_no}
+                                        className="w-80"
                                         onChange={(e) => setData('phic_no', e.target.value)}
                                     />
                                 </Form.Item>
@@ -391,6 +429,7 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                     <TextInput
                                         type="number"
                                         value={data.bir_tin_no}
+                                        className="w-80"
                                         onChange={(e) => setData('bir_tin_no', e.target.value)}
                                     />
                                 </Form.Item>
@@ -479,7 +518,8 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                             </div>
 
                             {/* Salary Grade */}
-                            <div className="flex gap-5">
+
+                            {/* <div className="flex gap-5">
                                 <Form.Item
                                     label="Salary Grade"
                                     name="salary_grade_id"
@@ -504,8 +544,94 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                                         ))}
                                     </Select>
                                 </Form.Item>
-                            </div>
+                            </div> */}
                         </div>
+
+                        <div className="flex gap-5">
+                            {/* Grade */}
+                            <Form.Item
+                                label="Salary Grade"
+                                required
+                                validateStatus={!data.grade ? 'error' : ''}
+                                help={!data.grade ? 'Salary Grade is required' : ''}
+                            >
+                                <InputNumber
+                                    min={1}
+                                    max={33}
+                                    placeholder="Enter Grade"
+                                    value={data.grade}
+                                    onChange={(value) => {
+                                        const updated = { ...data, grade: value };
+                                        const matched = salaryGrades.find(
+                                            (g) => g.grade === value && g.step === data.step
+                                        );
+                                        updated.salary_grade_id = matched ? matched.id : null;
+                                        updated.monthly_salary = matched
+                                            ? matched.monthly_salary
+                                            : '';
+                                        setData(updated);
+                                    }}
+                                />
+                            </Form.Item>
+
+                            {/* Step */}
+                            <Form.Item
+                                label="Step"
+                                required
+                                validateStatus={!data.step ? 'error' : ''}
+                                help={!data.step ? 'Step is required' : ''}
+                            >
+                                <InputNumber
+                                    min={1}
+                                    max={8}
+                                    placeholder="Enter Step"
+                                    value={data.step}
+                                    onChange={(value) => {
+                                        const updated = { ...data, step: value };
+                                        const matched = salaryGrades.find(
+                                            (g) => g.grade === data.grade && g.step === value
+                                        );
+                                        updated.salary_grade_id = matched ? matched.id : null;
+                                        updated.monthly_salary = matched
+                                            ? matched.monthly_salary
+                                            : '';
+                                        setData(updated);
+                                    }}
+                                />
+                            </Form.Item>
+
+                            {/* Monthly Salary (readonly) */}
+                            <Form.Item
+                                label="Monthly Salary"
+                                validateStatus={
+                                    data.grade && data.step && !data.salary_grade_id ? 'error' : ''
+                                }
+                                help={
+                                    data.grade && data.step && !data.salary_grade_id
+                                        ? 'No matching salary grade and step found'
+                                        : ''
+                                }
+                            >
+                                {/* <Input
+                                    value={
+                                        data.monthly_salary
+                                            ? `₱${data.monthly_salary.toLocaleString()}`
+                                            : ''
+                                    }
+                                    disabled
+                                /> */}
+                                <TextInput
+                                    className="bg-gray-100 text-gray-600"
+                                    value={
+                                        data.monthly_salary
+                                            ? `₱${data.monthly_salary.toLocaleString()}`
+                                            : ''
+                                    }
+                                    disabled
+                                />
+                            </Form.Item>
+                        </div>
+
                         <div className="flex gap-5 p-2">
                             <Form.Item
                                 label="Position"
@@ -561,10 +687,10 @@ export default function NewEmployee({ auth, salaryGrades, positions, department 
                             password would be: Doe1995
                         </div>
 
-                        <div className="flex justify-end p-2">
+                        <div className="flex w-48 p-2">
                             <PrimaryButton
                                 type="submit"
-                                className="w-full rounded-md bg-high p-2 font-bold"
+                                className="w-full items-center justify-center rounded-md bg-high p-2 font-bold"
                             >
                                 {loading ? 'Submitting...' : 'Submit'}
                             </PrimaryButton>

@@ -4,9 +4,9 @@ import { Modal, Table, Drawer, Button, Form, Badge, Popover, List, Select } from
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import styled from 'styled-components';
-import LoanPrograms from './LoanPrograms';
-import LoanTypes from './LoanTypes';
-import EmployeeLoanForm from './EmployeeLoanForm';
+import LoanPrograms from '../LoanPrograms';
+import LoanTypes from '../LoanTypes';
+import EmployeeLoanForm from '../EmployeeLoanForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 

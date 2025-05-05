@@ -52,29 +52,29 @@ const PayrollData = ({
         };
 
         dataSource.forEach((record) => {
-            totals.basic_pay += record.salary_grade?.monthly_salary || 0;
-            totals.net_basic += record.salary_grade?.monthly_salary || 0;
-            totals.pera += record.benefits?.find((b) => b.name === 'PERA')?.pivot?.amount || 0;
-            totals.net_pera += record.net_pera || 0;
-            totals.rata += record.benefits?.find((b) => b.name === 'RATA')?.pivot?.amount || 0;
-            totals.salary_differential +=
-                record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL')?.pivot?.amount || 0;
-            totals.total_salary += record.total_salary || 0;
-            totals.tax += record.contributions?.find((c) => c.name === 'TAX')?.pivot?.amount || 0;
-            totals.gsis_prem +=
-                record.contributions?.find((c) => c.name === 'GSIS PREM')?.pivot?.amount || 0;
-            totals.hdmf_prem1 +=
-                record.contributions?.find((c) => c.name === 'HDMF PREM1')?.pivot?.amount || 0;
-            totals.phic += record.contributions?.find((c) => c.name === 'PHIC')?.pivot?.amount || 0;
-            totals.total_contributions += record.total_contributions || 0;
-            totals.patve_cont +=
-                record.contributions?.find((c) => c.name === 'PATVE CONT.')?.pivot?.amount || 0;
-            totals.loans_total += record.loans?.reduce(
-                (sum, loan) => sum + (loan.remainingAmortization || 0),
-                0
-            );
-            totals.total_deductions += record.total_deductions || 0;
-            totals.net_amount += record.net_amount || 0;
+            // totals.basic_pay += record.salary_grade?.monthly_salary || 0;
+            // totals.net_basic += record.salary_grade?.monthly_salary || 0;
+            // // totals.pera += record.benefits?.find((b) => b.name === 'PERA')?.pivot?.amount || 0;
+            // // totals.net_pera += record.net_pera || 0;
+            // // totals.rata += record.benefits?.find((b) => b.name === 'RATA')?.pivot?.amount || 0;
+            // // totals.salary_differential +=
+            // //     record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL')?.pivot?.amount || 0;
+            // // totals.total_salary += record.total_salary || 0;
+            // // totals.tax += record.contributions?.find((c) => c.name === 'TAX')?.pivot?.amount || 0;
+            // // totals.gsis_prem +=
+            // //     record.contributions?.find((c) => c.name === 'GSIS PREM')?.pivot?.amount || 0;
+            // // totals.hdmf_prem1 +=
+            // //     record.contributions?.find((c) => c.name === 'HDMF PREM1')?.pivot?.amount || 0;
+            // // totals.phic += record.contributions?.find((c) => c.name === 'PHIC')?.pivot?.amount || 0;
+            // // totals.total_contributions += record.total_contributions || 0;
+            // // totals.patve_cont +=
+            // //     record.contributions?.find((c) => c.name === 'PATVE CONT.')?.pivot?.amount || 0;
+            // // totals.loans_total += record.loans?.reduce(
+            // //     (sum, loan) => sum + (loan.remainingAmortization || 0),
+            // //     0
+            // // );
+            // totals.total_deductions += record.total_deductions || 0;
+            // totals.net_amount += record.net_amount || 0;
         });
 
         setGrandTotals(totals);
@@ -94,6 +94,21 @@ const PayrollData = ({
     };
 
     useEffect(() => {
+        // loan columns for all loan types
+        // const loanColumns = loanTypes.map((loanType) => ({
+        //     title: loanType.type.toUpperCase(),
+        //     render: (_, record) => {
+        //         const loan = record.loans?.find((loan) => loan.loan_type_id === loanType.id);
+        //         if (loan) {
+        //             return loan.remainingAmortization && loan.remainingAmortization > 0
+        //                 ? PhpFormat(loan.remainingAmortization)
+        //                 : ''; // empty if no remaining amortization
+        //         }
+        //         return ''; // no loan, return empty
+        //     },
+        //     width: 150,
+        // }));
+        // "Loans Total"
         const loansTotalColumn = {
             title: 'LOANS TOTAL',
             render: (_, record) => {
@@ -105,6 +120,15 @@ const PayrollData = ({
             },
             width: 150,
         };
+        // const PATVEColumn = {
+        //     title: 'PATVE CONT.',
+        //     render: (_, record) => {
+        //         const contribution = record.contributions?.find((c) => c.name === 'PATVE CONT.');
+        //         return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+        //     },
+        //     width: 150,
+        // };
+        // Static columns
         const staticColumns = [
             {
                 title: 'EMPLOYEE NO',
@@ -126,6 +150,14 @@ const PayrollData = ({
                 render: (_, employee) => (employee.department ? employee.department.name : 'N/A'),
                 width: 150,
             },
+            // {
+            //     title: 'SG-STEP',
+            //     render: (_, record) => {
+            //         const { salary_grade } = record;
+            //         return salary_grade ? `${salary_grade.grade}-${salary_grade.step}` : '';
+            //     },
+            //     width: 100,
+            // },
             {
                 title: 'POSITION',
                 dataIndex: 'position',
@@ -133,9 +165,61 @@ const PayrollData = ({
                 render: (_, employee) => (employee.position ? employee.position.name : 'N/A'),
                 width: 150,
             },
+            // {
+            //     title: 'BASIC PAY',
+            //     dataIndex: ['salary_grade', 'monthly_salary'],
+            //     render: PhpFormat,
+            //     width: 150,
+            // },
+            // {
+            //     title: 'NET BASIC',
+            //     render: (_, record) => {
+            //         const monthlySalary = record.salary_grade?.monthly_salary || 0;
+            //         return <span className="font-semibold">{PhpFormat(monthlySalary)}</span>;
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'PERA',
+            //     render: (_, record) => {
+            //         const benefit = record.benefits?.find((b) => b.name === 'PERA');
+            //         return benefit ? PhpFormat(benefit.pivot.amount || 0) : '';
+            //     },
+            // },
         ];
         // Gross income
         const BenefitColumns = [
+            // {
+            //     title: 'LWOP-PERA',
+            //     render: (_, record) => {
+            //         const benefit = record.benefits?.find((b) => b.name === 'LWOP-PERA');
+            //         return benefit ? PhpFormat(benefit.pivot.amount || 0) : '';
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'NET PERA',
+            //     render: (_, record) => {
+            //         return <span className="font-semibold">{PhpFormat(record.net_pera)}</span>;
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'RATA',
+            //     render: (_, record) => {
+            //         const benefit = record.benefits?.find((b) => b.name === 'RATA');
+            //         return benefit ? PhpFormat(benefit.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'SALARY DIFFERENTIAL',
+            //     render: (_, record) => {
+            //         const benefit = record.benefits?.find((b) => b.name === 'SALARY DIFFERENTIAL');
+            //         return benefit ? PhpFormat(benefit.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
             {
                 title: 'TOTAL',
                 render: (_, record) => (
@@ -147,6 +231,38 @@ const PayrollData = ({
 
         // Deductions
         const ContributionColumns = [
+            // {
+            //     title: 'TAX',
+            //     render: (_, record) => {
+            //         const contribution = record.contributions?.find((c) => c.name === 'TAX');
+            //         return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'GSIS PREM',
+            //     render: (_, record) => {
+            //         const contribution = record.contributions?.find((c) => c.name === 'GSIS PREM');
+            //         return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'HDMF PREM1',
+            //     render: (_, record) => {
+            //         const contribution = record.contributions?.find((c) => c.name === 'HDMF PREM1');
+            //         return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
+            // {
+            //     title: 'PHIC',
+            //     render: (_, record) => {
+            //         const contribution = record.contributions?.find((c) => c.name === 'PHIC');
+            //         return contribution ? PhpFormat(contribution.pivot.amount || 0) : ' ';
+            //     },
+            //     width: 150,
+            // },
             {
                 title: 'BIR GSIS PHIC HDMF TOTAL',
                 dataIndex: 'total_contributions',
@@ -177,6 +293,8 @@ const PayrollData = ({
             ...staticColumns,
             ...BenefitColumns,
             ...ContributionColumns,
+            // ...loanColumns,
+            // PATVEColumn,
             loansTotalColumn,
             totalDeductionColumn,
             NetAmountColumn,
@@ -267,9 +385,9 @@ const PayrollData = ({
                             <Table.Summary.Cell index={0} colSpan={5}>
                                 Grand Total
                             </Table.Summary.Cell>
-                            {/* <Table.Summary.Cell index={5}>
+                            <Table.Summary.Cell index={5}>
                                 {PhpFormat(grandTotals.basic_pay)}
-                            </Table.Summary.Cell> */}
+                            </Table.Summary.Cell>
                             <Table.Summary.Cell index={6}>
                                 {PhpFormat(grandTotals.net_basic)}
                             </Table.Summary.Cell>
@@ -306,7 +424,13 @@ const PayrollData = ({
                             <Table.Summary.Cell index={17}>
                                 {PhpFormat(grandTotals.total_contributions)}
                             </Table.Summary.Cell>
-
+                            {/* Add cells for loan columns dynamically */}
+                            {loanTypes.map((_, index) => (
+                                <Table.Summary.Cell key={index}></Table.Summary.Cell>
+                            ))}
+                            <Table.Summary.Cell>
+                                {PhpFormat(grandTotals.patve_cont)}
+                            </Table.Summary.Cell>
                             <Table.Summary.Cell>
                                 {PhpFormat(grandTotals.loans_total)}
                             </Table.Summary.Cell>

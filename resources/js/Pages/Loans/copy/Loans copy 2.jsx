@@ -4,11 +4,11 @@ import { FloatButton as Btn, Divider, Modal, Table, Drawer, Button, Form } from 
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import styled from 'styled-components';
-import LoanPrograms from './LoanPrograms';
-import LoanTypes from './LoanTypes';
+import LoanPrograms from '../LoanPrograms';
+import LoanTypes from '../LoanTypes';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
-import EmployeeLoanForm from './EmployeeLoanForm';
+import EmployeeLoanForm from '../EmployeeLoanForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { Badge, Popover, List, Input, DatePicker, Select } from 'antd';

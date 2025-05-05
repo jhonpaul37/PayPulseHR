@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -88,6 +88,25 @@ export default function ContributionsIndex({
             });
     };
 
+    const calculateLeaveDeduction = () => {
+        const values = lwopForm.getFieldsValue();
+        if (!selectedEmployee) return;
+
+        const totalMinutes =
+            (values.days || 0) * 8 * 60 + // Convert days to minutes (8-hour workday)
+            (values.hours || 0) * 60 + // Convert hours to minutes
+            (values.minutes || 0); // Add raw minutes
+
+        const leaveCreditDeduction = totalMinutes / (8 * 60); // Convert to days
+        const dailyRate = selectedEmployee?.salary_grade?.monthly_salary / 22; // 22 working days/month
+        const amount = (dailyRate * leaveCreditDeduction).toFixed(2);
+
+        lwopForm.setFieldsValue({
+            credit: `${leaveCreditDeduction.toFixed(4)} days`,
+            amount: amount,
+        });
+    };
+
     const handleLwopPeraSubmit = () => {
         lwopForm
             .validateFields()
@@ -97,6 +116,13 @@ export default function ContributionsIndex({
                     return;
                 }
 
+                const totalMinutes =
+                    (values.days || 0) * 8 * 60 + (values.hours || 0) * 60 + (values.minutes || 0);
+
+                const leaveCreditDeduction = totalMinutes / (8 * 60);
+                const dailyRate = selectedEmployee?.salary_grade?.monthly_salary / 22;
+                const amount = (dailyRate * leaveCreditDeduction).toFixed(2);
+
                 Inertia.post(
                     route('storeLwopRecord'),
                     {
@@ -104,7 +130,8 @@ export default function ContributionsIndex({
                         minutes: values.minutes || 0,
                         hours: values.hours || 0,
                         days: values.days || 0,
-                        amount: values.amount,
+                        amount: amount,
+                        leave_credit_deduction: leaveCreditDeduction.toFixed(4),
                     },
                     {
                         onSuccess: () => {
@@ -162,6 +189,7 @@ export default function ContributionsIndex({
     const handleEmployeeSelect = (value, option) => {
         const employee = employees.find((e) => e.id === value);
         setSelectedEmployee(employee);
+        calculateLeaveDeduction();
     };
 
     const handleSearch = (value) => {
@@ -241,9 +269,8 @@ export default function ContributionsIndex({
                         href={route('leaveManagement')}
                         className="mr-4 flex items-center text-gray-600 hover:text-gray-800"
                     >
-                        {/* <ArrowLeftOutlined className="mr-1" /> */}
+                        Deduction
                     </Link>
-                    Deduction
                 </header>
             </div>
             <div className="pt-10">
@@ -251,18 +278,14 @@ export default function ContributionsIndex({
                     {/* Left Content */}
                     <div className="flex-1">
                         <div className="mb-4 flex gap-4">
-                            {/* Add Deduction */}
                             <PrimaryButton type="primary" onClick={showModal}>
                                 Add
                             </PrimaryButton>
-
-                            {/* Edit LWOP (Single) */}
                             <PrimaryButton type="primary" onClick={showLwopPeraModal}>
                                 LWOP
                             </PrimaryButton>
                         </div>
 
-                        {/* Table */}
                         {employeeBenefits.length > 0 || employeeContribution.length > 0 ? (
                             <Table
                                 dataSource={employees.map((employee) => {
@@ -459,7 +482,7 @@ export default function ContributionsIndex({
 
                 {/* Edit LWOP Modal (Single) */}
                 <Modal
-                    title="LWOP"
+                    title="LWOP / Late Deduction"
                     open={isLwopPeraModalVisible}
                     onCancel={handleLwopPeraCancel}
                     footer={[
@@ -498,7 +521,6 @@ export default function ContributionsIndex({
                                 ))}
                             </Select>
                         </Form.Item>
-                        {console.log(employees)}
 
                         {selectedEmployee && (
                             <>
@@ -528,7 +550,8 @@ export default function ContributionsIndex({
                                         />
                                     </div>
                                 </div>
-                                <label className="font-bold">Period</label>
+
+                                <label className="font-bold">Late Duration</label>
                                 <Row gutter={16}>
                                     <Col span={8}>
                                         <Form.Item name="days" label="Day(s)">
@@ -536,6 +559,7 @@ export default function ContributionsIndex({
                                                 type="number"
                                                 placeholder="Days"
                                                 min={0}
+                                                onChange={calculateLeaveDeduction}
                                                 style={{ width: '100%' }}
                                             />
                                         </Form.Item>
@@ -548,6 +572,7 @@ export default function ContributionsIndex({
                                                 placeholder="Hours"
                                                 min={0}
                                                 max={23}
+                                                onChange={calculateLeaveDeduction}
                                                 style={{ width: '100%' }}
                                             />
                                         </Form.Item>
@@ -566,32 +591,51 @@ export default function ContributionsIndex({
                                                 placeholder="Minutes"
                                                 min={0}
                                                 max={59}
+                                                onChange={calculateLeaveDeduction}
                                                 style={{ width: '100%' }}
                                             />
                                         </Form.Item>
                                     </Col>
                                 </Row>
 
-                                <label className="font-bold">Equivalent</label>
+                                <label className="font-bold">Deduction Calculation</label>
                                 <div className="flex gap-5">
-                                    <Form.Item name="credit" label="Credit">
-                                        <Input type="credit" placeholder="Credit" />
+                                    <Form.Item name="credit" label="Leave Credit Deduction">
+                                        <Input
+                                            type="text"
+                                            placeholder="Will calculate automatically"
+                                            disabled
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="amount"
-                                        label="Amount *"
+                                        label="Monetary Deduction *"
                                         rules={[
-                                            { required: true, message: 'Please enter the amount' },
+                                            {
+                                                required: true,
+                                                message: 'Amount will be calculated automatically',
+                                            },
                                         ]}
                                     >
                                         <Input
-                                            type="number"
-                                            placeholder="Amount"
+                                            type="text"
+                                            placeholder="Will calculate automatically"
                                             prefix="₱"
-                                            autoComplete="off"
+                                            disabled
                                         />
                                     </Form.Item>
+                                </div>
+
+                                <div className="mt-2 text-sm text-gray-500">
+                                    <p>
+                                        Calculation: 1 minute late = 1 minute leave credit deduction
+                                    </p>
+                                    <p>8 hours = 1 day leave credit</p>
+                                    <p>
+                                        Monetary value based on daily rate (Monthly Salary / 22
+                                        working days)
+                                    </p>
                                 </div>
                             </>
                         )}

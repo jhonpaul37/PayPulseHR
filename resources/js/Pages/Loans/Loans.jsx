@@ -179,16 +179,6 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                     className="mr-3 cursor-pointer"
                     onClick={showFolderModal}
                 />
-                <Popover
-                    placement="bottomRight"
-                    content={content}
-                    title="Notifications"
-                    trigger="click"
-                >
-                    <Badge count={notifications.length} size="small">
-                        <FontAwesomeIcon icon={faBell} className="cursor-pointer text-xl" />
-                    </Badge>
-                </Popover>
             </div>
 
             <Modal
@@ -336,11 +326,94 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         <span className="text-xl font-bold">Loan Programs</span>
                     </div>
                     <LoanPrograms programs={loanPrograms} />
-
                     <div className="my-4 border-b-2 border-yellow-400">
                         <span className="text-xl font-bold">Loan Types</span>
                     </div>
                     <LoanTypes loanPrograms={loanPrograms} loanTypes={loanTypes} />
+                    // Add this section below the Loan Types section in your return statement
+                    <div className="my-4 border-b-2 border-yellow-400">
+                        <span className="text-xl font-bold">Employee Loans</span>
+                    </div>
+                    <div className="mb-6 rounded-lg bg-white p-4 shadow">
+                        <Table
+                            dataSource={employeeLoan}
+                            rowKey="id"
+                            pagination={{ pageSize: 10 }}
+                            scroll={{ x: true }}
+                        >
+                            <Table.Column
+                                title="Employee"
+                                dataIndex={['employee', 'first_name']}
+                                key="employee"
+                                render={(text, record) => (
+                                    <span>
+                                        {record.employee?.first_name} {record.employee?.last_name}
+                                    </span>
+                                )}
+                            />
+                            <Table.Column
+                                title="Loan Type"
+                                dataIndex={['loan_type', 'type']}
+                                key="loan_type"
+                            />
+                            <Table.Column
+                                title="Loan Program"
+                                dataIndex={['loan_program', 'name']}
+                                key="loan_program"
+                            />
+                            <Table.Column
+                                title="Amount"
+                                dataIndex="amount"
+                                key="amount"
+                                render={(amount) => `₱${parseFloat(amount).toFixed(2)}`}
+                            />
+                            <Table.Column
+                                title="Interest Rate"
+                                dataIndex="interest_rate"
+                                key="interest_rate"
+                                render={(rate) => `${parseFloat(rate).toFixed(2)}%`}
+                            />
+                            <Table.Column
+                                title="Date Granted"
+                                dataIndex="date_granted"
+                                key="date_granted"
+                                render={(date) => new Date(date).toLocaleDateString()}
+                            />
+                            <Table.Column
+                                title="Status"
+                                key="status"
+                                render={(_, record) => {
+                                    const totalPaid =
+                                        record.payments?.reduce(
+                                            (sum, payment) => sum + parseFloat(payment.amount),
+                                            0
+                                        ) || 0;
+                                    const remaining = parseFloat(record.amount) - totalPaid;
+
+                                    if (remaining <= 0) {
+                                        return <Badge status="success" text="Fully Paid" />;
+                                    } else if (totalPaid > 0) {
+                                        return <Badge status="processing" text="Partially Paid" />;
+                                    } else {
+                                        return <Badge status="default" text="Unpaid" />;
+                                    }
+                                }}
+                            />
+                            <Table.Column
+                                title="Remaining Balance"
+                                key="remaining"
+                                render={(_, record) => {
+                                    const totalPaid =
+                                        record.payments?.reduce(
+                                            (sum, payment) => sum + parseFloat(payment.amount),
+                                            0
+                                        ) || 0;
+                                    const remaining = parseFloat(record.amount) - totalPaid;
+                                    return `₱${remaining.toFixed(2)}`;
+                                }}
+                            />
+                        </Table>
+                    </div>
                 </div>
 
                 <FloatButton onClick={showModal} title="Add Employee Loan">

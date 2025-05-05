@@ -70,7 +70,7 @@ const ScrollableContent = styled(Content)`
 `;
 
 const AuthenticatedLayout = ({ user, children }) => {
-    const [collapsed, setCollapsed] = useState(false); //true is  close by default sidebar
+    const [collapsed, setCollapsed] = useState(true); //true is  close by default sidebar
     const { url, props } = usePage();
     const { auth } = props;
 
@@ -92,6 +92,9 @@ const AuthenticatedLayout = ({ user, children }) => {
         if (url.startsWith('/hr/appLeaveForm/')) return '5';
 
         if (url === '/hr/employees') return '6';
+        if (url === '/hr/employees/create') return '6';
+        if (url === '/hr/admin/unassigned-users') return '6';
+
         if (url === '/payroll/data') return '7';
         if (url === '/loans') return '8';
         if (url === '/employee_benefits') return '9';
