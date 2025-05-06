@@ -31,8 +31,6 @@ class Employee extends Model
         'termination_reason',
         'photo_url',
         'user_id',
-
-
         'classification',
         'gsis_no',
         'hdmf_no',
