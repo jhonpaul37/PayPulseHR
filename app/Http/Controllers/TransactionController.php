@@ -72,7 +72,6 @@ public function store(Request $request)
                 'total_salary' => $employeeData['total_salary'],
                 'total_deductions' => $employeeData['total_deductions'],
                 // 'net_amount' => $employeeData['net_amount'],
-                'net_pay' => $employeeData['net_pay'],
             ]);
 
             // Add employee data to the processed array
@@ -81,7 +80,6 @@ public function store(Request $request)
                 'name' => $employee->first_name . ' ' . $employee->last_name,
                 'monthly_salary' => $employeeData['monthly_salary'],
                 'total_salary' => $employeeData['total_salary'],
-                'net_pay' => $employeeData['net_pay'],
                 'net_pera' => $employeeData['net_pera'],
                 'contributions' => $employeeData['contributions'],
                 'benefits' => $employeeData['benefits'],
@@ -90,7 +88,6 @@ public function store(Request $request)
                 'total_contributions' => $employeeData['total_contributions'],
                 'total_loans' => $employeeData['total_loans'],
                 'total_deductions' => $employeeData['total_deductions'],
-                'net_amount' => $employeeData['net_amount'],
             ];
         }
     }

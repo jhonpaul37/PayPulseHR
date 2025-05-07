@@ -129,7 +129,7 @@ class EmployeeLoanController extends Controller
     public function edit(EmployeeLoan $employeeLoan)
     {
         $employeeLoan->load(['employee', 'loanType']);
-        $loanTypes = LoanType::all(); // Assuming you want to allow changing the loan type
+        $loanTypes = LoanType::all();
 
         return inertia('Loans/EditEmployeeLoan', [
             'employeeLoan' => $employeeLoan,

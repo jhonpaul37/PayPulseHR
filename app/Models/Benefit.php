@@ -12,7 +12,6 @@ class Benefit extends Model
     protected $fillable = [
         'name',
         'description',
-        // 'amount',
     ];
 
     public function employeeBenefits()

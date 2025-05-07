@@ -1,10 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import React, { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/react';
-import { useRoute } from '@ziggy';
 import { Empty, Drawer } from 'antd';
-import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 

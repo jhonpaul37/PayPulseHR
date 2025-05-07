@@ -41,10 +41,8 @@ public function payrollData()
         foreach ($employee->loans as $loan) {
             // Use the pre-calculated total paid from the loan payments
             $totalPaid = $loan->payments->sum('amount');
-
             // Use total_paid directly as the remaining amount, no need for recalculation
             $remainingAmount = $loan->total_paid - $totalPaid;
-
             // Set the remaining amortization
             $loan->remainingAmortization = $remainingAmount > 0 ? min($remainingAmount, $loan->monthly_amortization) : null;
         }
@@ -70,10 +68,8 @@ public function payrollData()
 
         // Calculate NET PERA
         $netPera = $peraAmount - $lwopPeraAmount;
-
         // Calculate TOTAL SALARY (Basic + Benefits)
         $totalSalary = $employee->salaryGrade->monthly_salary + $netPera + $rataAmount + $salaryDifferentialAmount;
-
         // Calculate total loan amortization (remaining)
         $loanTotal = $employee->loans->reduce(function ($sum, $loan) {
             return $sum + ($loan->remainingAmortization ?? 0);
@@ -95,26 +91,20 @@ public function payrollData()
 
         // Total Contributions (except PATEV)
         $totalContributions = $otherContributionsTotal;
-
         // Include PATEV to total deductions
         $totalDeductions = $loanTotal + $totalContributions + $patevContribution;
-
         // Calculate Net Amount (Total Salary - Total Deductions)
         $netAmount = $totalSalary - $totalDeductions;
-
-        // Calculate NET PAY 1-15
-        $netPay1To15 = $netAmount / 2;
 
         // Computed properties
         $employee->net_pera = $netPera;
         $employee->total_salary = $totalSalary;
-        $employee->total_loans = $loanTotal; // Total loan amount
-        $employee->total_contributions = $totalContributions; // Add total contributions excluding PATEV
-        $employee->total_patev_contribution = $patevContribution; // Separately PATEV
-        $employee->total_deductions = $totalDeductions; // Total deductions including (PATEV)
-        $employee->total_payable = $totalSalary - $employee->total_deductions; // Payable after deductions
+        $employee->total_loans = $loanTotal;
+        $employee->total_contributions = $totalContributions;
+        $employee->total_patev_contribution = $patevContribution;
+        $employee->total_deductions = $totalDeductions;
+        $employee->total_payable = $totalSalary - $employee->total_deductions;
         $employee->net_amount = $netAmount;
-        $employee->net_pay = $netPay1To15;
     }
 
     return Inertia::render('Payroll/PayrollData', [

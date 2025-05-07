@@ -67,8 +67,6 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Employee Name Input with Suggestions */}
-
             <div className="relative">
                 <label htmlFor="employee_name" className="block text-sm font-medium text-gray-700">
                     Employee
@@ -96,7 +94,6 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                 )}
             </div>
 
-            {/* Loan Type Dropdown */}
             <select
                 name="loan_type_id"
                 value={formData.loan_type_id}
@@ -112,8 +109,6 @@ function EmployeeLoanForm({ employeeLoan = {}, employees, loanTypes, loanProgram
                     </option>
                 ))}
             </select>
-
-            {/* Other Fields */}
             <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
                     Loan Amount

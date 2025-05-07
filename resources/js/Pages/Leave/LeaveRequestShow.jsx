@@ -25,7 +25,7 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
         <AuthenticatedLayout user={auth.user}>
             <div>
                 <div className="border-2 border-black p-4">
-                    <FormHeader />
+                    {/* <FormHeader /> */}
 
                     <div className="mb-5">
                         <label className="flex justify-center border-b-2 border-t-2 border-black p-1 font-bold">
@@ -144,11 +144,11 @@ const LeaveRequestShow = ({ LeaveRequest, auth }) => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center pt-10">
+                    {/* <div className="flex justify-center pt-10">
                         <span className="border-t border-black px-16 font-bold">
                             Signature of Requestor
                         </span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="mt-5 flex justify-end">
                     <Link

@@ -330,7 +330,7 @@ const Loans = ({ auth, loanPrograms, loanTypes, employees, employeeLoan = [] }) 
                         <span className="text-xl font-bold">Loan Types</span>
                     </div>
                     <LoanTypes loanPrograms={loanPrograms} loanTypes={loanTypes} />
-                    // Add this section below the Loan Types section in your return statement
+
                     <div className="my-4 border-b-2 border-yellow-400">
                         <span className="text-xl font-bold">Employee Loans</span>
                     </div>

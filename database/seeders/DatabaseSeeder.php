@@ -16,59 +16,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-
-        //Salary Grade
-        DB::table('salary_grades')->insert([
-            // Grade 1
-            ['grade' => 1, 'step' => 1, 'monthly_salary' => 13000.00],
-            ['grade' => 1, 'step' => 2, 'monthly_salary' => 13109.00],
-            ['grade' => 1, 'step' => 3, 'monthly_salary' => 13219.00],
-            ['grade' => 1, 'step' => 4, 'monthly_salary' => 13329.00],
-            ['grade' => 1, 'step' => 5, 'monthly_salary' => 13441.00],
-            ['grade' => 1, 'step' => 6, 'monthly_salary' => 13553.00],
-            ['grade' => 1, 'step' => 7, 'monthly_salary' => 13666.00],
-            ['grade' => 1, 'step' => 8, 'monthly_salary' => 13780.00],
-
-            // Grade 2
-            ['grade' => 2, 'step' => 1, 'monthly_salary' => 14100.00],
-            ['grade' => 2, 'step' => 2, 'monthly_salary' => 14217.00],
-            ['grade' => 2, 'step' => 3, 'monthly_salary' => 14335.00],
-            ['grade' => 2, 'step' => 4, 'monthly_salary' => 14454.00],
-            ['grade' => 2, 'step' => 5, 'monthly_salary' => 14574.00],
-            ['grade' => 2, 'step' => 6, 'monthly_salary' => 14695.00],
-            ['grade' => 2, 'step' => 7, 'monthly_salary' => 14817.00],
-            ['grade' => 2, 'step' => 8, 'monthly_salary' => 14940.00],
-
-            // Grade 3
-            ['grade' => 3, 'step' => 1, 'monthly_salary' => 15700.00],
-            ['grade' => 3, 'step' => 2, 'monthly_salary' => 15826.00],
-            ['grade' => 3, 'step' => 3, 'monthly_salary' => 15953.00],
-            ['grade' => 3, 'step' => 4, 'monthly_salary' => 16081.00],
-            ['grade' => 3, 'step' => 5, 'monthly_salary' => 16210.00],
-            ['grade' => 3, 'step' => 6, 'monthly_salary' => 16340.00],
-            ['grade' => 3, 'step' => 7, 'monthly_salary' => 16471.00],
-            ['grade' => 3, 'step' => 8, 'monthly_salary' => 16603.00],
-
-            // Grade 4
-            ['grade' => 4, 'step' => 1, 'monthly_salary' => 16900.00],
-            ['grade' => 4, 'step' => 2, 'monthly_salary' => 17039.00],
-            ['grade' => 4, 'step' => 3, 'monthly_salary' => 17179.00],
-            ['grade' => 4, 'step' => 4, 'monthly_salary' => 17320.00],
-            ['grade' => 4, 'step' => 5, 'monthly_salary' => 17462.00],
-            ['grade' => 4, 'step' => 6, 'monthly_salary' => 17605.00],
-            ['grade' => 4, 'step' => 7, 'monthly_salary' => 17749.00],
-            ['grade' => 4, 'step' => 8, 'monthly_salary' => 17894.00],
-
-            // Grade 5
-            ['grade' => 5, 'step' => 1, 'monthly_salary' => 18400.00],
-            ['grade' => 5, 'step' => 2, 'monthly_salary' => 18552.00],
-            ['grade' => 5, 'step' => 3, 'monthly_salary' => 18705.00],
-            ['grade' => 5, 'step' => 4, 'monthly_salary' => 18859.00],
-            ['grade' => 5, 'step' => 5, 'monthly_salary' => 19014.00],
-            ['grade' => 5, 'step' => 6, 'monthly_salary' => 19170.00],
-            ['grade' => 5, 'step' => 7, 'monthly_salary' => 19327.00],
-            ['grade' => 5, 'step' => 8, 'monthly_salary' => 19485.00],
+        //users
+        DB::table('users')->insert([
+            ['id'=>'1', 'name' => 'admin','email' => 'admin1234@gmail.com', 'password'=>'@Dm!n_56789'],
         ]);
+
+        //employee
+        DB::table('employees')->insert([
+            ['user_id'=>'1', 'name' => 'admin'],
+        ]);
+
 
         //Benefits
         DB::table('benefits')->insert([

@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 class LeaveController extends Controller
 {
-
-    // By Employee
     public function LeaveRequestForm()
     {
         $employee = Auth::user()->employee;
@@ -89,10 +87,6 @@ class LeaveController extends Controller
     }
 
     // leaveManagement
-    // public function leaveManagement()
-    // {
-    //     return Inertia::render('Leave/LeaveManagement');
-    // }
     public function leaveManagement()
     {
         $badgeCounts = [
@@ -177,18 +171,6 @@ class LeaveController extends Controller
 
     //
 
-    // public function forReview()
-    // {
-    //     $ReviewLeave = Leave::whereIn('status', ['review'])
-    //         ->with('employee')
-    //         ->latest()
-    //         ->paginate(6);
-
-    //     return Inertia::render('Leave/ForReview', [
-    //         'ReviewLeave' => $ReviewLeave,
-    //     ]);
-    // }
-
     public function forReview()
 {
     $ReviewLeave = Leave::whereIn('status', ['review'])
@@ -201,19 +183,6 @@ class LeaveController extends Controller
     ]);
 }
 
-// public function updateStatus(Leave $leave, Request $request)
-// {
-
-//     $request->validate([
-//         'status' => 'required|in:Approved,rejected,review',
-//     ]);
-
-//     $leave->update([
-//         'status' => $request->status,
-//     ]);
-
-//     return back()->with('success', 'Leave status updated successfully');
-// }
 
 public function updateStatus(Leave $leave, Request $request)
 {
@@ -299,13 +268,5 @@ public function updateStatus(Leave $leave, Request $request)
             ],
         ]);
     }
-    // public function updateStatus(Leave $leave, Request $request)
-    // {
 
-    //     $leave->update([
-    //         'status' => 'review',
-    //     ]);
-
-    //     return back()->with('success', 'Leave request status updated to review');
-    // }
 }

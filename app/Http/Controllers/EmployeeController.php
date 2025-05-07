@@ -17,7 +17,6 @@ class EmployeeController extends Controller
 {
     public function EmployeeList()
     {
-        // $employees = Employee::all();
         $employees = Employee::with(['position', 'department'])->get();
         return Inertia::render('Employees/EmployeeList', ['employees' => $employees]);
     }
@@ -55,7 +54,6 @@ class EmployeeController extends Controller
 
 public function update(Request $request, Employee $employee)
 {
-    // Validate request data
     $validated = $request->validate([
         'employee_id' => 'required|string',
         'first_name' => 'required|string',
@@ -87,24 +85,18 @@ public function update(Request $request, Employee $employee)
         'bir_tin_no' => 'nullable|string',
     ]);
 
-    // Check if a new photo was uploaded
     if ($request->hasFile('photo')) {
         $path = $request->file('photo')->store('employee_photos', 'public');
         $validated['photo_url'] = $path;
     }
 
-    // Update the employee with validated data
     $employee->update($validated);
 
-    // Recalculate and update contributions
     $this->updateEmployeeContributions($employee);
 
     return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
 }
 
-/**
- * Update contributions for an employee based on their updated salary grade.
- */
 private function updateEmployeeContributions(Employee $employee)
 {
     $salaryGrade = $employee->salaryGrade;
@@ -268,7 +260,6 @@ private function updateEmployeeContributions(Employee $employee)
         // Assign created user's ID to the Employee record
         $validated['user_id'] = $user->id;
 
-        // Create employee
         Employee::create($validated);
 
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');

@@ -28,8 +28,6 @@ const PayrollData = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [grandTotals, setGrandTotals] = useState({});
 
-    // console.log(loanPayment);
-
     // Calculate grand totals
     const calculateGrandTotals = () => {
         const totals = {
@@ -215,7 +213,6 @@ const PayrollData = ({
             total_salary: employee.total_salary,
             total_deductions: employee.total_deductions,
             net_pera: employee.net_pera,
-            net_pay: employee.net_pay,
             net_amount: employee.net_amount,
         }));
 
@@ -253,6 +250,7 @@ const PayrollData = ({
                     View
                 </PrimaryButton>
             </div>
+
             <Table
                 dataSource={dataSource}
                 columns={columns}
@@ -261,7 +259,6 @@ const PayrollData = ({
                 onRow={(record) => ({
                     onClick: () => showEmployeeModal(record),
                 })}
-                // Replace the current summary section in the Table component with this:
                 summary={() => (
                     <Table.Summary fixed>
                         <Table.Summary.Row className="bg-gray-100 font-bold">
@@ -329,6 +326,7 @@ const PayrollData = ({
                     })}
                 />
             </Drawer>
+
             <Modal open={modalVisible} onCancel={handleCloseModal} footer={null} width={800}>
                 <div className="flex justify-center py-5 text-xl font-bold">Employee Details</div>
                 {selectedEmployee && (

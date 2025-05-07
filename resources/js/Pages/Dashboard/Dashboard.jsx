@@ -87,16 +87,7 @@ const FundCluster = ({ fundClusters = [] }) => {
 
     return (
         <div className="rounded-md border p-3 shadow">
-            <h2 className="mb-3 font-bold">Balance Accounts</h2>
-
-            {/* Button to open the modal */}
-            <PrimaryButton
-                onClick={() => setIsModalOpen(true)}
-                className="mb-4"
-                disabled={processing}
-            >
-                Upload CSV
-            </PrimaryButton>
+            <h2 className="mb-3 text-xl font-bold">Balance Accounts</h2>
 
             {/* Modal */}
             <Modal
@@ -142,7 +133,7 @@ const FundCluster = ({ fundClusters = [] }) => {
             {fundClusters.length === 0 ? (
                 <div>No data available</div>
             ) : (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {fundClusters.map((cluster) => (
                         <div
                             key={cluster.id}
@@ -157,6 +148,14 @@ const FundCluster = ({ fundClusters = [] }) => {
                     ))}
                 </div>
             )}
+            {/* Button to open the modal */}
+            <PrimaryButton
+                onClick={() => setIsModalOpen(true)}
+                className="mt-4"
+                disabled={processing}
+            >
+                Upload CSV
+            </PrimaryButton>
         </div>
     );
 };
